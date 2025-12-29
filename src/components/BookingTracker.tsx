@@ -25,7 +25,13 @@ export default function BookingTracker() {
     const { t, language } = useTranslation();
     const { toast } = useToast();
     const formRef = useRef<HTMLFormElement>(null);
-    const [state, dispatch, isPending] = useActionState(trackBooking, {});
+    
+    const translatedTrackBooking = async (prevState: any, formData: FormData) => {
+        formData.append('lang', language);
+        return trackBooking(prevState, formData);
+    }
+    const [state, dispatch, isPending] = useActionState(translatedTrackBooking, {});
+    
     const [resetState, resetDispatch, isResetPending] = useActionState(resetTrackerState, {});
 
 
@@ -38,6 +44,15 @@ export default function BookingTracker() {
             });
         }
     }, [state, toast, t]);
+    
+    useEffect(() => {
+        // This will reset the state when the reset action completes.
+        if(!isResetPending && formRef.current) {
+            // we don't actually need to inspect resetState, 
+            // the fact that the action completed is enough.
+        }
+    }, [isResetPending])
+
 
     if(state?.history) {
         return (
@@ -57,7 +72,7 @@ export default function BookingTracker() {
                                 </div>
                             </div>
                              <form action={resetDispatch} className='mt-4'>
-                                <Button type="submit" className="w-full sm:w-auto">
+                                <Button type="submit" disabled={isResetPending} className="w-full sm:w-auto">
                                     {isResetPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                     {t('trackAnotherBooking')}
                                 </Button>
@@ -81,7 +96,6 @@ export default function BookingTracker() {
                         <form ref={formRef} action={dispatch} className="flex items-start gap-2">
                             <div className="flex-grow">
                                 <Input name="phone" type="tel" placeholder={t('enterPhoneNumberPlaceholder')} required className="text-base"/>
-                                <input type="hidden" name="lang" value={language} />
                             </div>
                             <SubmitButton />
                         </form>
