@@ -2,6 +2,7 @@
 'use client';
 
 import { useActionState, useState, useEffect, useTransition } from 'react';
+import { useFormStatus } from 'react-dom';
 import { trackBooking, resetTrackerState } from '@/app/actions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from './ui/button';
@@ -10,17 +11,16 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import { Loader2, Search, XCircle, CheckCircle, Map, History } from 'lucide-react';
 import React from 'react';
 
 function SubmitButton() {
-  const { pending } = useActionState(trackBooking, { });
+  const { pending } = useFormStatus();
   const { t } = useTranslation();
   return (
     <Button type="submit" disabled={pending} className="w-full sm:w-auto">
@@ -31,18 +31,18 @@ function SubmitButton() {
 }
 
 function TrackAnotherButton({ onReset }: { onReset: () => void }) {
-    const [isPending, startTransition] = useTransition();
+    const { pending } = useFormStatus();
     const { t } = useTranslation();
 
-    const handleClick = () => {
-        startTransition(() => {
+    useEffect(() => {
+        if(!pending) {
             onReset();
-        });
-    }
+        }
+    }, [pending, onReset]);
 
     return (
-        <Button type="button" onClick={handleClick} disabled={isPending} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        <Button type="submit" disabled={pending} variant="outline" className="w-full sm:w-auto border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+            {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {t('trackAnotherBooking')}
         </Button>
     )
@@ -74,6 +74,8 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
             setView('history');
         } else if (state?.error) {
             setView('error');
+        } else {
+            setView('form');
         }
     }
   }, [state, isPending]);
@@ -152,7 +154,9 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         
         <DialogFooter className="sm:justify-end gap-2 pt-4">
             {view !== 'form' && (
-              <TrackAnotherButton onReset={resetView} />
+              <form action={resetTrackerState}>
+                <TrackAnotherButton onReset={resetView} />
+              </form>
             )}
         </DialogFooter>
       </DialogContent>
