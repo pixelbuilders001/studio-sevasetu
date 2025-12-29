@@ -77,6 +77,8 @@
     "statusTechnicianAssigned": "तकनीशियन असाइन किया गया",
     "statusInProgress": "प्रगति पर है",
     "statusCompleted": "पूरी हो गई",
+    "trackAnotherBooking": "दूसरी बुकिंग ट्रैक करें",
+    "closeButton": "बंद करें",
 
     "category_phone_name": "मोबाइल फोन",
     "problem_phone_screen-broken_name": "स्क्रीन टूटी",
