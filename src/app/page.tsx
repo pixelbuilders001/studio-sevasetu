@@ -62,7 +62,7 @@ export default function Home() {
                 {t('heroSubtitle')}
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in justify-center md:justify-start">
-                <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-10">
+                <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-10 w-full sm:w-auto">
                   <a href="#services">{t('bookRepairNow')}</a>
                 </Button>
                 <PaymentIcons />
@@ -72,7 +72,7 @@ export default function Home() {
               </div>
             </div>
              {heroImage && (
-              <div className="relative h-80 md:h-full w-full animate-fade-in rounded-lg overflow-hidden hidden md:block">
+              <div className="relative h-64 md:h-full w-full animate-fade-in rounded-lg overflow-hidden hidden md:block">
                 <Image
                   src={heroImage.imageUrl}
                   alt={heroImage.description}
