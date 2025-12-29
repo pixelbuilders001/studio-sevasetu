@@ -30,7 +30,7 @@ export default function BookingDetailsPage() {
     notFound();
   }
 
-  const problemDescription = problemIds.split(',').length > 1 ? `${selectedProblemNames}` : selectedProblemNames;
+  const problemDescription = selectedProblemNames;
 
   return (
     <div className="container mx-auto px-4 py-8">
