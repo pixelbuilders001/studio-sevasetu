@@ -37,7 +37,7 @@ export default function PriceEstimationPage({ params }: { params: { category: st
               <Wrench className="w-6 h-6 text-primary" />
               <span className="font-semibold">{t('fixedInspectionCharge')}</span>
             </div>
-            <span className="text-lg font-bold">₹199</span>
+            <span className="text-lg font-bold">199 /-</span>
           </div>
 
           <div className="flex items-start gap-3 text-sm text-muted-foreground p-3 bg-muted/50 rounded-lg">
