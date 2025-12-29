@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
-import { trackBooking } from '@/app/actions';
+import { useActionState, useState, useEffect } from 'react';
+import { trackBooking, resetTrackerState } from '@/app/actions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -30,37 +30,40 @@ function SubmitButton() {
   );
 }
 
+function TrackAnotherButton() {
+    const { pending } = useActionState();
+    const { t } = useTranslation();
+    return (
+        <Button type="submit" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+            {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {t('trackAnotherBooking')}
+        </Button>
+    )
+}
+
 export default function BookingTrackerModal({ isMobile = false }: { isMobile?: boolean }) {
   const { t, language } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   
-  const translatedTrackBooking = async (prevState: any, formData: FormData) => {
-    formData.append('lang', language);
-    return trackBooking(prevState, formData);
-  };
-
-  const [state, dispatch] = useActionState(translatedTrackBooking, {});
-
-  const resetState = () => {
-    dispatch({ reset: true });
-  }
+  const [state, dispatch, isPending] = useActionState(trackBooking, {});
+  const [resetStateVal, resetDispatch, isResetPending] = useActionState(resetTrackerState, {});
 
   const handleOpenChange = (open: boolean) => {
-    if(!open) {
-        resetState();
+    if(!open && (state.history || state.error)) {
+      // If closing the modal, reset the state by submitting the reset form
+      const formData = new FormData();
+      resetDispatch(formData);
     }
     setIsOpen(open);
   }
 
   useEffect(() => {
-    if (state?.history) {
-        // Form will not reset, modal will show history
-    } else if (state?.error) {
-        // Form will not reset, modal will show error
-    } else {
-        // Initial state or reset, do nothing
+    if(!isPending && state?.history) {
+      // success, do nothing special
+    } else if(!isPending && state?.error) {
+       // error, do nothing special
     }
-  }, [state]);
+  }, [state, isPending]);
 
   const TriggerButton = isMobile ? (
      <button className="text-lg font-medium text-foreground transition-colors hover:text-primary w-full text-left">
@@ -89,6 +92,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
             <div className="flex items-start gap-2">
                 <div className="flex-grow">
                 <Input name="phone" type="tel" placeholder={t('enterPhoneNumberPlaceholder')} required className="text-base" />
+                <input type="hidden" name="lang" value={language} />
                 </div>
                 <SubmitButton />
             </div>
@@ -132,10 +136,12 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         
         <DialogFooter className="sm:justify-end gap-2 pt-4">
             {state?.history ? (
-                <Button onClick={resetState} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">{t('trackAnotherBooking')}</Button>
+                <form action={resetDispatch}>
+                    <TrackAnotherButton />
+                </form>
             ) : (
                 <DialogClose asChild>
-                    <Button type="button" variant="ghost">
+                    <Button type="button" variant="outline" className="border-accent text-accent hover:bg-accent/10">
                     {t('closeButton')}
                     </Button>
                 </DialogClose>

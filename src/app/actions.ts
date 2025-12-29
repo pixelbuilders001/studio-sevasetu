@@ -104,10 +104,7 @@ export async function bookService(
 }
 
 
-export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string; reset?: boolean } > {
-  if (prevState.reset) {
-    return { reset: true };
-  }
+export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string; } > {
   const phone = formData.get('phone');
   const lang = (formData.get('lang') as string) || 'en';
   const t = getTranslations(lang);
@@ -137,4 +134,8 @@ export async function trackBooking(prevState: any, formData: FormData): Promise<
   } else { // Simulate not found
     return { error: t('bookingNotFound') };
   }
+}
+
+export async function resetTrackerState(prevState: any, formData: FormData): Promise<{}> {
+  return {};
 }

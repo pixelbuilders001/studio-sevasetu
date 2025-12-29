@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
-import { trackBooking } from '@/app/actions';
+import { trackBooking, resetTrackerState } from '@/app/actions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
@@ -25,13 +25,9 @@ export default function BookingTracker() {
     const { t, language } = useTranslation();
     const { toast } = useToast();
     const formRef = useRef<HTMLFormElement>(null);
+    const [state, dispatch, isPending] = useActionState(trackBooking, {});
+    const [resetState, resetDispatch, isResetPending] = useActionState(resetTrackerState, {});
 
-    const translatedTrackBooking = async (prevState: any, formData: FormData) => {
-        formData.append('lang', language);
-        return trackBooking(prevState, formData);
-    };
-
-    const [state, dispatch] = useActionState(translatedTrackBooking, {});
 
     useEffect(() => {
         if (state?.error) {
@@ -41,10 +37,37 @@ export default function BookingTracker() {
                 description: state.error,
             });
         }
-        if (state?.status) {
-            formRef.current?.reset();
-        }
     }, [state, toast, t]);
+
+    if(state?.history) {
+        return (
+            <section id="track-booking" className="py-16 md:py-24 bg-muted/30">
+                <div className="container mx-auto px-4">
+                    <Card className="max-w-xl mx-auto shadow-lg">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl">{t('trackYourBookingTitle')}</CardTitle>
+                            <CardDescription>{t('trackYourBookingDescription')}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                             <div className="mt-6 p-4 bg-green-100/50 border border-green-300 rounded-lg flex items-center gap-3">
+                                <CheckCircle className="w-6 h-6 text-green-600" />
+                                <div>
+                                    <p className="font-semibold text-green-800">{t('currentStatus')}</p>
+                                    <p className="text-lg font-bold text-green-900">{state.history[state.history.length-1].status}</p>
+                                </div>
+                            </div>
+                             <form action={resetDispatch} className='mt-4'>
+                                <Button type="submit" className="w-full sm:w-auto">
+                                    {isResetPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                    {t('trackAnotherBooking')}
+                                </Button>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+            </section>
+        )
+    }
 
     return (
         <section id="track-booking" className="py-16 md:py-24 bg-muted/30">
@@ -58,19 +81,12 @@ export default function BookingTracker() {
                         <form ref={formRef} action={dispatch} className="flex items-start gap-2">
                             <div className="flex-grow">
                                 <Input name="phone" type="tel" placeholder={t('enterPhoneNumberPlaceholder')} required className="text-base"/>
+                                <input type="hidden" name="lang" value={language} />
                             </div>
                             <SubmitButton />
                         </form>
-                        {state?.history && (
-                            <div className="mt-6 p-4 bg-green-100/50 border border-green-300 rounded-lg flex items-center gap-3">
-                                <CheckCircle className="w-6 h-6 text-green-600" />
-                                <div>
-                                    <p className="font-semibold text-green-800">{t('currentStatus')}</p>
-                                    <p className="text-lg font-bold text-green-900">{state.history[state.history.length-1].status}</p>
-                                </div>
-                            </div>
-                        )}
-                         {state?.error && !state.history && (
+                        
+                         {state?.error && (
                             <div className="mt-6 p-4 bg-red-100/50 border border-red-300 rounded-lg flex items-center gap-3">
                                 <XCircle className="w-6 h-6 text-red-600" />
                                 <div>
