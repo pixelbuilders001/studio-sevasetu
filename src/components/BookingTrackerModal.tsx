@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useActionState, useState, useEffect } from 'react';
+import { useActionState, useState, useEffect, useTransition } from 'react';
 import { trackBooking, resetTrackerState } from '@/app/actions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from './ui/button';
@@ -30,38 +30,51 @@ function SubmitButton() {
   );
 }
 
-function TrackAnotherButton() {
-    const { pending } = useActionState(resetTrackerState, {});
+function TrackAnotherButton({ onReset }: { onReset: () => void }) {
+    const [isPending, startTransition] = useTransition();
     const { t } = useTranslation();
+
+    const handleClick = () => {
+        startTransition(() => {
+            onReset();
+        });
+    }
+
     return (
-        <Button type="submit" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-            {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        <Button type="button" onClick={handleClick} disabled={isPending} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {t('trackAnotherBooking')}
         </Button>
     )
 }
 
+type View = 'form' | 'history' | 'error';
+
 export default function BookingTrackerModal({ isMobile = false }: { isMobile?: boolean }) {
   const { t, language } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [view, setView] = useState<View>('form');
   
   const [state, dispatch, isPending] = useActionState(trackBooking, {});
-  const [resetStateVal, resetDispatch, isResetPending] = useActionState(resetTrackerState, {});
 
   const handleOpenChange = (open: boolean) => {
-    if(!open && (state.history || state.error)) {
-      // If closing the modal, reset the state by submitting the reset form
-      const formData = new FormData();
-      resetDispatch(formData);
+    if(!open) {
+      setView('form');
     }
     setIsOpen(open);
   }
+  
+  const resetView = () => {
+    setView('form');
+  }
 
   useEffect(() => {
-    if(!isPending && state?.history) {
-      // success, do nothing special
-    } else if(!isPending && state?.error) {
-       // error, do nothing special
+    if (!isPending) {
+        if (state?.history) {
+            setView('history');
+        } else if (state?.error) {
+            setView('error');
+        }
     }
   }, [state, isPending]);
 
@@ -87,7 +100,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
           <DialogDescription>{t('trackYourBookingDescription')}</DialogDescription>
         </DialogHeader>
         
-        {!state?.history && (
+        {view === 'form' && (
             <form action={dispatch} className="space-y-4 py-4">
             <div className="flex items-start gap-2">
                 <div className="flex-grow">
@@ -96,19 +109,22 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
                 </div>
                 <SubmitButton />
             </div>
-            {state?.error && (
-                <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-3">
-                <XCircle className="w-6 h-6 text-destructive" />
-                <div>
-                    <p className="font-semibold text-destructive">{t('bookingNotFound')}</p>
-                    <p className="text-sm text-muted-foreground">{state.error}</p>
-                </div>
-                </div>
-            )}
             </form>
         )}
 
-        {state?.history && (
+        {view === 'error' && (
+             <div className="space-y-4 py-4">
+                <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-3">
+                    <XCircle className="w-6 h-6 text-destructive" />
+                    <div>
+                        <p className="font-semibold text-destructive">{t('bookingNotFound')}</p>
+                        <p className="text-sm text-muted-foreground">{state.error}</p>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {view === 'history' && state?.history && (
           <div className="mt-4 space-y-6">
             <div>
               <h3 className="font-semibold mb-4 text-lg flex items-center gap-2"><History /> {t('bookingHistory')}</h3>
@@ -135,16 +151,8 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         )}
         
         <DialogFooter className="sm:justify-end gap-2 pt-4">
-            {state?.history ? (
-                <form action={resetDispatch}>
-                    <TrackAnotherButton />
-                </form>
-            ) : (
-                <DialogClose asChild>
-                    <Button type="button" variant="outline" className="border-accent text-accent hover:bg-accent/10">
-                    {t('closeButton')}
-                    </Button>
-                </DialogClose>
+            {view !== 'form' && (
+              <TrackAnotherButton onReset={resetView} />
             )}
         </DialogFooter>
       </DialogContent>
