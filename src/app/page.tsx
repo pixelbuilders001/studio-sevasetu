@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <>
       <section className="bg-background">
-        <div className="container mx-auto px-4 py-16 md:py-24">
+        <div className="container mx-auto px-4 py-8 md:py-16">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="animate-fade-in-up text-center md:text-left">
               <h1 className="text-4xl md:text-6xl font-bold text-primary mb-4 font-headline">
@@ -35,14 +35,14 @@ export default function Home() {
               </div>
             </div>
             {heroImage && (
-              <div className="relative h-80 md:h-full w-full animate-fade-in rounded-lg overflow-hidden">
+              <div className="relative h-80 md:h-full w-full animate-fade-in rounded-lg overflow-hidden hidden md:block">
                 <Image
                   src={heroImage.imageUrl}
                   alt={heroImage.description}
                   fill
                   className="object-cover"
                   data-ai-hint={heroImage.imageHint}
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="50vw"
                 />
               </div>
             )}
