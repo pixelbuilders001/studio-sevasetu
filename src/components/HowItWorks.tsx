@@ -1,34 +1,38 @@
+'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Search, Calendar, Wrench, Smile } from 'lucide-react';
 
-const steps = [
-  {
-    icon: Search,
-    title: '1. Select Your Service',
-    description: 'Choose your device and describe the problem you are facing.',
-  },
-  {
-    icon: Calendar,
-    title: '2. Schedule a Visit',
-    description: 'Pick a convenient time slot for our technician to visit your location.',
-  },
-  {
-    icon: Wrench,
-    title: '3. Get It Repaired',
-    description: 'Our expert technician will diagnose the issue and repair your device.',
-  },
-  {
-    icon: Smile,
-    title: '4. Pay After Service',
-    description: 'Make the payment only after your device is repaired to your satisfaction.',
-  },
-];
-
 export default function HowItWorks() {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      icon: Search,
+      title: t('howItWorksStep1Title'),
+      description: t('howItWorksStep1Desc'),
+    },
+    {
+      icon: Calendar,
+      title: t('howItWorksStep2Title'),
+      description: t('howItWorksStep2Desc'),
+    },
+    {
+      icon: Wrench,
+      title: t('howItWorksStep3Title'),
+      description: t('howItWorksStep3Desc'),
+    },
+    {
+      icon: Smile,
+      title: t('howItWorksStep4Title'),
+      description: t('howItWorksStep4Desc'),
+    },
+  ];
+  
   return (
     <section className="py-16 md:py-24 bg-muted/50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-12 font-headline text-center">How It Works</h2>
+        <h2 className="text-3xl font-bold mb-12 font-headline text-center">{t('howItWorksTitle')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
             <Card key={index} className="text-center border-0 bg-transparent shadow-none">

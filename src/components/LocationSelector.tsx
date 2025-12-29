@@ -17,6 +17,7 @@ import { useLocation } from '@/context/LocationContext';
 import { ChevronDown, Loader2, MapPin } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
+import { useTranslation } from '@/hooks/useTranslation';
 
 type PostalInfo = {
   Name: string;
@@ -27,6 +28,7 @@ type PostalInfo = {
 
 export default function LocationSelector() {
   const { location, setLocation } = useLocation();
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [pincode, setPincode] = useState(location.pincode);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +40,7 @@ export default function LocationSelector() {
 
   const handlePincodeSearch = async () => {
     if (pincode.length !== 6) {
-      setError('Please enter a valid 6-digit pincode.');
+      setError(t('errorInvalidPincode'));
       setPostalData([]);
       return;
     }
@@ -51,11 +53,11 @@ export default function LocationSelector() {
         setPostalData(data[0].PostOffice);
         setSelectedArea(data[0].PostOffice[0] || null);
       } else {
-        setError(data[0].Message || 'Could not find the pincode.');
+        setError(data[0].Message || t('errorCouldNotFindPincode'));
         setPostalData([]);
       }
     } catch (err) {
-      setError('Failed to fetch location data.');
+      setError(t('errorFailedToFetchLocation'));
       setPostalData([]);
     } finally {
       setIsLoading(false);
@@ -96,7 +98,7 @@ export default function LocationSelector() {
           <div className="text-left">
             <div className="font-semibold text-sm leading-tight">{location.pincode}</div>
             <div className="text-xs text-muted-foreground leading-tight truncate max-w-[150px]">
-              {location.area?.Name || 'Select your location'}
+              {location.area?.Name || t('selectYourLocation')}
             </div>
           </div>
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
@@ -104,9 +106,9 @@ export default function LocationSelector() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Select Your Location</DialogTitle>
+          <DialogTitle>{t('selectYourLocation')}</DialogTitle>
           <DialogDescription>
-            Enter your pincode to find service availability in your area.
+            {t('pincodeDialogDescription')}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -115,17 +117,17 @@ export default function LocationSelector() {
               id="pincode"
               value={pincode}
               onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="Enter 6-digit Pincode"
+              placeholder={t('pincodeInputPlaceholder')}
               className="flex-grow"
             />
             <Button onClick={handlePincodeSearch} disabled={isLoading}>
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Search'}
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('searchButton')}
             </Button>
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           {postalData.length > 0 && (
             <div className="space-y-2">
-              <p className="font-medium text-sm">Select your area</p>
+              <p className="font-medium text-sm">{t('selectYourArea')}</p>
               <RadioGroup
                 value={selectedArea?.Name}
                 onValueChange={(value) => {
@@ -148,10 +150,10 @@ export default function LocationSelector() {
         </div>
         <DialogFooter>
           <DialogClose asChild>
-             <Button type="button" variant="outline">Cancel</Button>
+             <Button type="button" variant="outline">{t('cancelButton')}</Button>
           </DialogClose>
           <Button onClick={handleLocationConfirm} disabled={!selectedArea}>
-            Confirm Location
+            {t('confirmLocationButton')}
           </Button>
         </DialogFooter>
       </DialogContent>

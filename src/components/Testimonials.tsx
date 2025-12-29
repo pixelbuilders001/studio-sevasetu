@@ -1,33 +1,8 @@
+'use client';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Star } from 'lucide-react';
-
-const testimonials = [
-  {
-    name: 'Priya S.',
-    location: 'Pune',
-    avatar: 'PS',
-    rating: 5,
-    comment:
-      'Amazing service! My phone screen was replaced in under an hour at my home. The technician was very professional and polite.',
-  },
-  {
-    name: 'Amit K.',
-    location: 'Pune',
-    avatar: 'AK',
-    rating: 5,
-    comment:
-      'My laptop was running extremely slow. SevaSetu technician came and upgraded the RAM and now it works like a new machine. Highly recommended!',
-  },
-  {
-    name: 'Sunita D.',
-    location: 'Pune',
-    avatar: 'SD',
-    rating: 5,
-    comment:
-      'The AC was not cooling properly. The service person was on time, identified the gas leak, and fixed it quickly. Very satisfied with the work.',
-  },
-];
+import { useTranslation } from '@/hooks/useTranslation';
 
 const StarRating = ({ rating }: { rating: number }) => (
     <div className="flex items-center gap-1">
@@ -41,10 +16,36 @@ const StarRating = ({ rating }: { rating: number }) => (
   );
 
 export default function Testimonials() {
+  const { t } = useTranslation();
+
+  const testimonials = [
+    {
+      name: 'Priya S.',
+      location: 'Pune',
+      avatar: 'PS',
+      rating: 5,
+      comment: t('testimonial1'),
+    },
+    {
+      name: 'Amit K.',
+      location: 'Pune',
+      avatar: 'AK',
+      rating: 5,
+      comment: t('testimonial2'),
+    },
+    {
+      name: 'Sunita D.',
+      location: 'Pune',
+      avatar: 'SD',
+      rating: 5,
+      comment: t('testimonial3'),
+    },
+  ];
+
   return (
     <section className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-12 font-headline text-center">What Our Customers Say</h2>
+        <h2 className="text-3xl font-bold mb-12 font-headline text-center">{t('whatOurCustomersSay')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="flex flex-col">

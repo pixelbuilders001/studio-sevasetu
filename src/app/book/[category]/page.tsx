@@ -1,23 +1,29 @@
+'use client';
 import { serviceCategories } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function ProblemSelectionPage({ params }: { params: { category: string } }) {
   const { category: categoryId } = params;
-  const category = serviceCategories.find((c) => c.id === categoryId);
+  const { t, getTranslatedCategory } = useTranslation();
 
-  if (!category) {
+  const originalCategory = serviceCategories.find((c) => c.id === categoryId);
+
+  if (!originalCategory) {
     notFound();
   }
+
+  const category = getTranslatedCategory(originalCategory);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
           <CardTitle className="text-center text-2xl md:text-3xl font-headline">
-            What's the problem with your {category.name}?
+            {t('whatsTheProblemWithYour')} {category.name}?
           </CardTitle>
         </CardHeader>
         <CardContent>
