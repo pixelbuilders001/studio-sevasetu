@@ -51,23 +51,24 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
   
   const [state, dispatch, isPending] = useActionState(trackBooking, {});
 
+  const [resetState, resetDispatch, isResetPending] = useActionState(resetTrackerState, {});
+
   const handleOpenChange = (open: boolean) => {
     if(!open) {
       setView('form');
     }
     setIsOpen(open);
   }
-  
-  const resetView = () => {
-    setView('form');
-  }
 
   useEffect(() => {
     if (isPending) return;
+
     if (state?.history) {
       setView('history');
     } else if (state?.error) {
       setView('error');
+    } else {
+        setView('form');
     }
   }, [state, isPending]);
 
@@ -121,7 +122,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
           <div className="mt-4 space-y-6">
             <div>
               <h3 className="font-semibold mb-4 text-lg flex items-center gap-2"><History /> {t('bookingHistory')}</h3>
-              <div className="relative pl-6">
+              <div className="relative pl-8">
                 {state.history.map((item, index) => (
                   <div key={index} className="relative pb-8">
                     {index < state.history.length - 1 && (
@@ -132,7 +133,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
                          <CheckCircle className={`w-4 h-4 ${index === state.history.length - 1 ? 'text-primary-foreground' : 'text-muted-foreground'}`}/>
                       </div>
                     </div>
-                    <div className="pl-4">
+                    <div className="pl-4 ml-2">
                        <p className={`font-semibold ${index === state.history.length-1 ? 'text-primary' : 'text-foreground'}`}>{item.status}</p>
                        <p className="text-sm text-muted-foreground">{item.date}</p>
                     </div>
@@ -145,9 +146,9 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         
         <DialogFooter className="sm:justify-end gap-2 pt-4">
             {view !== 'form' && (
-              <form action={() => setView('form')}>
+              <form action={resetDispatch}>
                  <Button type="submit" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {isResetPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {t('trackAnotherBooking')}
                 </Button>
               </form>
