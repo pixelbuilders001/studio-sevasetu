@@ -41,7 +41,7 @@ function TrackAnotherButton({ onReset }: { onReset: () => void }) {
     }, [pending, onReset]);
 
     return (
-        <Button type="submit" disabled={pending} variant="outline" className="w-full sm:w-auto border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+        <Button type="submit" disabled={pending} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
             {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {t('trackAnotherBooking')}
         </Button>
@@ -69,14 +69,11 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
   }
 
   useEffect(() => {
-    if (!isPending) {
-        if (state?.history) {
-            setView('history');
-        } else if (state?.error) {
-            setView('error');
-        } else {
-            setView('form');
-        }
+    if (isPending) return;
+    if (state?.history) {
+      setView('history');
+    } else if (state?.error) {
+      setView('error');
     }
   }, [state, isPending]);
 
