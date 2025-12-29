@@ -80,9 +80,11 @@ export default function Home() {
         </div>
       </section>
 
-      <HowItWorks />
+      <div id="how-it-works">
+        <HowItWorks />
+      </div>
 
-      <section className="py-16 md:py-24">
+      <section id="why-choose-us" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <TrustIndicators />
         </div>
