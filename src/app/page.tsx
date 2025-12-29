@@ -9,26 +9,44 @@ import TrustIndicators from '@/components/TrustIndicators';
 import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { useTranslation } from '@/hooks/useTranslation';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function Home() {
   const { t, getTranslatedCategory } = useTranslation();
   const categories = serviceCategories.map(getTranslatedCategory);
+  const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
 
   return (
     <>
       <section className="bg-background">
-        <div className="container mx-auto px-4 py-16 md:py-24 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-primary mb-4 font-headline animate-fade-in-down">
-              {t('heroTitle')}
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 animate-fade-in-up">
-              {t('heroSubtitle')}
-            </p>
-            <div className="animate-fade-in">
-              <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg">
-                <a href="#services">{t('bookRepairNow')}</a>
-              </Button>
+        <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="animate-fade-in-up text-center md:text-left">
+              <h1 className="text-4xl md:text-6xl font-bold text-primary mb-4 font-headline">
+                {t('heroTitle')}
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto md:mx-0 mb-8">
+                {t('heroSubtitle')}
+              </p>
+              <div className="animate-fade-in">
+                <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg">
+                  <a href="#services">{t('bookRepairNow')}</a>
+                </Button>
+              </div>
             </div>
+            {heroImage && (
+              <div className="relative h-80 md:h-full w-full animate-fade-in rounded-lg overflow-hidden">
+                <Image
+                  src={heroImage.imageUrl}
+                  alt={heroImage.description}
+                  fill
+                  className="object-cover"
+                  data-ai-hint={heroImage.imageHint}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

@@ -1,6 +1,12 @@
 {
   "placeholderImages": [
     {
+      "id": "hero-image",
+      "description": "Technician repairing a device",
+      "imageUrl": "https://images.unsplash.com/photo-1596008194724-433b9cde7332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx0ZWNobmljaWFuJTIwcmVwYWlyfGVufDB8fHx8MTc2NzAwMzMzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "technician repair"
+    },
+    {
       "id": "phone-repair",
       "description": "A person repairing a mobile phone.",
       "imageUrl": "https://images.unsplash.com/photo-1639776738932-956082f0b704?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwaG9uZSUyMHJlcGFpcnxlbnwwfHx8fDE3NjcwMDMzMzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
