@@ -96,8 +96,8 @@ export default function LocationSelector() {
         <Button variant="ghost" className="flex items-center gap-2">
           <MapPin className="h-4 w-4 text-muted-foreground" />
           <div className="text-left">
-            <div className="font-semibold text-sm leading-tight">{location.pincode}</div>
-            <div className="text-xs bg-accent text-accent-foreground leading-tight truncate max-w-[150px] px-2 py-1 rounded-md">
+            <div className="font-semibold text-sm leading-tight bg-accent text-primary-foreground px-2 py-1 rounded-md">{location.pincode}</div>
+            <div className="text-xs bg-accent text-primary-foreground leading-tight truncate max-w-[150px] px-2 py-1 rounded-md">
               {location.area?.Name || t('selectYourLocation')}
             </div>
           </div>
