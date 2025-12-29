@@ -7,6 +7,7 @@ export type FormState = {
     landmark?: string[];
     timeSlot?: string[];
     media?: string[];
+    problemDescription?: string[];
     _form?: string[];
   };
   success: boolean;

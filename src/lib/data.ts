@@ -50,6 +50,7 @@ export const serviceCategories: ServiceCategory[] = [
       { id: 'keyboard-issue', name: 'Keyboard Issue' },
       { id: 'os-software-issue', name: 'OS/Software Issue' },
       { id: 'not-starting', name: 'Not Starting' },
+      { id: 'other', name: 'Other Issue' },
     ],
   },
   {
@@ -63,6 +64,7 @@ export const serviceCategories: ServiceCategory[] = [
       { id: 'installation-uninstallation', name: 'Installation / Uninstallation' },
       { id: 'service-cleaning', name: 'Service / Cleaning' },
       { id: 'noise-issue', name: 'Noise Issue' },
+      { id: 'other', name: 'Other Issue' },
     ],
   },
   {
@@ -75,6 +77,7 @@ export const serviceCategories: ServiceCategory[] = [
       { id: 'water-leakage', name: 'Water Leakage' },
       { id: 'compressor-issue', name: 'Compressor Issue' },
       { id: 'noise-issue', name: 'Noise Issue' },
+      { id: 'other', name: 'Other Issue' },
     ],
   },
   {
@@ -87,6 +90,7 @@ export const serviceCategories: ServiceCategory[] = [
       { id: 'motor-issue', name: 'Motor Issue' },
       { id: 'water-pump-issue', name: 'Water Pump Issue' },
       { id: 'power-issue', name: 'Power Issue' },
+      { id: 'other', name: 'Other Issue' },
     ],
   },
 ];

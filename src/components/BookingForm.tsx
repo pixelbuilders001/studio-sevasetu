@@ -48,6 +48,8 @@ export function BookingForm({ category, problem }: { category: string; problem: 
     }
   }, [state, toast]);
 
+  const isOtherProblem = problem.toLowerCase() === 'other issue';
+
   return (
     <form ref={formRef} action={dispatch} className="space-y-4">
       <input type="hidden" name="category" value={category} />
@@ -75,6 +77,14 @@ export function BookingForm({ category, problem }: { category: string; problem: 
         <Label htmlFor="landmark">Landmark (Optional)</Label>
         <Input id="landmark" name="landmark" />
       </div>
+
+      {isOtherProblem && (
+        <div>
+            <Label htmlFor="problemDescription">Please describe the problem</Label>
+            <Textarea id="problemDescription" name="problemDescription" required />
+            {state.errors?.problemDescription && <p className="text-sm font-medium text-destructive mt-1">{state.errors.problemDescription[0]}</p>}
+        </div>
+      )}
 
       <div>
         <Label htmlFor="timeSlot">Preferred Time Slot</Label>

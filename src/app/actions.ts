@@ -17,6 +17,7 @@ const BookingSchema = z.object({
         file => !file || ['image/jpeg', 'image/png', 'video/mp4'].includes(file.type),
         "Only .jpg, .png, and .mp4 formats are supported."
     ),
+  problemDescription: z.string().optional(),
 });
 
 export async function bookService(
@@ -32,6 +33,7 @@ export async function bookService(
     media: formData.get('media'),
     category: formData.get('category'),
     problem: formData.get('problem'),
+    problemDescription: formData.get('problemDescription'),
   };
   
   const validatedFields = BookingSchema.safeParse({
@@ -41,6 +43,7 @@ export async function bookService(
     landmark: rawData.landmark,
     timeSlot: rawData.timeSlot,
     media: rawData.media,
+    problemDescription: rawData.problemDescription,
   });
 
   if (!validatedFields.success) {
@@ -52,12 +55,24 @@ export async function bookService(
   }
 
   const { name, mobile, address, landmark, timeSlot, media } = validatedFields.data;
-  const { category, problem } = rawData;
+  const { category, problem, problemDescription: customProblem } = rawData;
 
-  const problemDescription = `
+  if (problem === 'Other Issue' && !customProblem) {
+    return {
+        success: false,
+        errors: {
+            problemDescription: ['Please describe the problem.'],
+        },
+        message: 'Please describe the problem.',
+    }
+  }
+
+  const problemText = problem === 'Other Issue' ? customProblem : problem;
+
+  const fullProblemDescription = `
     Customer: ${name}
     Device: ${category}
-    Problem: ${problem}
+    Problem: ${problemText}
     Address: ${address}, ${landmark || ''}
     Preferred Slot: ${timeSlot}
   `;
