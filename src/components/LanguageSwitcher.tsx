@@ -1,18 +1,38 @@
 'use client';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
-import { Globe } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Languages } from 'lucide-react';
 
 export default function LanguageSwitcher() {
   const { language, setLanguage } = useTranslation();
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'hi' : 'en');
-  };
-
   return (
-    <Button variant="ghost" size="icon" onClick={toggleLanguage} aria-label="Switch language">
-      <Globe className="h-5 w-5" />
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label="Switch language">
+          <Languages className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          onClick={() => setLanguage('en')}
+          disabled={language === 'en'}
+        >
+          English
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => setLanguage('hi')}
+          disabled={language === 'hi'}
+        >
+          हिंदी
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
