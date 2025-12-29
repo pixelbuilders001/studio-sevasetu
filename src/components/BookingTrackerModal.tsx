@@ -34,12 +34,6 @@ function TrackAnotherButton({ onReset }: { onReset: () => void }) {
     const { pending } = useFormStatus();
     const { t } = useTranslation();
 
-    useEffect(() => {
-        if(!pending) {
-            onReset();
-        }
-    }, [pending, onReset]);
-
     return (
         <Button type="submit" disabled={pending} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
             {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
@@ -151,8 +145,11 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         
         <DialogFooter className="sm:justify-end gap-2 pt-4">
             {view !== 'form' && (
-              <form action={resetTrackerState}>
-                <TrackAnotherButton onReset={resetView} />
+              <form action={() => setView('form')}>
+                 <Button type="submit" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {t('trackAnotherBooking')}
+                </Button>
               </form>
             )}
         </DialogFooter>
