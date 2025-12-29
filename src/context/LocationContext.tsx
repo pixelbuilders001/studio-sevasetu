@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 type AreaInfo = {
     Name: string;
@@ -32,7 +32,27 @@ const defaultLocation: Location = {
 }
 
 export function LocationProvider({ children }: { children: ReactNode }) {
-  const [location, setLocation] = useState<Location>(defaultLocation);
+  const [location, setLocationState] = useState<Location>(defaultLocation);
+
+  useEffect(() => {
+    try {
+      const storedLocation = localStorage.getItem('userLocation');
+      if (storedLocation) {
+        setLocationState(JSON.parse(storedLocation));
+      }
+    } catch (error) {
+      console.error("Failed to parse location from localStorage", error);
+    }
+  }, []);
+
+  const setLocation = (newLocation: Location) => {
+    setLocationState(newLocation);
+    try {
+      localStorage.setItem('userLocation', JSON.stringify(newLocation));
+    } catch (error) {
+      console.error("Failed to save location to localStorage", error);
+    }
+  };
 
   return (
     <LocationContext.Provider value={{ location, setLocation }}>
