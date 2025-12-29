@@ -1,14 +1,15 @@
 'use client';
 import { serviceCategories } from '@/lib/data';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { AlertCircle, Wrench } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 
-export default function PriceEstimationPage({ params }: { params: { category: string; problem: string } }) {
-  const { category: categoryId, problem: problemId } = params;
+export default function PriceEstimationPage() {
+  const params = useParams();
+  const { category: categoryId, problem: problemId } = params as { category: string, problem: string };
   const { t, getTranslatedCategory } = useTranslation();
   
   const originalCategory = serviceCategories.find((c) => c.id === categoryId);

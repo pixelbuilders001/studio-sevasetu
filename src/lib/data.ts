@@ -19,7 +19,12 @@ export type ServiceCategory = {
 const getImage = (id: string): ImagePlaceholder => {
     const img = PlaceHolderImages.find(p => p.id === id);
     if (!img) {
-        throw new Error(`Placeholder image with id "${id}" not found.`);
+        // Return a default/fallback image or throw an error
+        const defaultImg = PlaceHolderImages.find(p => p.id === 'other-issue');
+        if(defaultImg) return defaultImg;
+
+        // If even the default is not there, this is a critical setup error.
+        throw new Error(`Placeholder image with id "${id}" not found and default image is also missing.`);
     }
     return img;
 }
