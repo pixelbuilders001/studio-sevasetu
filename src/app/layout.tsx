@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { LocationProvider } from '@/context/LocationContext';
 
 export const metadata: Metadata = {
   title: 'SevaSetu - Trusted Local Repair',
@@ -22,9 +23,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background">
-        <Header />
-        <main className="flex-grow">{children}</main>
-        <Footer />
+        <LocationProvider>
+          <Header />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+        </LocationProvider>
         <Toaster />
       </body>
     </html>
