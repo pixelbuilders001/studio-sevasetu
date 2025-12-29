@@ -7,6 +7,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
@@ -57,13 +59,13 @@ export default function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+                  <SheetHeader className="border-b pb-4 mb-4">
+                    <SheetTitle className="sr-only">Menu</SheetTitle>
+                    <Link href="/" className="text-2xl font-bold text-primary font-headline">
+                        {t('appName')}
+                    </Link>
+                  </SheetHeader>
                   <div className="flex flex-col h-full">
-                    <div className="flex justify-between items-center border-b pb-4 mb-4">
-                        <Link href="/" className="text-2xl font-bold text-primary font-headline">
-                           {t('appName')}
-                        </Link>
-                    </div>
-                    
                     <nav className="flex flex-col gap-4">
                       {navItems.map((item) => (
                         <SheetClose asChild key={item.href}>
