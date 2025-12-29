@@ -68,11 +68,11 @@ export default function ProblemSelectionPage() {
                   key={problem.id}
                   onClick={() => toggleProblemSelection(problem)}
                   className={`cursor-pointer overflow-hidden group transition-all duration-300 h-full flex flex-col hover:shadow-lg relative ${
-                    isSelected ? 'border-primary shadow-lg' : 'border-border'
+                    isSelected ? 'border-accent shadow-lg' : 'border-border'
                   }`}
                 >
                   {isSelected && (
-                    <div className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground rounded-full p-1">
+                    <div className="absolute top-2 right-2 z-10 bg-accent text-accent-foreground rounded-full p-1">
                       <CheckCircle className="w-4 h-4" />
                     </div>
                   )}
