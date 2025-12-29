@@ -52,7 +52,7 @@ export default function Home() {
             />
           </div>
         )}
-        <div className="relative container mx-auto px-4 pt-12 pb-8 md:pt-20 md:pb-12 z-10">
+        <div className="relative container mx-auto px-4 pt-8 pb-8 md:pt-16 md:pb-12 z-10">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="animate-fade-in-up text-center md:text-left">
               <h1 className="text-4xl md:text-6xl font-bold text-primary mb-4 font-headline">
