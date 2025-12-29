@@ -101,3 +101,33 @@ export async function bookService(
   
   redirect(`/confirmation?bookingId=${`SS-${Math.floor(100000 + Math.random() * 900000)}`}`);
 }
+
+
+export async function trackBooking(prevState: any, formData: FormData): Promise<{ status?: string; error?: string }> {
+  const phone = formData.get('phone');
+  const lang = (formData.get('lang') as string) || 'en';
+  const t = getTranslations(lang);
+
+  const PhoneSchema = z.string().regex(/^(\+91)?[6-9]\d{9}$/, { message: t('validation.mobile.regex') });
+  const validation = PhoneSchema.safeParse(phone);
+
+  if (!validation.success) {
+    return { error: validation.error.flatten().formErrors[0] };
+  }
+
+  // This is a simulation. In a real app, you'd query your database.
+  const statuses = [
+    t('statusBooked'),
+    t('statusTechnicianAssigned'),
+    t('statusInProgress'),
+    t('statusCompleted'),
+  ];
+  const lastDigit = parseInt((phone as string).slice(-1));
+
+  if (lastDigit < 8) { // Simulate found booking
+    const randomIndex = lastDigit % statuses.length;
+    return { status: statuses[randomIndex] };
+  } else { // Simulate not found
+    return { error: t('bookingNotFound') };
+  }
+}

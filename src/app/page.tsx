@@ -10,6 +10,7 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { useTranslation } from '@/hooks/useTranslation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import BookingTracker from '@/components/BookingTracker';
 
 export default function Home() {
   const { t, getTranslatedCategory } = useTranslation();
@@ -49,6 +50,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <BookingTracker />
 
       <section id="services" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
