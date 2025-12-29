@@ -67,12 +67,12 @@ export default function ProblemSelectionPage() {
                 <Card
                   key={problem.id}
                   onClick={() => toggleProblemSelection(problem)}
-                  className={`cursor-pointer overflow-hidden group transition-all duration-300 h-full flex flex-col hover:shadow-lg ${
-                    isSelected ? 'border-red-500 shadow-lg' : 'border-border'
+                  className={`cursor-pointer overflow-hidden group transition-all duration-300 h-full flex flex-col hover:shadow-lg relative ${
+                    isSelected ? 'border-primary shadow-lg' : 'border-border'
                   }`}
                 >
                   {isSelected && (
-                    <div className="absolute top-2 right-2 z-10 bg-red-500 text-white rounded-full p-1">
+                    <div className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground rounded-full p-1">
                       <CheckCircle className="w-4 h-4" />
                     </div>
                   )}
@@ -97,10 +97,11 @@ export default function ProblemSelectionPage() {
           </div>
         </CardContent>
       </Card>
+      
       {selectedProblems.length > 0 && (
-         <div className="bg-background border-t shadow-[0_-4px_12px_rgba(0,0,0,0.08)] mt-8">
+         <div className="mt-8">
             <div className="container mx-auto px-4 py-4">
-                <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+                <div className="max-w-4xl mx-auto flex items-center justify-between gap-4 bg-background border shadow-lg p-4 rounded-lg">
                     <div className="flex-grow flex items-center gap-2 overflow-hidden">
                        <p className="font-semibold hidden sm:inline">{t('selected_issues', { defaultValue: 'Selected:'})}</p>
                        <div className="flex gap-2 overflow-x-auto">
