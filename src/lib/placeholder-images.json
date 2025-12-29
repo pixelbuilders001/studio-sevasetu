@@ -2,8 +2,8 @@
   "placeholderImages": [
     {
       "id": "hero-image",
-      "description": "Technician repairing a device",
-      "imageUrl": "https://images.pexels.com/photos/4981799/pexels-photo-4981799.jpeg",
+      "description": "Technician repairing a device with a customer watching",
+      "imageUrl": "https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Dec%2029%2C%202025%2C%2008_11_39%20PM.png",
       "imageHint": "technician repair"
     },
     {
