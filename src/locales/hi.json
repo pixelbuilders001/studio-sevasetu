@@ -85,6 +85,13 @@
     "statusCompleted": "पूरी हो गई",
     "trackAnotherBooking": "दूसरी बुकिंग ट्रैक करें",
     "closeButton": "बंद करें",
+    "satisfactionGuarantee": "100% संतुष्टि की गारंटी",
+    "doorstepServiceTitle": "डोरस्टेप सेवा",
+    "doorstepServiceDesc": "स्थानीय: पास में आसान मरम्मत",
+    "verifiedTechniciansTitle": "सत्यापित तकनीशियन",
+    "verifiedTechniciansDesc": "100% मानक गारंटी",
+    "payAfterRepairTitle": "मरम्मत के बाद भुगतान",
+    "payAfterRepairDesc": "संतुष्ट होने के बाद ही भुगतान करें।",
 
     "category_phone_name": "मोबाइल फोन",
     "problem_phone_screen-broken_name": "स्क्रीन टूटी",

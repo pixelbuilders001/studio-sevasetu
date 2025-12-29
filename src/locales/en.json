@@ -83,6 +83,13 @@
     "statusTechnicianAssigned": "Technician Assigned",
     "statusInProgress": "In Progress",
     "statusCompleted": "Completed",
+    "satisfactionGuarantee": "100% Satisfaction Guarantee",
+    "doorstepServiceTitle": "Doorstep Service",
+    "doorstepServiceDesc": "Local: Easy repair nearby",
+    "verifiedTechniciansTitle": "Verified Technicians",
+    "verifiedTechniciansDesc": "100% Standard Guarantee",
+    "payAfterRepairTitle": "Pay After Repair",
+    "payAfterRepairDesc": "Pay only after you are satisfied.",
 
     "category_phone_name": "Mobile Phone",
     "problem_phone_screen-broken_name": "Screen Broken",

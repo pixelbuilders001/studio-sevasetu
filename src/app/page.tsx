@@ -10,16 +10,48 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { useTranslation } from '@/hooks/useTranslation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import PaymentIcons from '@/components/PaymentIcons';
+import { ShieldCheck, Truck, CreditCard } from 'lucide-react';
 
 export default function Home() {
   const { t, getTranslatedCategory } = useTranslation();
   const categories = serviceCategories.map(getTranslatedCategory);
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
 
+  const featureCards = [
+    {
+      icon: Truck,
+      title: t('doorstepServiceTitle'),
+      description: t('doorstepServiceDesc'),
+    },
+    {
+      icon: ShieldCheck,
+      title: t('verifiedTechniciansTitle'),
+      description: t('verifiedTechniciansDesc'),
+    },
+    {
+      icon: CreditCard,
+      title: t('payAfterRepairTitle'),
+      description: t('payAfterRepairDesc'),
+    },
+  ];
+
   return (
     <>
-      <section className="bg-background">
-        <div className="container mx-auto px-4 py-8 md:py-16">
+      <section className="relative bg-background text-foreground overflow-hidden">
+         {heroImage && (
+          <div className="absolute inset-0 z-0 opacity-20">
+            <Image
+              src={heroImage.imageUrl}
+              alt={heroImage.description}
+              fill
+              className="object-cover"
+              data-ai-hint={heroImage.imageHint}
+              priority
+            />
+          </div>
+        )}
+        <div className="relative container mx-auto px-4 pt-12 pb-8 md:pt-20 md:pb-12 z-10">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="animate-fade-in-up text-center md:text-left">
               <h1 className="text-4xl md:text-6xl font-bold text-primary mb-4 font-headline">
@@ -28,20 +60,24 @@ export default function Home() {
               <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto md:mx-0 mb-8">
                 {t('heroSubtitle')}
               </p>
-              <div className="animate-fade-in">
-                <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg">
+              <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in justify-center md:justify-start">
+                <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-10">
                   <a href="#services">{t('bookRepairNow')}</a>
                 </Button>
+                <PaymentIcons />
+              </div>
+               <div className="mt-6 text-center md:text-left">
+                  <p className="text-sm text-muted-foreground font-semibold">{t('satisfactionGuarantee')}</p>
               </div>
             </div>
-            {heroImage && (
+             {heroImage && (
               <div className="relative h-80 md:h-full w-full animate-fade-in rounded-lg overflow-hidden hidden md:block">
                 <Image
                   src={heroImage.imageUrl}
                   alt={heroImage.description}
                   fill
-                  className="object-cover"
-                  data-ai-hint={heroImage.imageHint}
+                  className="object-contain"
+                  data-ai-hint={heroimage.imageHint}
                   sizes="50vw"
                 />
               </div>
@@ -49,6 +85,25 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <section className="py-12 md:py-16 bg-background">
+        <div className="container mx-auto px-4 -mt-16 md:-mt-24 relative z-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {featureCards.map((card, index) => (
+              <Card key={index} className="bg-card/80 backdrop-blur-sm border-border/50 shadow-lg hover:shadow-xl transition-shadow">
+                <CardContent className="p-6 flex items-center gap-4">
+                  <card.icon className="w-10 h-10 text-accent" />
+                  <div>
+                    <h3 className="font-bold text-lg">{card.title}</h3>
+                    <p className="text-sm text-muted-foreground">{card.description}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
 
       <section id="services" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
@@ -58,7 +113,7 @@ export default function Home() {
               <Link href={`/book/${category.id}`} key={category.id} className="group">
                 <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
                   <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
-                    <div className="relative w-full aspect-video">
+                    <div className="relative w-full aspect-square">
                       <Image
                         src={category.image.imageUrl}
                         alt={category.name}
