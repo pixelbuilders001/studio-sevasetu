@@ -73,3 +73,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .services-mega-menu {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
