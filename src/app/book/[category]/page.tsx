@@ -42,7 +42,7 @@ export default function ProblemSelectionPage({ params }: { params: { category: s
                         alt={problem.name}
                         fill
                         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="object-contain transition-transform duration-300 group-hover:scale-105 p-2"
                         data-ai-hint={problem.image.imageHint}
                       />
                     </div>
