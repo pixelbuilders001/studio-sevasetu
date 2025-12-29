@@ -18,15 +18,16 @@ import { Loader2, Search, XCircle, CheckCircle, History, Bike } from 'lucide-rea
 import React from 'react';
 
 type View = 'form' | 'history' | 'error';
+type TrackResult = { history?: { status: string; date: string }[]; error?: string; } | null;
 
 export default function BookingTrackerModal({ isMobile = false }: { isMobile?: boolean }) {
   const { t, language } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<View>('form');
+  const [trackResult, setTrackResult] = useState<TrackResult>(null);
   
   const [trackState, trackDispatch, isTrackPending] = useActionState(trackBooking, {});
   const formRef = useRef<HTMLFormElement>(null);
-
 
   const trackAction = (formData: FormData) => {
     formData.append('lang', language);
@@ -43,23 +44,28 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
   
   const resetToForm = () => {
       setView('form');
-      // A special value to tell useActionState to reset
-      trackDispatch(null as any); 
+      setTrackResult(null);
       formRef.current?.reset();
   }
 
   useEffect(() => {
-    if (isTrackPending) return;
-
-    if (trackState?.history) {
-      setView('history');
-    } else if (trackState?.error) {
-      setView('error');
-    } else {
-      // This handles the initial state and reset
-      setView('form');
+    if (isTrackPending) {
+        return;
+    }
+    if (trackState?.history || trackState?.error) {
+        setTrackResult(trackState);
     }
   }, [trackState, isTrackPending]);
+  
+  useEffect(() => {
+    if (trackResult?.history) {
+      setView('history');
+    } else if (trackResult?.error) {
+      setView('error');
+    } else {
+      setView('form');
+    }
+  }, [trackResult]);
 
   const TriggerButton = isMobile ? (
      <button className="text-lg font-medium text-foreground transition-colors hover:text-primary w-full text-left flex items-center gap-2">
@@ -99,35 +105,35 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
             </form>
         )}
 
-        {view === 'error' && trackState?.error && (
+        {view === 'error' && trackResult?.error && (
              <div className="space-y-4 py-4">
                 <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-3">
                     <XCircle className="w-6 h-6 text-destructive" />
                     <div>
                         <p className="font-semibold text-destructive">{t('bookingNotFound')}</p>
-                        <p className="text-sm text-muted-foreground">{trackState.error}</p>
+                        <p className="text-sm text-muted-foreground">{trackResult.error}</p>
                     </div>
                 </div>
             </div>
         )}
 
-        {view === 'history' && trackState?.history && (
+        {view === 'history' && trackResult?.history && (
           <div className="mt-4 space-y-6">
             <div>
               <h3 className="font-semibold mb-4 text-lg flex items-center gap-2"><History /> {t('bookingHistory')}</h3>
               <div className="relative pl-8">
-                {trackState.history.map((item, index) => (
+                {trackResult.history.map((item, index) => (
                   <div key={index} className="relative pb-8">
-                    {index < trackState.history.length - 1 && (
+                    {index < trackResult.history.length - 1 && (
                        <div className="absolute left-[11px] top-4 -bottom-4 w-0.5 bg-border"></div>
                     )}
                     <div className="absolute left-0 top-0">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${index === trackState.history.length-1 ? 'bg-primary' : 'bg-muted'}`}>
-                         <CheckCircle className={`w-4 h-4 ${index === trackState.history.length - 1 ? 'text-primary-foreground' : 'text-muted-foreground'}`}/>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${index === trackResult.history.length-1 ? 'bg-primary' : 'bg-muted'}`}>
+                         <CheckCircle className={`w-4 h-4 ${index === trackResult.history.length - 1 ? 'text-primary-foreground' : 'text-muted-foreground'}`}/>
                       </div>
                     </div>
                     <div className="pl-4 ml-4">
-                       <p className={`font-semibold ${index === trackState.history.length-1 ? 'text-primary' : 'text-foreground'}`}>{item.status}</p>
+                       <p className={`font-semibold ${index === trackResult.history.length-1 ? 'text-primary' : 'text-foreground'}`}>{item.status}</p>
                        <p className="text-sm text-muted-foreground">{item.date}</p>
                     </div>
                   </div>
@@ -139,8 +145,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         
         <DialogFooter className="sm:justify-end gap-2 pt-4">
             {view !== 'form' && (
-              <Button onClick={resetToForm} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold" disabled={isTrackPending}>
-                  {isTrackPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              <Button onClick={resetToForm} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
                   {t('trackAnotherBooking')}
               </Button>
             )}
