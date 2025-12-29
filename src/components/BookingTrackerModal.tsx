@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useState, useEffect } from 'react';
-import { trackBooking, resetTrackerState } from '@/app/actions';
+import { trackBooking } from '@/app/actions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -25,15 +25,19 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
   const [view, setView] = useState<View>('form');
   
   const [trackState, trackDispatch, isTrackPending] = useActionState(trackBooking, {});
+
+  const trackAction = (formData: FormData) => {
+    trackDispatch(formData);
+  }
   
   const handleOpenChange = (open: boolean) => {
     if(!open) {
       setView('form');
-      // A small delay to allow the exit animation to complete before resetting the state
-      setTimeout(() => {
-        // This is a dummy action to reset the state.
-        trackDispatch(new FormData());
-      }, 300);
+      // This is a dummy action to reset the state. A better way would be a dedicated reset action.
+      // For now, creating a new FormData works to signal a reset to the useActionState hook if it were designed to handle it.
+      // Because it's not, we manually reset the view.
+      const dummyFormData = new FormData();
+      trackDispatch(dummyFormData);
     }
     setIsOpen(open);
   }
@@ -47,8 +51,6 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
       setView('error');
     }
   }, [trackState, isTrackPending]);
-  
-  const [resetState, resetDispatch, isResetPending] = useActionState(resetTrackerState, {});
 
   const TriggerButton = isMobile ? (
      <button className="text-lg font-medium text-foreground transition-colors hover:text-primary w-full text-left flex items-center gap-2">
@@ -57,10 +59,16 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
     </button>
   ) : (
     <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
-      <Bike className="mr-2 h-4 w-4" />
+      <Bike className="mr-2" />
       {t('trackBooking')}
     </Button>
   );
+
+  const resetView = () => {
+    setView('form');
+    const dummyFormData = new FormData();
+    trackDispatch(dummyFormData);
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -74,11 +82,9 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         </DialogHeader>
         
         {view === 'form' && (
-            <form action={(formData) => {
-                trackDispatch(formData);
-            }} className="space-y-4 py-4">
-            <div className="flex items-start gap-2">
-                <div className="flex-grow">
+            <form action={trackAction} className="space-y-4 py-4">
+            <div className="flex flex-col sm:flex-row items-start gap-2">
+                <div className="flex-grow w-full">
                 <Input name="phone" type="tel" placeholder={t('enterPhoneNumberPlaceholder')} required className="text-base" />
                 <input type="hidden" name="lang" value={language} />
                 </div>
@@ -130,15 +136,10 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         
         <DialogFooter className="sm:justify-end gap-2 pt-4">
             {view !== 'form' && (
-              <form action={() => {
-                setView('form');
-                resetDispatch();
-              }}>
-                 <Button type="submit" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold" disabled={isResetPending}>
-                    {isResetPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {t('trackAnotherBooking')}
-                </Button>
-              </form>
+              <Button onClick={resetView} className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold" disabled={isTrackPending}>
+                  {isTrackPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  {t('trackAnotherBooking')}
+              </Button>
             )}
         </DialogFooter>
       </DialogContent>
