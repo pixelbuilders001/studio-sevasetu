@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState, useEffect, useTransition } from 'react';
+import { useActionState, useState, useEffect } from 'react';
 import { trackBooking, resetTrackerState } from '@/app/actions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from './ui/button';
@@ -14,20 +14,8 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Loader2, Search, XCircle, CheckCircle, History } from 'lucide-react';
+import { Loader2, Search, XCircle, CheckCircle, History, Bike } from 'lucide-react';
 import React from 'react';
-
-function SubmitButton() {
-  const { t } = useTranslation();
-  const [isPending, startTransition] = useTransition();
-  
-  return (
-    <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
-      {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-      {t('trackButton')}
-    </Button>
-  );
-}
 
 type View = 'form' | 'history' | 'error';
 
@@ -37,12 +25,15 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
   const [view, setView] = useState<View>('form');
   
   const [trackState, trackDispatch, isTrackPending] = useActionState(trackBooking, {});
-  const [resetState, resetDispatch, isResetPending] = useActionState(resetTrackerState, {});
   
   const handleOpenChange = (open: boolean) => {
     if(!open) {
-      // Reset view to form when closing
       setView('form');
+      // A small delay to allow the exit animation to complete before resetting the state
+      setTimeout(() => {
+        // This is a dummy action to reset the state.
+        trackDispatch(new FormData());
+      }, 300);
     }
     setIsOpen(open);
   }
@@ -57,20 +48,16 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
     }
   }, [trackState, isTrackPending]);
   
-  useEffect(() => {
-    if (isResetPending) return;
-    // When reset action is done, switch to form view.
-    // This depends on the reset action completing.
-    // A better approach is to handle it without depending on the action's pending state if it's just a UI state reset.
-    setView('form');
-  }, [isResetPending]);
+  const [resetState, resetDispatch, isResetPending] = useActionState(resetTrackerState, {});
 
   const TriggerButton = isMobile ? (
-     <button className="text-lg font-medium text-foreground transition-colors hover:text-primary w-full text-left">
+     <button className="text-lg font-medium text-foreground transition-colors hover:text-primary w-full text-left flex items-center gap-2">
+        <Bike />
         {t('trackBooking')}
     </button>
   ) : (
     <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
+      <Bike className="mr-2 h-4 w-4" />
       {t('trackBooking')}
     </Button>
   );
@@ -87,7 +74,9 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         </DialogHeader>
         
         {view === 'form' && (
-            <form action={trackDispatch} className="space-y-4 py-4">
+            <form action={(formData) => {
+                trackDispatch(formData);
+            }} className="space-y-4 py-4">
             <div className="flex items-start gap-2">
                 <div className="flex-grow">
                 <Input name="phone" type="tel" placeholder={t('enterPhoneNumberPlaceholder')} required className="text-base" />
@@ -128,7 +117,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
                          <CheckCircle className={`w-4 h-4 ${index === trackState.history.length - 1 ? 'text-primary-foreground' : 'text-muted-foreground'}`}/>
                       </div>
                     </div>
-                    <div className="pl-4 ml-4">
+                    <div className="pl-4 ml-2">
                        <p className={`font-semibold ${index === trackState.history.length-1 ? 'text-primary' : 'text-foreground'}`}>{item.status}</p>
                        <p className="text-sm text-muted-foreground">{item.date}</p>
                     </div>
@@ -143,8 +132,9 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
             {view !== 'form' && (
               <form action={() => {
                 setView('form');
+                resetDispatch();
               }}>
-                 <Button type="submit" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+                 <Button type="submit" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold" disabled={isResetPending}>
                     {isResetPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {t('trackAnotherBooking')}
                 </Button>

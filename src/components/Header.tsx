@@ -11,7 +11,7 @@ import {
   SheetClose,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Map } from 'lucide-react';
+import { Menu, Bike } from 'lucide-react';
 import React from 'react';
 import BookingTrackerModal from './BookingTrackerModal';
 
