@@ -127,16 +127,19 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
                 ))}
               </div>
             </div>
-            <Button onClick={resetState} variant="outline" className='w-full'>{t('trackAnotherBooking')}</Button>
           </div>
         )}
         
-        <DialogFooter className="sm:justify-start">
-            <DialogClose asChild>
-                <Button type="button" variant="ghost">
-                {t('closeButton')}
-                </Button>
-            </DialogClose>
+        <DialogFooter className="sm:justify-end gap-2 pt-4">
+            {state?.history ? (
+                <Button onClick={resetState} variant="outline" className='w-full sm:w-auto'>{t('trackAnotherBooking')}</Button>
+            ) : (
+                <DialogClose asChild>
+                    <Button type="button" variant="ghost">
+                    {t('closeButton')}
+                    </Button>
+                </DialogClose>
+            )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
