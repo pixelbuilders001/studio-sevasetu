@@ -58,7 +58,7 @@ export default function ProblemSelectionPage({ params }: { params: { category: s
           </CardTitle>
           <CardDescription>{t('select_all_issues', {defaultValue: "Select all issues you are facing."})}</CardDescription>
         </CardHeader>
-        <CardContent className="pb-32">
+        <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 md:gap-6">
             {category.problems.map((problem) => {
               const isSelected = selectedProblems.some((p) => p.id === problem.id);
@@ -97,7 +97,7 @@ export default function ProblemSelectionPage({ params }: { params: { category: s
         </CardContent>
       </Card>
       {selectedProblems.length > 0 && (
-         <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-[0_-4px_12px_rgba(0,0,0,0.08)] z-50">
+         <div className="bg-background border-t shadow-[0_-4px_12px_rgba(0,0,0,0.08)] mt-8">
             <div className="container mx-auto px-4 py-4">
                 <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
                     <div className="flex-grow flex items-center gap-2 overflow-hidden">
