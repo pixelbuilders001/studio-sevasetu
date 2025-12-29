@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -77,7 +78,7 @@ export default function Home() {
                   alt={heroImage.description}
                   fill
                   className="object-contain"
-                  data-ai-hint={heroimage.imageHint}
+                  data-ai-hint={heroImage.imageHint}
                   sizes="50vw"
                 />
               </div>
