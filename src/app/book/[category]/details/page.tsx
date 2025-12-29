@@ -1,14 +1,18 @@
 'use client';
 import { serviceCategories } from '@/lib/data';
-import { notFound, useParams } from 'next/navigation';
+import { notFound, useParams, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingForm } from '@/components/BookingForm';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useMemo } from 'react';
+import { useMemo, Suspense } from 'react';
 
-export default function BookingDetailsPage() {
+function BookingDetailsContent() {
   const params = useParams();
-  const { category: categoryId, problem: problemIds } = params as { category: string; problem: string };
+  const searchParams = useSearchParams();
+
+  const { category: categoryId } = params as { category: string };
+  const problemIds = searchParams.get('problems');
+
   const { t, getTranslatedCategory } = useTranslation();
 
   const originalCategory = serviceCategories.find((c) => c.id === categoryId);
@@ -27,7 +31,14 @@ export default function BookingDetailsPage() {
 
 
   if (!category || !selectedProblemNames) {
-    notFound();
+    // This can happen if the query param is missing or invalid
+    // Or if the component renders before client-side navigation is complete
+    // We could show a loading state or redirect
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p>Loading booking details...</p>
+      </div>
+    );
   }
 
   const problemDescription = selectedProblemNames;
@@ -46,5 +57,13 @@ export default function BookingDetailsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function BookingDetailsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BookingDetailsContent />
+    </Suspense>
   );
 }

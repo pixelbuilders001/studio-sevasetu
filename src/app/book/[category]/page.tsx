@@ -1,6 +1,6 @@
 'use client';
 import { serviceCategories, type Problem } from '@/lib/data';
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, useRouter, useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -9,8 +9,9 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-export default function ProblemSelectionPage({ params }: { params: { category: string } }) {
-  const { category: categoryId } = params;
+export default function ProblemSelectionPage() {
+  const params = useParams();
+  const categoryId = params.category as string;
   const { t, getTranslatedCategory } = useTranslation();
   const router = useRouter();
 
@@ -41,7 +42,7 @@ export default function ProblemSelectionPage({ params }: { params: { category: s
       return;
     }
     const problemIds = selectedProblems.map((p) => p.id).join(',');
-    router.push(`/book/${categoryId}/${problemIds}/details`);
+    router.push(`/book/${categoryId}/details?problems=${problemIds}`);
   };
 
   const removeProblem = (problemId: string) => {
