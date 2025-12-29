@@ -41,12 +41,13 @@ export function BookingForm({ category, problem }: { category: string; problem: 
   }
 
   const [state, dispatch] = useActionState(translatedBookService, initialState);
+  const { errors } = state;
 
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (state.message && !state.success) {
+    if (state.message && !state.success && Object.keys(errors || {}).length > 0) {
       toast({
         variant: 'destructive',
         title: t('bookingError'),
@@ -56,7 +57,7 @@ export function BookingForm({ category, problem }: { category: string; problem: 
     if (state.success) {
         formRef.current?.reset();
     }
-  }, [state, toast, t]);
+  }, [state, errors, toast, t]);
 
   const isOtherProblem = problem.toLowerCase() === 'other issue' || problem === 'अन्य समस्या';
 
@@ -68,19 +69,19 @@ export function BookingForm({ category, problem }: { category: string; problem: 
       <div>
         <Label htmlFor="name">{t('nameLabel')}</Label>
         <Input id="name" name="name" required />
-        {state.errors?.name && <p className="text-sm font-medium text-destructive mt-1">{state.errors.name[0]}</p>}
+        {errors?.name && <p className="text-sm font-medium text-destructive mt-1">{errors.name[0]}</p>}
       </div>
 
       <div>
         <Label htmlFor="mobile">{t('mobileLabel')}</Label>
         <Input id="mobile" name="mobile" type="tel" required />
-        {state.errors?.mobile && <p className="text-sm font-medium text-destructive mt-1">{state.errors.mobile[0]}</p>}
+        {errors?.mobile && <p className="text-sm font-medium text-destructive mt-1">{errors.mobile[0]}</p>}
       </div>
 
       <div>
         <Label htmlFor="address">{t('addressLabel')}</Label>
         <Textarea id="address" name="address" required />
-        {state.errors?.address && <p className="text-sm font-medium text-destructive mt-1">{state.errors.address[0]}</p>}
+        {errors?.address && <p className="text-sm font-medium text-destructive mt-1">{errors.address[0]}</p>}
       </div>
 
       <div>
@@ -92,7 +93,7 @@ export function BookingForm({ category, problem }: { category: string; problem: 
         <div>
             <Label htmlFor="problemDescription">{t('describeProblemLabel')}</Label>
             <Textarea id="problemDescription" name="problemDescription" required />
-            {state.errors?.problemDescription && <p className="text-sm font-medium text-destructive mt-1">{state.errors.problemDescription[0]}</p>}
+            {errors?.problemDescription && <p className="text-sm font-medium text-destructive mt-1">{errors.problemDescription[0]}</p>}
         </div>
       )}
 
@@ -108,17 +109,17 @@ export function BookingForm({ category, problem }: { category: string; problem: 
                 <SelectItem value="evening">{t('timeSlotEvening')}</SelectItem>
             </SelectContent>
         </Select>
-        {state.errors?.timeSlot && <p className="text-sm font-medium text-destructive mt-1">{state.errors.timeSlot[0]}</p>}
+        {errors?.timeSlot && <p className="text-sm font-medium text-destructive mt-1">{errors.timeSlot[0]}</p>}
       </div>
 
       <div>
         <Label htmlFor="media">{t('mediaLabel')}</Label>
         <Input id="media" name="media" type="file" accept="image/jpeg,image/png,video/mp4" />
         <p className="text-sm text-muted-foreground mt-1">{t('mediaHelpText')}</p>
-        {state.errors?.media && <p className="text-sm font-medium text-destructive mt-1">{state.errors.media[0]}</p>}
+        {errors?.media && <p className="text-sm font-medium text-destructive mt-1">{errors.media[0]}</p>}
       </div>
       
-      {state.message && !state.success && (
+      {state.message && !state.success && Object.keys(errors || {}).length > 0 && (
         <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>{t('errorTitle')}</AlertTitle>
