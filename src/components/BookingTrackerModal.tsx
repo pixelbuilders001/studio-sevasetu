@@ -11,8 +11,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogTrigger,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { Loader2, Search, XCircle, CheckCircle, History } from 'lucide-react';
 import React from 'react';
@@ -70,7 +70,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         {t('trackBooking')}
     </button>
   ) : (
-    <Button variant="ghost">
+    <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
       {t('trackBooking')}
     </Button>
   );
@@ -142,9 +142,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
         <DialogFooter className="sm:justify-end gap-2 pt-4">
             {view !== 'form' && (
               <form action={() => {
-                startTransition(() => {
-                  setView('form');
-                });
+                setView('form');
               }}>
                  <Button type="submit" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
                     {isResetPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
@@ -156,8 +154,4 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
       </DialogContent>
     </Dialog>
   );
-}
-
-function startTransition(arg0: () => void) {
-  throw new Error('Function not implemented.');
 }
