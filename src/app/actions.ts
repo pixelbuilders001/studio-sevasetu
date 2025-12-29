@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import type { FormState } from '@/lib/types';
 import { getTranslations } from '@/lib/get-translation';
+import { subDays, format } from 'date-fns';
 
 export async function bookService(
   prevState: FormState,
@@ -103,7 +104,7 @@ export async function bookService(
 }
 
 
-export async function trackBooking(prevState: any, formData: FormData): Promise<{ status?: string; error?: string }> {
+export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string }> {
   const phone = formData.get('phone');
   const lang = (formData.get('lang') as string) || 'en';
   const t = getTranslations(lang);
@@ -117,16 +118,17 @@ export async function trackBooking(prevState: any, formData: FormData): Promise<
 
   // This is a simulation. In a real app, you'd query your database.
   const statuses = [
-    t('statusBooked'),
-    t('statusTechnicianAssigned'),
-    t('statusInProgress'),
-    t('statusCompleted'),
+    { status: t('statusBooked'), date: format(subDays(new Date(), 2), "MMM d, yyyy 'at' h:mm a")},
+    { status: t('statusTechnicianAssigned'), date: format(subDays(new Date(), 1), "MMM d, yyyy 'at' h:mm a")},
+    { status: t('statusInProgress'), date: format(new Date(), "MMM d, yyyy 'at' h:mm a")},
+    { status: t('statusCompleted'), date: format(new Date(), "MMM d, yyyy 'at' h:mm a")},
   ];
   const lastDigit = parseInt((phone as string).slice(-1));
 
   if (lastDigit < 8) { // Simulate found booking
-    const randomIndex = lastDigit % statuses.length;
-    return { status: statuses[randomIndex] };
+    const statusIndex = lastDigit % statuses.length;
+    const history = statuses.slice(0, statusIndex + 1);
+    return { history };
   } else { // Simulate not found
     return { error: t('bookingNotFound') };
   }

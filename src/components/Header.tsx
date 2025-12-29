@@ -11,8 +11,9 @@ import {
   SheetClose,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
+import { Menu, Map } from 'lucide-react';
 import React from 'react';
+import BookingTrackerModal from './BookingTrackerModal';
 
 export default function Header() {
   const { t } = useTranslation();
@@ -39,6 +40,7 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+             <BookingTrackerModal />
           </nav>
           <div className="flex items-center gap-2">
             <div className="hidden md:flex items-center gap-2">
@@ -73,6 +75,7 @@ export default function Header() {
                           </Link>
                         </SheetClose>
                       ))}
+                       <BookingTrackerModal isMobile={true} />
                     </nav>
                     <div className="mt-auto border-t pt-4 space-y-4">
                         <LocationSelector />

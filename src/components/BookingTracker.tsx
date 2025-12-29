@@ -61,16 +61,16 @@ export default function BookingTracker() {
                             </div>
                             <SubmitButton />
                         </form>
-                        {state?.status && (
+                        {state?.history && (
                             <div className="mt-6 p-4 bg-green-100/50 border border-green-300 rounded-lg flex items-center gap-3">
                                 <CheckCircle className="w-6 h-6 text-green-600" />
                                 <div>
                                     <p className="font-semibold text-green-800">{t('currentStatus')}</p>
-                                    <p className="text-lg font-bold text-green-900">{state.status}</p>
+                                    <p className="text-lg font-bold text-green-900">{state.history[state.history.length-1].status}</p>
                                 </div>
                             </div>
                         )}
-                         {state?.error && !state.status && (
+                         {state?.error && !state.history && (
                             <div className="mt-6 p-4 bg-red-100/50 border border-red-300 rounded-lg flex items-center gap-3">
                                 <XCircle className="w-6 h-6 text-red-600" />
                                 <div>

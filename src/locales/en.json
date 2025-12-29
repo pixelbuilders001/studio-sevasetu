@@ -72,6 +72,7 @@
     "trackButton": "Track",
     "currentStatus": "Current Status",
     "bookingNotFound": "Booking not found",
+    "bookingHistory": "Booking History",
     "statusBooked": "Booked",
     "statusTechnicianAssigned": "Technician Assigned",
     "statusInProgress": "In Progress",
