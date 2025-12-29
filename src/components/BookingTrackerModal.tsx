@@ -20,7 +20,7 @@ import { Loader2, Search, XCircle, CheckCircle, Map, History } from 'lucide-reac
 import React from 'react';
 
 function SubmitButton() {
-  const { pending } = useActionState();
+  const { pending } = useActionState(trackBooking, { });
   const { t } = useTranslation();
   return (
     <Button type="submit" disabled={pending} className="w-full sm:w-auto">
@@ -31,7 +31,7 @@ function SubmitButton() {
 }
 
 function TrackAnotherButton() {
-    const { pending } = useActionState();
+    const { pending } = useActionState(resetTrackerState, {});
     const { t } = useTranslation();
     return (
         <Button type="submit" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
@@ -81,7 +81,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
       <DialogTrigger asChild>
         {TriggerButton}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[480px]" showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>{t('trackYourBookingTitle')}</DialogTitle>
           <DialogDescription>{t('trackYourBookingDescription')}</DialogDescription>
