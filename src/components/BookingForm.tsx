@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useRef } from 'react';
+import { useFormStatus } from 'react-dom';
 import { bookService } from '@/app/actions';
 import type { FormState } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,6 @@ import {
 } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Loader2 } from 'lucide-react';
-import { useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -40,7 +40,7 @@ export function BookingForm({ category, problem }: { category: string; problem: 
     return bookService(prevState, formData);
   }
 
-  const [state, dispatch] = useFormState(translatedBookService, initialState);
+  const [state, dispatch] = useActionState(translatedBookService, initialState);
 
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();

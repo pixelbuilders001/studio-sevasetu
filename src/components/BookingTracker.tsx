@@ -1,13 +1,13 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useRef } from 'react';
+import { useFormStatus } from 'react-dom';
 import { trackBooking } from '@/app/actions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Loader2, CheckCircle, XCircle, Search } from 'lucide-react';
-import { useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 function SubmitButton() {
@@ -31,7 +31,7 @@ export default function BookingTracker() {
         return trackBooking(prevState, formData);
     };
 
-    const [state, dispatch] = useFormState(translatedTrackBooking, {});
+    const [state, dispatch] = useActionState(translatedTrackBooking, {});
 
     useEffect(() => {
         if (state?.error) {

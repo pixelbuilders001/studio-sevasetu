@@ -1,7 +1,8 @@
 
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { trackBooking } from '@/app/actions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from './ui/button';
@@ -17,7 +18,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Loader2, Search, XCircle, CheckCircle, Map, History } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -39,7 +40,7 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
     return trackBooking(prevState, formData);
   };
 
-  const [state, dispatch] = useFormState(translatedTrackBooking, {});
+  const [state, dispatch] = useActionState(translatedTrackBooking, {});
 
   const resetState = () => {
     dispatch({ reset: true });
