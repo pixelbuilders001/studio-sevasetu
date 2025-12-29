@@ -15,7 +15,7 @@
     {
       "id": "ac-repair",
       "description": "An air conditioner unit mounted on a wall.",
-      "imageUrl": "https://picsum.photos/seed/ac/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1726614846573-c1ac2e6161d1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhaXIlMjBjb25kaXRpb25lcnxlbnwwfHx8fDE3NjcwMDMzMzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "air conditioner"
     },
     {
@@ -29,6 +29,156 @@
       "description": "An air cooler in a room.",
       "imageUrl": "https://images.unsplash.com/photo-1658671227304-9a989a842c88?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhaXIlMjBjb29sZXJ8ZW58MHx8fHwxNzY3MDAzMzMyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "air cooler"
+    },
+    {
+      "id": "phone-screen-broken",
+      "imageUrl": "https://images.unsplash.com/photo-1610337673044-720471f83677?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxicm9rZW4lMjBzY3JlZW58ZW58MHx8fHwxNzY3MDA0NjU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "broken screen",
+      "description": "Broken phone screen"
+    },
+    {
+      "id": "phone-battery-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1583142485083-291557266e6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwaG9uZSUyMGJhdHRlcnl8ZW58MHx8fHwxNzY2OTUwNDI5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone battery",
+      "description": "Phone battery issue"
+    },
+    {
+      "id": "phone-charging-problem",
+      "imageUrl": "https://images.unsplash.com/photo-1655958370938-a960fe73abb4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwaG9uZSUyMGNoYXJnaW5nfGVufDB8fHx8MTc2Njk1NTc3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone charging",
+      "description": "Phone charging problem"
+    },
+    {
+      "id": "phone-mic-speaker-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1558629420-f7fa42552501?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGhvbmUlMjBzcGVha2VyfGVufDB8fHx8MTc2NzAwNDY1OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone speaker",
+      "description": "Phone speaker issue"
+    },
+    {
+      "id": "phone-not-switching-on",
+      "imageUrl": "https://images.unsplash.com/photo-1668990900603-52a164c13b30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwaG9uZSUyMHBvd2VyfGVufDB8fHx8MTc2NzAwNDY1OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone power",
+      "description": "Phone not switching on"
+    },
+    {
+      "id": "other-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1606595898127-a06c52b4e2b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cXVlc3Rpb24lMjBtYXJrfGVufDB8fHx8MTc2NjkzOTg2OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "question mark",
+      "description": "Other issue"
+    },
+    {
+      "id": "laptop-screen-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxsYXB0b3AlMjBzY3JlZW58ZW58MHx8fHwxNzY3MDA0NjU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop screen",
+      "description": "Laptop screen issue"
+    },
+    {
+      "id": "laptop-battery-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1596302332910-07f3ac264d7b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsYXB0b3AlMjBiYXR0ZXJ5fGVufDB8fHx8MTc2NzAwNDY1OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop battery",
+      "description": "Laptop battery issue"
+    },
+    {
+      "id": "laptop-slow-performance",
+      "imageUrl": "https://images.unsplash.com/photo-1632893037506-aac33bf18107?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzbG93JTIwbGFwdG9wfGVufDB8fHx8MTc2NzAwNDY1OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "slow laptop",
+      "description": "Slow laptop performance"
+    },
+    {
+      "id": "laptop-keyboard-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxsYXB0b3AlMjBrZXlib2FyZHxlbnwwfHx8fDE3NjcwMDQ2NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop keyboard",
+      "description": "Laptop keyboard issue"
+    },
+    {
+      "id": "laptop-os-software-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1649451844774-cd08101398ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bGFwdG9wJTIwc29mdHdhcmV8ZW58MHx8fHwxNzY3MDA0NjU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop software",
+      "description": "Laptop software issue"
+    },
+    {
+      "id": "laptop-not-starting",
+      "imageUrl": "https://images.unsplash.com/photo-1601129490376-e24f32ed8024?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxsYXB0b3AlMjBwb3dlcnxlbnwwfHx8fDE3NjcwMDQ2NjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop power",
+      "description": "Laptop not starting"
+    },
+    {
+      "id": "ac-not-cooling",
+      "imageUrl": "https://images.unsplash.com/photo-1586299576722-e14abcdcfcb3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxob3QlMjByb29tfGVufDB8fHx8MTc2NzAwNDY1OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "hot room",
+      "description": "AC not cooling"
+    },
+    {
+      "id": "ac-gas-leakage",
+      "imageUrl": "https://images.unsplash.com/photo-1646775896376-62f6fb9b894e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhYyUyMGxlYWt8ZW58MHx8fHwxNzY3MDA0NjU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ac leak",
+      "description": "AC gas leakage"
+    },
+    {
+      "id": "ac-installation",
+      "imageUrl": "https://images.unsplash.com/photo-1761642119720-1ce47b16d09b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhYyUyMGluc3RhbGxhdGlvbnxlbnwwfHx8fDE3NjcwMDQ2NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ac installation",
+      "description": "AC installation"
+    },
+    {
+      "id": "ac-service-cleaning",
+      "imageUrl": "https://images.unsplash.com/photo-1634890437712-d312d94107e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhYyUyMGNsZWFuaW5nfGVufDB8fHx8MTc2NzAwNDY1OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ac cleaning",
+      "description": "AC service cleaning"
+    },
+    {
+      "id": "ac-noise-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1525569815264-42cac54bfd4c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxsb3VkJTIwbm9pc2V8ZW58MHx8fHwxNzY3MDA0NjU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "loud noise",
+      "description": "AC noise issue"
+    },
+    {
+      "id": "fridge-not-cooling",
+      "imageUrl": "https://images.unsplash.com/photo-1609824390238-d4f066ddaaf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx3YXJtJTIwZnJpZGdlfGVufDB8fHx8MTc2NzAwNDY1OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "warm fridge",
+      "description": "Fridge not cooling"
+    },
+    {
+      "id": "fridge-water-leakage",
+      "imageUrl": "https://images.unsplash.com/photo-1716491777893-1500ba5f0a9a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3YXRlciUyMHB1ZGRsZXxlbnwwfHx8fDE3NjcwMDQ2NjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "water puddle",
+      "description": "Fridge water leakage"
+    },
+    {
+      "id": "fridge-compressor-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1536854704214-f489b6693769?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmcmlkZ2UlMjBtb3RvcnxlbnwwfHx8fDE3NjcwMDQ2NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fridge motor",
+      "description": "Fridge compressor issue"
+    },
+    {
+      "id": "fridge-noise-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1525569815264-42cac54bfd4c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxsb3VkJTIwbm9pc2V8ZW58MHx8fHwxNzY3MDA0NjU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "loud noise",
+      "description": "Fridge noise issue"
+    },
+    {
+      "id": "cooler-not-cooling",
+      "imageUrl": "https://images.unsplash.com/photo-1618226494825-d9d01d8c59d9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8aG90JTIwcm9vbXxlbnwwfHx8fDE3NjcwMDQ2NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "hot room",
+      "description": "Cooler not cooling"
+    },
+    {
+      "id": "cooler-motor-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1421344682218-763a7bcdf34b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYW4lMjBtb3RvcnxlbnwwfHx8fDE3NjcwMDQ2NjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fan motor",
+      "description": "Cooler motor issue"
+    },
+    {
+      "id": "cooler-water-pump-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1700318092011-6e4666e94ab5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3YXRlciUyMHB1bXB8ZW58MHx8fHwxNzY2OTkyNTUyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "water pump",
+      "description": "Cooler water pump issue"
+    },
+    {
+      "id": "cooler-power-issue",
+      "imageUrl": "https://images.unsplash.com/photo-1645423555833-d2f4801dfc6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwb3dlciUyMHBsdWd8ZW58MHx8fHwxNzY3MDA0NjYwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "power plug",
+      "description": "Cooler power issue"
     }
   ]
 }
