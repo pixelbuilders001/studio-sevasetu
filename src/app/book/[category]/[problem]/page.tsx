@@ -3,32 +3,10 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { initialProblemUnderstanding } from '@/ai/flows/initial-problem-understanding';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Wrench } from 'lucide-react';
 
-async function EstimationDetails({ categoryName, problemName }: { categoryName: string, problemName: string }) {
-  const estimation = await initialProblemUnderstanding({
-    deviceCategory: categoryName,
-    problemDescription: problemName,
-  });
-
-  return (
-    <>
-      <div className="space-y-4">
-        <div>
-          <h3 className="font-semibold text-primary">AI-Powered Diagnosis</h3>
-          <p className="text-muted-foreground">{estimation.refinedProblemDescription}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold text-primary">Estimated Repair Price</h3>
-          <p className="text-2xl font-bold text-accent">{estimation.estimatedPriceRange}</p>
-        </div>
-      </div>
-    </>
-  );
-}
 
 function EstimationSkeleton() {
   return (
@@ -71,13 +49,9 @@ export default function PriceEstimationPage({ params }: { params: { category: st
             <span className="text-lg font-bold">₹199</span>
           </div>
 
-          <Suspense fallback={<EstimationSkeleton />}>
-            <EstimationDetails categoryName={category.name} problemName={problem.name} />
-          </Suspense>
-
           <div className="flex items-start gap-3 text-sm text-muted-foreground p-3 bg-muted/50 rounded-lg">
             <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
-            <p>The final price will be confirmed by the technician after a physical inspection of the device. The estimate provided is based on common repair scenarios.</p>
+            <p>The final price will be confirmed by the technician after a physical inspection of the device.</p>
           </div>
         </CardContent>
         <CardFooter>

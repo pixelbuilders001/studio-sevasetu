@@ -2,7 +2,6 @@
 
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
-import { predictTechnicianAssignment } from './ai/flows/technician-assignment-prediction';
 import type { FormState } from '@/lib/types';
 
 const BookingSchema = z.object({
@@ -64,13 +63,10 @@ export async function bookService(
   `;
 
   try {
-    // Predict technician in the background
-    predictTechnicianAssignment({ problemDescription });
-    
     // Simulate booking creation
     const bookingId = `SS-${Math.floor(100000 + Math.random() * 900000)}`;
     
-    // In a real app, you would save the booking details, technician assignment, and media to a database.
+    // In a real app, you would save the booking details and media to a database.
     // The media file can be uploaded to a storage service like Firebase Storage.
     // For this example, we're just proceeding to confirmation.
 
