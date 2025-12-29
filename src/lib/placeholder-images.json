@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "phone-repair",
+      "description": "A person repairing a mobile phone.",
+      "imageUrl": "https://images.unsplash.com/photo-1639776738932-956082f0b704?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwaG9uZSUyMHJlcGFpcnxlbnwwfHx8fDE3NjcwMDMzMzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone repair"
+    },
+    {
+      "id": "laptop-repair",
+      "description": "A person repairing a laptop.",
+      "imageUrl": "https://images.unsplash.com/photo-1709102884400-b50ca1a12bc3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxsYXB0b3AlMjByZXBhaXJ8ZW58MHx8fHwxNzY2OTU0NzQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop repair"
+    },
+    {
+      "id": "ac-repair",
+      "description": "An air conditioner unit mounted on a wall.",
+      "imageUrl": "https://picsum.photos/seed/ac/600/400",
+      "imageHint": "air conditioner"
+    },
+    {
+      "id": "fridge-repair",
+      "description": "A modern refrigerator in a kitchen.",
+      "imageUrl": "https://images.unsplash.com/photo-1716193696093-9c54b6a290e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxyZWZyaWdlcmF0b3J8ZW58MHx8fHwxNzY2ODk3MzE3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "refrigerator"
+    },
+    {
+      "id": "cooler-repair",
+      "description": "An air cooler in a room.",
+      "imageUrl": "https://images.unsplash.com/photo-1658671227304-9a989a842c88?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhaXIlMjBjb29sZXJ8ZW58MHx8fHwxNzY3MDAzMzMyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "air cooler"
+    }
+  ]
 }
