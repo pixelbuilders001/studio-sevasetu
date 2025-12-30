@@ -11,17 +11,15 @@ import { getTranslations } from '@/lib/get-translation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import PaymentIcons from '@/components/PaymentIcons';
 import { ShieldCheck, Truck, CreditCard } from 'lucide-react';
-import { getTranslatedCategory } from '@/context/LanguageContext';
+import type { ServiceCategory } from '@/lib/data';
 
 export default async function Home({ searchParams }: { searchParams?: { lang?: string } }) {
   const lang = searchParams?.lang || 'en';
   const t = getTranslations(lang);
   
-  let categories = [];
+  let categories: ServiceCategory[] = [];
   try {
-    const originalCategories = await getServiceCategories();
-    // Assuming getTranslatedCategory is adapted to work server-side or you have an alternative
-    categories = originalCategories.map(c => ({...c, name: t(`category_${c.slug}_name`, { defaultValue: c.name })}));
+    categories = await getServiceCategories();
   } catch (error) {
     console.error(error);
     // You can render an error message to the user here
