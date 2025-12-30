@@ -87,9 +87,9 @@ function BookingDetailsContent() {
         <CardContent>
           <div className="mb-6 space-y-3">
              <div className="flex justify-between items-center bg-muted/30 p-3 rounded-lg">
-                <p className="font-semibold text-muted-foreground">{t('selected_issues')}</p>
+                <p className="font-semibold text-muted-foreground">Service</p>
                  <div className="flex flex-wrap justify-end gap-1">
-                    {selectedProblems.map(p => p && <Badge key={p.id} variant="secondary">{p.name}</Badge>)}
+                    <Badge variant="secondary">{category.name}</Badge>
                 </div>
              </div>
              <Separator />
