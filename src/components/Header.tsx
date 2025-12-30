@@ -85,17 +85,13 @@ export default function Header() {
              <BookingTrackerModal />
           </nav>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <div className="md:hidden">
-                 <LocationSelector />
-              </div>
-              <div className="hidden md:flex">
+            <div className="hidden md:flex items-center gap-2">
                 <LocationSelector />
-              </div>
-              <LanguageSwitcher />
+                <LanguageSwitcher />
             </div>
 
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center gap-2">
+              <LocationSelector />
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">
@@ -104,12 +100,13 @@ export default function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-                  <SheetHeader className="border-b pb-4 mb-4">
+                  <SheetHeader className="border-b pb-4 mb-4 flex-row justify-between items-center">
                     <SheetClose asChild>
                       <Link href="/" className="text-2xl font-bold text-primary font-headline">
                           {t('appName')}
                       </Link>
                     </SheetClose>
+                    <LanguageSwitcher />
                     <SheetTitle className="sr-only">Menu</SheetTitle>
                   </SheetHeader>
                   <div className="flex flex-col h-full">
