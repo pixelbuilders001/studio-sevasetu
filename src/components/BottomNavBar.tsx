@@ -3,8 +3,6 @@ import Link from 'next/link';
 import { Home, LayoutGrid, MessageSquare } from 'lucide-react';
 import BookingTrackerModal from './BookingTrackerModal';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Dialog, DialogTrigger } from './ui/dialog';
-import { Button } from './ui/button';
 import { Bike } from 'lucide-react';
 
 export default function BottomNavBar() {

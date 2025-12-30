@@ -100,10 +100,12 @@ export default function Header() {
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                   <SheetHeader className="border-b pb-4 mb-4">
+                    <SheetClose asChild>
+                      <Link href="/" className="text-2xl font-bold text-primary font-headline">
+                          {t('appName')}
+                      </Link>
+                    </SheetClose>
                     <SheetTitle className="sr-only">Menu</SheetTitle>
-                    <Link href="/" className="text-2xl font-bold text-primary font-headline">
-                        {t('appName')}
-                    </Link>
                   </SheetHeader>
                   <div className="flex flex-col h-full">
                     <nav className="flex flex-col gap-4">
