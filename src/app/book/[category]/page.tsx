@@ -7,7 +7,6 @@ import ProblemSelectionClient from './ProblemSelectionClient';
 export default async function ProblemSelectionPage({ params, searchParams }: { params: { category: string }, searchParams: { lang?: string } }) {
   const categorySlug = params.category;
   const lang = searchParams?.lang || 'en';
-  const t = getTranslations(lang);
   
   const originalCategory = await getServiceCategory(categorySlug);
   
@@ -15,10 +14,8 @@ export default async function ProblemSelectionPage({ params, searchParams }: { p
     notFound();
   }
   
-  const category = getTranslatedCategory(originalCategory, t);
-
   // We can't pass the icon component to the client, so we remove it.
-  const { icon, ...categoryWithoutIcon } = category;
+  const { icon, ...categoryWithoutIcon } = originalCategory;
 
-  return <ProblemSelectionClient category={{ ...categoryWithoutIcon, iconName: category.icon }} />;
+  return <ProblemSelectionClient category={{ ...categoryWithoutIcon, iconName: originalCategory.icon }} />;
 }
