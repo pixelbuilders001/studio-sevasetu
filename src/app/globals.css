@@ -72,6 +72,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  main {
+    @apply pb-20 md:pb-0;
+  }
 }
 
 @layer components {

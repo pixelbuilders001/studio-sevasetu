@@ -21,7 +21,7 @@ import React from 'react';
 type View = 'form' | 'history' | 'error';
 type TrackResult = { history?: { status: string; date: string }[]; error?: string; } | null;
 
-export default function BookingTrackerModal({ isMobile = false }: { isMobile?: boolean }) {
+export default function BookingTrackerModal({ isMobile = false, asChild = false, children }: { isMobile?: boolean, asChild?: boolean, children?: React.ReactNode }) {
   const { t, language } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<View>('form');
@@ -68,12 +68,12 @@ export default function BookingTrackerModal({ isMobile = false }: { isMobile?: b
     }
   }, [trackResult]);
 
-  const TriggerButton = isMobile ? (
+  const TriggerButton = isMobile && !asChild ? (
      <button className="text-lg font-medium text-foreground transition-colors hover:text-primary w-full text-left flex items-center gap-2">
         <Bike />
         {t('trackBooking')}
     </button>
-  ) : (
+  ) : asChild ? <>{children}</> :(
     <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
       <Bike className="mr-2" />
       {t('trackBooking')}

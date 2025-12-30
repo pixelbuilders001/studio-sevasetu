@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { LocationProvider } from '@/context/LocationContext';
 import { LanguageProvider } from '@/context/LanguageContext';
+import BottomNavBar from '@/components/BottomNavBar';
 
 export const metadata: Metadata = {
   title: 'SevaSetu - Trusted Local Repair',
@@ -29,6 +30,7 @@ export default function RootLayout({
             <Header />
             <main className="flex-grow">{children}</main>
             <Footer />
+            <BottomNavBar />
           </LocationProvider>
         </LanguageProvider>
         <Toaster />
