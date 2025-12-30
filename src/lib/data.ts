@@ -1,4 +1,3 @@
-
 import type { ImagePlaceholder } from '@/lib/placeholder-images';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Smartphone, Laptop, AirVent, Refrigerator, Fan, LucideIcon, Tv, WashingMachine } from 'lucide-react';
