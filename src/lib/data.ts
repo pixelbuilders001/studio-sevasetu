@@ -4,12 +4,12 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Smartphone, Laptop, AirVent, Refrigerator, Fan, LucideIcon } from 'lucide-react';
 import type { TranslationFunc } from '@/context/LanguageContext';
 
-const ICONS: Record<string, LucideIcon> = {
-    "MOBILE PHONES": Smartphone,
-    "LAPTOPS": Laptop,
-    "AC": AirVent,
-    "FRIDGE": Refrigerator,
-    "AIR COOLER": Fan,
+export const ICONS: Record<string, LucideIcon> = {
+    "Smartphone": Smartphone,
+    "Laptop": Laptop,
+    "AirVent": AirVent,
+    "Refrigerator": Refrigerator,
+    "Fan": Fan,
 }
 
 export type Problem = {
@@ -20,10 +20,10 @@ export type Problem = {
 };
 
 export type ServiceCategory = {
-  id: string; // The UUID
-  slug: string; // The slug for URL
+  id: string;
+  slug: string;
   name: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: string; // Changed from React.ComponentType to string
   image: {
       imageUrl: string;
       imageHint: string;
@@ -42,13 +42,14 @@ const getImage = (id: string): ImagePlaceholder => {
     return img;
 }
 
-const serviceCategories: Omit<ServiceCategory, 'problems'>[] = [
-    { id: '1', slug: 'mobile-phones', name: 'Mobile Phone', icon: Smartphone, image: { imageUrl: getImage('phone-repair').imageUrl, imageHint: 'phone repair' } },
-    { id: '2', slug: 'laptop-repair', name: 'Laptop', icon: Laptop, image: { imageUrl: getImage('laptop-repair').imageUrl, imageHint: 'laptop repair' } },
-    { id: '3', slug: 'ac-repair', name: 'AC', icon: AirVent, image: { imageUrl: getImage('ac-repair').imageUrl, imageHint: 'ac repair' } },
-    { id: '4', slug: 'fridge-repair', name: 'Fridge', icon: Refrigerator, image: { imageUrl: getImage('fridge-repair').imageUrl, imageHint: 'fridge repair' } },
-    { id: '5', slug: 'cooler-repair', name: 'Air Cooler', icon: Fan, image: { imageUrl: getImage('cooler-repair').imageUrl, imageHint: 'cooler repair' } },
+const serviceCategories: Omit<ServiceCategory, 'problems' | 'icon'> & { icon: string }[] = [
+    { id: '1', slug: 'mobile-phones', name: 'Mobile Phone', icon: 'Smartphone', image: { imageUrl: getImage('phone-repair').imageUrl, imageHint: 'phone repair' } },
+    { id: '2', slug: 'laptop-repair', name: 'Laptop', icon: 'Laptop', image: { imageUrl: getImage('laptop-repair').imageUrl, imageHint: 'laptop repair' } },
+    { id: '3', slug: 'ac-repair', name: 'AC', icon: 'AirVent', image: { imageUrl: getImage('ac-repair').imageUrl, imageHint: 'ac repair' } },
+    { id: '4', slug: 'fridge-repair', name: 'Fridge', icon: 'Refrigerator', image: { imageUrl: getImage('fridge-repair').imageUrl, imageHint: 'fridge repair' } },
+    { id: '5', slug: 'cooler-repair', name: 'Air Cooler', icon: 'Fan', image: { imageUrl: getImage('cooler-repair').imageUrl, imageHint: 'cooler repair' } },
 ];
+
 
 const problems: Omit<Problem, 'image'>[] = [
     { id: 'screen-broken', name: 'Screen Broken', category_id: 1, image_id: 'phone-screen-broken' },
@@ -87,15 +88,14 @@ const problems: Omit<Problem, 'image'>[] = [
 ].map(p => ({ ...p, image: getImage(p.image_id) }));
 
 
-export async function getServiceCategories(): Promise<Omit<ServiceCategory, 'problems'>[]> {
-    return Promise.resolve(serviceCategories);
+export function getServiceCategories(): Omit<ServiceCategory, 'problems'>[] {
+    return serviceCategories;
 }
 
-
-export async function getServiceCategory(slug: string): Promise<ServiceCategory | null> {
+export function getServiceCategory(slug: string): ServiceCategory | null {
     const categoryInfo = serviceCategories.find(c => c.slug === slug);
     if (!categoryInfo) {
-        return Promise.resolve(null);
+        return null;
     }
     
     const categoryProblems = problems
@@ -105,10 +105,10 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
             image: getImage(p.image.id)
         }));
 
-    return Promise.resolve({
+    return {
         ...categoryInfo,
         problems: categoryProblems as Problem[],
-    });
+    };
 }
 
 
@@ -124,6 +124,6 @@ export const getTranslatedCategory = (category: ServiceCategory, t: TranslationF
 export const getTranslatedCategories = (categories: Omit<ServiceCategory, 'problems'>[], t: TranslationFunc): Omit<ServiceCategory, 'problems'>[] => {
     return categories.map(category => ({
         ...category,
-        name: category.name
+        name: t(`category_${category.slug}_name` as any, { defaultValue: category.name })
     }));
 };

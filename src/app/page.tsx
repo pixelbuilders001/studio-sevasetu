@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { getServiceCategories, getTranslatedCategories } from '@/lib/data';
+import { getServiceCategories, getTranslatedCategories, ICONS } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import TrustIndicators from '@/components/TrustIndicators';
@@ -13,16 +13,11 @@ import PaymentIcons from '@/components/PaymentIcons';
 import { ShieldCheck, Truck, CreditCard } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 
-export default async function Home({ searchParams }: { searchParams?: { lang?: string } }) {
+export default function Home({ searchParams }: { searchParams?: { lang?: string } }) {
   const lang = searchParams?.lang || 'en';
   const t = getTranslations(lang);
   
-  let originalCategories: Omit<ServiceCategory, 'problems'>[] = [];
-  try {
-    originalCategories = await getServiceCategories();
-  } catch (error) {
-    console.error(error);
-  }
+  const originalCategories: Omit<ServiceCategory, 'problems'>[] = getServiceCategories();
   
   const categories = getTranslatedCategories(originalCategories, t);
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
@@ -117,7 +112,9 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 font-headline text-center">{t('ourServices')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-            {categories.map((category) => (
+            {categories.map((category) => {
+              const Icon = ICONS[category.icon];
+              return (
               <Link href={`/book/${category.slug}`} key={category.id} className="group">
                 <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
                   <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
@@ -132,13 +129,14 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
                       />
                     </div>
                     <div className="p-4 text-center w-full bg-card">
-                      <category.icon className="w-8 h-8 text-primary mx-auto mb-2" />
+                      {Icon && <Icon className="w-8 h-8 text-primary mx-auto mb-2" />}
                       <h3 className="font-bold text-base md:text-lg">{category.name}</h3>
                     </div>
                   </CardContent>
                 </Card>
               </Link>
-            ))}
+            );
+          })}
           </div>
         </div>
       </section>

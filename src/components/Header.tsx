@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Menu, Bike, ChevronDown } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import BookingTrackerModal from './BookingTrackerModal';
-import { getServiceCategories, ServiceCategory, getTranslatedCategories } from '@/lib/data';
+import { getServiceCategories, ServiceCategory, getTranslatedCategories, ICONS } from '@/lib/data';
 import { Skeleton } from './ui/skeleton';
 import { getTranslations } from '@/lib/get-translation';
 
@@ -32,9 +32,9 @@ function ServicesMenu() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategories = () => {
       try {
-        const originalCategories = await getServiceCategories();
+        const originalCategories = getServiceCategories();
         const t = getTranslations(language);
         const translated = getTranslatedCategories(originalCategories, t);
         setCategories(translated);
@@ -66,16 +66,19 @@ function ServicesMenu() {
   return (
     <div className="p-4">
       <div className="grid gap-4 services-mega-menu">
-        {categories.map((category) => (
-          <Link
-            key={category.id}
-            href={`/book/${category.slug}`}
-            className="group flex items-center gap-3 p-2 rounded-md hover:bg-accent/50"
-          >
-            <category.icon className="w-6 h-6 text-primary" />
-            <span className="font-semibold text-sm">{category.name}</span>
-          </Link>
-        ))}
+        {categories.map((category) => {
+          const Icon = ICONS[category.icon];
+          return (
+            <Link
+              key={category.id}
+              href={`/book/${category.slug}`}
+              className="group flex items-center gap-3 p-2 rounded-md hover:bg-accent/50"
+            >
+              {Icon && <Icon className="w-6 h-6 text-primary" />}
+              <span className="font-semibold text-sm">{category.name}</span>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

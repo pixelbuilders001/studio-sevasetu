@@ -1,6 +1,6 @@
 
 'use client';
-import { type Problem, type ServiceCategory } from '@/lib/data';
+import { type Problem, type ServiceCategory, ICONS } from '@/lib/data';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
@@ -10,7 +10,9 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-export default function ProblemSelectionClient({ category }: { category: ServiceCategory }) {
+type ClientCategory = Omit<ServiceCategory, 'icon'> & { iconName: string };
+
+export default function ProblemSelectionClient({ category }: { category: ClientCategory }) {
   const { t } = useTranslation();
   const router = useRouter();
 
