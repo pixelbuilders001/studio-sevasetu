@@ -19,7 +19,7 @@ export type Problem = {
   id: string; 
   name: string;
   image: ImagePlaceholder;
-  category_id: number;
+  category_id: string;
 };
 
 export type ServiceCategory = {
@@ -100,9 +100,10 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
     const category = categoryData;
     
     const { data: problemsData, error: problemsError } = await supabase
-        .from('problems')
+        .from('issues')
         .select('*')
-        .eq('category_id', category.id);
+        .eq('category_id', category.id)
+        .eq('is_active', true);
         
     if (problemsError) {
         console.error(`Failed to fetch problems for category ${category.id}:`, problemsError);
