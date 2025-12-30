@@ -84,7 +84,3 @@ export async function trackBooking(prevState: any, formData: FormData): Promise<
     return { error: t('bookingNotFound') };
   }
 }
-
-export async function resetTrackerState(prevState: any, formData: FormData): Promise<{}> {
-  return {};
-}

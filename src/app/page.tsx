@@ -13,7 +13,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import PaymentIcons from '@/components/PaymentIcons';
 import { ShieldCheck, Truck, CreditCard } from 'lucide-react';
-import BookingTracker from '@/components/BookingTracker';
+import BookingTrackerModal from '@/components/BookingTrackerModal';
 
 export default function Home() {
   const { t, getTranslatedCategory } = useTranslation();
@@ -106,7 +106,13 @@ export default function Home() {
         </div>
       </section>
 
-      <BookingTracker />
+      <section className="py-16 md:py-24 bg-muted/30">
+        <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold font-headline mb-4">{t('trackYourBookingTitle')}</h2>
+            <p className="text-muted-foreground mb-6 max-w-xl mx-auto">{t('trackYourBookingDescription')}</p>
+            <BookingTrackerModal />
+        </div>
+      </section>
 
       <section id="services" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
