@@ -87,25 +87,40 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
         throw new Error('Supabase URL and Anon Key must be provided in environment variables. Please check your .env file.');
     }
-    const headers = {
+     const headers = {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
     };
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/categories?slug=eq.${slug}&select=*,problems(*)`, { headers, cache: 'no-store' });
-    
-    if (!response.ok) {
-        console.error(`Failed to fetch category with slug ${slug}:`, await response.text());
+
+    // First, fetch the category by its slug
+    const categoryResponse = await fetch(`${SUPABASE_URL}/rest/v1/categories?slug=eq.${slug}&select=*`, { headers, cache: 'no-store' });
+
+    if (!categoryResponse.ok) {
+        console.error(`Failed to fetch category with slug ${slug}:`, await categoryResponse.text());
         throw new Error(`Failed to fetch category with slug ${slug}`);
     }
-    const data = await response.json();
-    
-    if (data.length === 0) {
+
+    const categoryData = await categoryResponse.json();
+
+    if (categoryData.length === 0) {
         return null;
     }
-    
-    const categoryData = data[0];
 
-    const problems = (categoryData.problems || []).map((p: any) => ({
+    const category = categoryData[0];
+
+    // Then, fetch the problems for that category using its ID
+    const problemsResponse = await fetch(`${SUPABASE_URL}/rest/v1/problems?category_id=eq.${category.id}`, { headers, cache: 'no-store' });
+
+    if (!problemsResponse.ok) {
+        console.error(`Failed to fetch problems for category ${category.id}:`, await problemsResponse.text());
+        // We can decide to return the category with empty problems or throw an error.
+        // For now, let's throw, as it indicates a data integrity issue.
+        throw new Error(`Failed to fetch problems for category ${category.name}`);
+    }
+    
+    const problemsData = await problemsResponse.json();
+
+    const problems = (problemsData || []).map((p: any) => ({
         id: p.id.toString(),
         name: p.name,
         category_id: p.category_id,
@@ -113,13 +128,13 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
     }));
     
     return {
-        id: categoryData.id,
-        slug: categoryData.slug,
-        name: categoryData.name,
-        icon: ICONS[categoryData.name] || Fan,
+        id: category.id,
+        slug: category.slug,
+        name: category.name,
+        icon: ICONS[category.name] || Fan,
         image: {
-            imageUrl: categoryData.icon_url,
-            imageHint: categoryData.name.toLowerCase()
+            imageUrl: category.icon_url,
+            imageHint: category.name.toLowerCase()
         },
         problems: problems,
     };
