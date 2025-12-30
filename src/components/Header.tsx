@@ -32,9 +32,9 @@ function ServicesMenu() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategories = () => {
+    const fetchCategories = async () => {
       try {
-        const originalCategories = getServiceCategories();
+        const originalCategories = await getServiceCategories();
         const t = getTranslations(language);
         const translated = getTranslatedCategories(originalCategories, t);
         setCategories(translated);
@@ -67,7 +67,7 @@ function ServicesMenu() {
     <div className="p-4">
       <div className="grid gap-4 services-mega-menu">
         {categories.map((category) => {
-          const Icon = ICONS[category.icon];
+          const Icon = ICONS[category.icon] || ICONS['Smartphone'];
           return (
             <Link
               key={category.id}
@@ -120,7 +120,12 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
-             <BookingTrackerModal />
+             <BookingTrackerModal asChild={true}>
+                <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                    <Bike className="mr-2" />
+                    {t('trackBooking')}
+                </Button>
+            </BookingTrackerModal>
           </nav>
           <div className="flex items-center gap-2">
             <div className="hidden md:flex items-center gap-2">

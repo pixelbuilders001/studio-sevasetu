@@ -84,7 +84,7 @@ export default function BookingTrackerModal({ isMobile = false, asChild = false,
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild={asChild || !isMobile}>
+      <DialogTrigger asChild={asChild || isMobile}>
         {Trigger}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px]">

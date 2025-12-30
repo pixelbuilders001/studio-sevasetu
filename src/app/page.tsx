@@ -13,11 +13,11 @@ import PaymentIcons from '@/components/PaymentIcons';
 import { ShieldCheck, Truck, CreditCard } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 
-export default function Home({ searchParams }: { searchParams?: { lang?: string } }) {
+export default async function Home({ searchParams }: { searchParams?: { lang?: string } }) {
   const lang = searchParams?.lang || 'en';
   const t = getTranslations(lang);
   
-  const originalCategories: Omit<ServiceCategory, 'problems'>[] = getServiceCategories();
+  const originalCategories: Omit<ServiceCategory, 'problems'>[] = await getServiceCategories();
   
   const categories = getTranslatedCategories(originalCategories, t);
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
@@ -113,7 +113,7 @@ export default function Home({ searchParams }: { searchParams?: { lang?: string 
           <h2 className="text-3xl font-bold mb-8 font-headline text-center">{t('ourServices')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             {categories.map((category) => {
-              const Icon = ICONS[category.icon];
+              const Icon = ICONS[category.icon] || ICONS['Smartphone'];
               return (
               <Link href={`/book/${category.slug}`} key={category.id} className="group">
                 <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
