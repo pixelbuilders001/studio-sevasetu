@@ -9,7 +9,7 @@ export type Language = 'en' | 'hi';
 
 type Translations = typeof en;
 
-type TranslationFunc = (key: keyof Translations, options?: { [key: string]: string | number }) => string;
+export type TranslationFunc = (key: keyof Translations, options?: { [key: string]: string | number }) => string;
 
 type LanguageContextType = {
   language: Language;
@@ -36,10 +36,10 @@ export const getTranslations = (lang: string): TranslationFunc => {
 };
 
 export const getTranslatedCategory = (category: ServiceCategory, t: TranslationFunc): ServiceCategory => {
-  const translatedName = t(`category_${category.id}_name` as keyof Translations);
+  const translatedName = t(`category_${category.id}_name` as keyof Translations, { defaultValue: category.name });
   const translatedProblems = category.problems.map(problem => ({
     ...problem,
-    name: t(`problem_${category.id}_${problem.id}_name` as keyof Translations),
+    name: t(`problem_${category.id}_${problem.id}_name` as keyof Translations, { defaultValue: problem.name }),
   }));
   return { ...category, name: translatedName, problems: translatedProblems };
 };
@@ -72,6 +72,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const t = useCallback((key: keyof Translations, options?: { [key: string]: string | number }): string => {
     let text = translations[language][key] || translations['en'][key] || key;
+    if (options && 'defaultValue' in options && !text) {
+        text = String(options.defaultValue);
+    }
     if (options) {
       Object.keys(options).forEach(k => {
         text = text.replace(new RegExp(`{{${k}}}`, 'g'), String(options[k]));
@@ -81,7 +84,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, [language]);
 
   const translatedCategoryGetter = useCallback((category: ServiceCategory): ServiceCategory => {
-    return getTranslatedCategory(category, t);
+     return getTranslatedCategory(category, t);
   }, [t]);
 
   return (
