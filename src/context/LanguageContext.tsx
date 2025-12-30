@@ -1,3 +1,4 @@
+
 'use client';
 
 import { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -38,28 +39,19 @@ export const getTranslations = (lang: string): TranslationFunc => {
   }
 };
 
-export const getTranslatedCategory = (category: ServiceCategory, t: TranslationFunc): ServiceCategory => {
-  const translatedName = t(`category_${category.slug}_name` as keyof Translations, { defaultValue: category.name });
-  const translatedProblems = category.problems.map(problem => ({
-    ...problem,
-    // Assuming problem IDs/slugs are consistent for translation keys
-    name: t(`problem_${category.slug}_${problem.id}_name` as keyof Translations, { defaultValue: problem.name }),
-  }));
-  return { ...category, name: translatedName, problems: translatedProblems };
-};
-
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en');
 
   useEffect(() => {
     try {
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
       const storedLanguage = localStorage.getItem('userLanguage') as Language;
-      if (storedLanguage && ['en', 'hi'].includes(storedLanguage)) {
-        setLanguageState(storedLanguage);
+      const initialLang = urlLang || storedLanguage;
+      if (initialLang && ['en', 'hi'].includes(initialLang)) {
+        setLanguageState(initialLang as Language);
       }
     } catch (error) {
-      console.error("Failed to parse language from localStorage", error);
+      console.error("Failed to parse language from localStorage or URL", error);
     }
   }, []);
 
@@ -67,16 +59,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLanguageState(newLanguage);
     try {
       localStorage.setItem('userLanguage', newLanguage);
-      // reload page to apply new language to server components
-      window.location.search = `?lang=${newLanguage}`;
+      const currentParams = new URLSearchParams(window.location.search);
+      currentParams.set('lang', newLanguage);
+      window.location.search = currentParams.toString();
     } catch (error) {
       console.error("Failed to save language to localStorage", error);
     }
   };
-
-  const t = useCallback((key: keyof Translations, options?: { [key: string]: string | number }): string => {
+  
+  const t = useCallback((key: keyof Translations, options?: { [key: string]: string | number | undefined }): string => {
     let text = translations[language][key] || translations['en'][key] || key;
-    if (options && 'defaultValue' in options && !text) {
+     if (options && 'defaultValue' in options && text === key) {
         text = String(options.defaultValue);
     }
     if (options) {
@@ -88,8 +81,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, [language]);
 
   const translatedCategoryGetter = useCallback((category: ServiceCategory): ServiceCategory => {
-     return getTranslatedCategory(category, t);
-  }, [t]);
+     const tFunc = getTranslations(language);
+     const translatedName = tFunc(`category_${category.slug}_name` as any, { defaultValue: category.name });
+      const translatedProblems = category.problems.map(problem => ({
+        ...problem,
+        name: tFunc(`problem_${category.slug}_${problem.id}_name` as any, { defaultValue: problem.name }),
+      }));
+      return { ...category, name: translatedName, problems: translatedProblems };
+  }, [language]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t, getTranslatedCategory: translatedCategoryGetter }}>

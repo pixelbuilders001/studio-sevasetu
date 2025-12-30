@@ -1,11 +1,13 @@
+
 'use client';
-import { getServiceCategory } from '@/lib/data';
+import { getServiceCategory, getTranslatedCategory } from '@/lib/data';
 import { notFound, useParams, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingForm } from '@/components/BookingForm';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, Suspense, useState, useEffect } from 'react';
 import type { ServiceCategory } from '@/lib/data';
+import { getTranslations } from '@/lib/get-translation';
 
 function BookingDetailsContent() {
   const params = useParams();
@@ -14,7 +16,7 @@ function BookingDetailsContent() {
   const { category: categorySlug } = params as { category: string };
   const problemIds = searchParams.get('problems');
 
-  const { t, getTranslatedCategory } = useTranslation();
+  const { t, language } = useTranslation();
   const [category, setCategory] = useState<ServiceCategory | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +29,8 @@ function BookingDetailsContent() {
           notFound();
           return;
         }
-        const translatedCategory = getTranslatedCategory(originalCategory);
+        const trans = getTranslations(language)
+        const translatedCategory = getTranslatedCategory(originalCategory, trans);
         setCategory(translatedCategory);
       } catch (error) {
         console.error("Failed to fetch category:", error);
@@ -37,7 +40,7 @@ function BookingDetailsContent() {
       }
     };
     fetchCategory();
-  }, [categorySlug, getTranslatedCategory]);
+  }, [categorySlug, language]);
   
   const selectedProblemNames = useMemo(() => {
     if (!category || !problemIds) return '';
@@ -46,15 +49,19 @@ function BookingDetailsContent() {
   }, [category, problemIds]);
 
 
-  if (loading || !category || !selectedProblemNames) {
+  if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <p>Loading booking details...</p>
       </div>
     );
   }
+  
+  if (!category) {
+    return notFound();
+  }
 
-  const problemDescription = selectedProblemNames;
+  const problemDescription = selectedProblemNames || category.problems[0]?.name || 'General Checkup';
 
   return (
     <div className="container mx-auto px-4 py-8">

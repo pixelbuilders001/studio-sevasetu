@@ -10,12 +10,14 @@ import {
 } from '@/components/ui/sheet';
 import { LayoutGrid } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { getServiceCategories, ServiceCategory } from '@/lib/data';
+import { getServiceCategories, ServiceCategory, getTranslatedCategories } from '@/lib/data';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Skeleton } from './ui/skeleton';
+import { getTranslations } from '@/lib/get-translation';
+
 
 function ServicesSheetSkeleton() {
     return (
@@ -37,15 +39,16 @@ function ServicesSheetSkeleton() {
 }
 
 export default function ServicesSheet() {
-    const { t, getTranslatedCategory } = useTranslation();
-    const [categories, setCategories] = useState<ServiceCategory[]>([]);
+    const { t, language } = useTranslation();
+    const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems'>[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
                 const originalCategories = await getServiceCategories();
-                const translated = originalCategories.map(cat => getTranslatedCategory(cat));
+                const trans = getTranslations(language);
+                const translated = getTranslatedCategories(originalCategories, trans);
                 setCategories(translated);
             } catch (error) {
                 console.error("Failed to fetch service categories", error);
@@ -54,7 +57,7 @@ export default function ServicesSheet() {
             }
         };
         fetchCategories();
-    }, [getTranslatedCategory]);
+    }, [language]);
 
 
     return (

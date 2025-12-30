@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { getServiceCategories } from '@/lib/data';
+import { getServiceCategories, getTranslatedCategories } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import TrustIndicators from '@/components/TrustIndicators';
@@ -17,14 +17,14 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
   const lang = searchParams?.lang || 'en';
   const t = getTranslations(lang);
   
-  let categories: ServiceCategory[] = [];
+  let originalCategories: Omit<ServiceCategory, 'problems'>[] = [];
   try {
-    categories = await getServiceCategories();
+    originalCategories = await getServiceCategories();
   } catch (error) {
     console.error(error);
-    // You can render an error message to the user here
   }
   
+  const categories = getTranslatedCategories(originalCategories, t);
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
 
   const featureCards = [
