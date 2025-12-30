@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { getServiceCategories, getTranslatedCategories, ICONS } from '@/lib/data';
+import { getServiceCategories, ICONS } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import TrustIndicators from '@/components/TrustIndicators';
@@ -17,9 +17,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
   const lang = searchParams?.lang || 'en';
   const t = getTranslations(lang);
   
-  const originalCategories: Omit<ServiceCategory, 'problems'>[] = await getServiceCategories();
-  
-  const categories = getTranslatedCategories(originalCategories, t);
+  const categories: Omit<ServiceCategory, 'problems'>[] = await getServiceCategories();
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
 
   const featureCards = [

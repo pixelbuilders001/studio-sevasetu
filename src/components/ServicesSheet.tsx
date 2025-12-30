@@ -10,13 +10,12 @@ import {
 } from '@/components/ui/sheet';
 import { LayoutGrid } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { getServiceCategories, ServiceCategory, getTranslatedCategories } from '@/lib/data';
+import { getServiceCategories, ServiceCategory } from '@/lib/data';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Skeleton } from './ui/skeleton';
-import { getTranslations } from '@/lib/get-translation';
 
 
 function ServicesSheetSkeleton() {
@@ -47,9 +46,7 @@ export default function ServicesSheet() {
         const fetchCategories = async () => {
             try {
                 const originalCategories = await getServiceCategories();
-                const trans = getTranslations(language);
-                const translated = getTranslatedCategories(originalCategories, trans);
-                setCategories(translated);
+                setCategories(originalCategories);
             } catch (error) {
                 console.error("Failed to fetch service categories", error);
             } finally {

@@ -22,9 +22,8 @@ import { Button } from '@/components/ui/button';
 import { Menu, Bike, ChevronDown } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import BookingTrackerModal from './BookingTrackerModal';
-import { getServiceCategories, ServiceCategory, getTranslatedCategories, ICONS } from '@/lib/data';
+import { getServiceCategories, ServiceCategory, ICONS } from '@/lib/data';
 import { Skeleton } from './ui/skeleton';
-import { getTranslations } from '@/lib/get-translation';
 
 function ServicesMenu() {
   const { language } = useTranslation();
@@ -35,9 +34,7 @@ function ServicesMenu() {
     const fetchCategories = async () => {
       try {
         const originalCategories = await getServiceCategories();
-        const t = getTranslations(language);
-        const translated = getTranslatedCategories(originalCategories, t);
-        setCategories(translated);
+        setCategories(originalCategories);
       } catch (error) {
         console.error("Failed to fetch service categories", error);
       } finally {
