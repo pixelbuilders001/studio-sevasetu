@@ -18,6 +18,8 @@ import { ChevronDown, Loader2, MapPin } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 type PostalInfo = {
   Name: string;
@@ -37,6 +39,7 @@ export default function LocationSelector() {
   const [selectedArea, setSelectedArea] = useState<PostalInfo | null>(
     location.area ? { ...location.area, Pincode: location.pincode } : null
   );
+  const isMobile = useIsMobile();
 
   const handlePincodeSearch = async () => {
     if (pincode.length !== 6) {
@@ -95,12 +98,18 @@ export default function LocationSelector() {
       <DialogTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-2">
           <MapPin className="h-4 w-4 text-muted-foreground" />
-          <div className="text-left">
-            <div className="font-semibold text-sm leading-tight">{location.pincode}</div>
-            <div className="text-xs text-muted-foreground leading-tight truncate max-w-[150px]">
-              {location.area?.Name || t('selectYourLocation')}
+          {isMobile ? (
+             <div className="text-left">
+                <div className="font-semibold text-sm leading-tight">{location.city}</div>
             </div>
-          </div>
+          ) : (
+            <div className="text-left">
+              <div className="font-semibold text-sm leading-tight">{location.pincode}</div>
+              <div className="text-xs text-muted-foreground leading-tight truncate max-w-[150px]">
+                {location.area?.Name || t('selectYourLocation')}
+              </div>
+            </div>
+          )}
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </Button>
       </DialogTrigger>
