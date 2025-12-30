@@ -68,25 +68,23 @@ export default function BookingTrackerModal({ isMobile = false, asChild = false,
     }
   }, [trackResult]);
 
-  const TriggerButton = asChild ? (
-    <>{children}</>
-  ) : isMobile ? (
+  const TriggerButton = isMobile && !asChild ? (
     <button className="text-lg font-medium text-foreground transition-colors hover:text-primary w-full text-left flex items-center gap-2">
       <Bike />
       {t('trackBooking')}
     </button>
-  ) : (
+  ) : !asChild ? (
     <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
       <Bike className="mr-2" />
       {t('trackBooking')}
     </Button>
-  );
+  ) : null;
 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild={asChild || isMobile}>
-        {TriggerButton}
+      <DialogTrigger asChild={asChild}>
+        {asChild ? children : TriggerButton}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
