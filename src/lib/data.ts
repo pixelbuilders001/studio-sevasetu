@@ -23,6 +23,7 @@ export type Problem = {
       imageHint: string;
   };
   category_id: string;
+  estimated_price: number;
 };
 
 export type ServiceCategory = {
@@ -108,6 +109,7 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
         id: p.id,
         name: p.title,
         category_id: p.category_id,
+        estimated_price: p.estimated_price,
         image: {
             imageUrl: p.icon_url,
             imageHint: p.title.toLowerCase()

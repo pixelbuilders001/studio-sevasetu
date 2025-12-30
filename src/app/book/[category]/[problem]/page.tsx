@@ -4,11 +4,12 @@ import { notFound, useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { AlertCircle, Wrench } from 'lucide-react';
+import { AlertCircle, Wrench, Hammer } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState, useEffect } from 'react';
 import type { ServiceCategory, Problem } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Separator } from '@/components/ui/separator';
 
 function PriceEstimationSkeleton() {
   return (
@@ -25,6 +26,13 @@ function PriceEstimationSkeleton() {
               <Skeleton className="h-5 w-40" />
             </div>
             <Skeleton className="h-7 w-20" />
+          </div>
+           <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg">
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-6 h-6 rounded-full" />
+              <Skeleton className="h-5 w-32" />
+            </div>
+            <Skeleton className="h-7 w-24" />
           </div>
           <div className="flex items-start gap-3 text-sm text-muted-foreground p-3 bg-muted/50 rounded-lg">
             <Skeleton className="w-5 h-5 rounded-full mt-0.5 shrink-0" />
@@ -89,6 +97,8 @@ export default function PriceEstimationPage() {
     notFound();
   }
 
+  const totalEstimate = 199 + (problem.estimated_price || 0);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-md mx-auto">
@@ -96,13 +106,31 @@ export default function PriceEstimationPage() {
           <CardTitle className="text-2xl font-headline">{t('priceEstimateTitle')}</CardTitle>
           <CardDescription>{t('priceEstimateDescription', { category: category.name, problem: problem.name })}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg">
-            <div className="flex items-center gap-3">
-              <Wrench className="w-6 h-6 text-primary" />
-              <span className="font-semibold">{t('fixedInspectionCharge')}</span>
+        <CardContent className="space-y-4">
+          <div className="p-4 bg-muted/30 rounded-lg space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Wrench className="w-5 h-5 text-muted-foreground" />
+                <span className="font-medium text-muted-foreground">{t('fixedInspectionCharge')}</span>
+              </div>
+              <span className="font-semibold">₹ 199</span>
             </div>
-            <span className="text-lg font-bold">199 /-</span>
+            {problem.estimated_price > 0 && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Hammer className="w-5 h-5 text-muted-foreground" />
+                  <span className="font-medium text-muted-foreground">Estimated Repair Cost</span>
+                </div>
+                <span className="font-semibold">₹ {problem.estimated_price}</span>
+              </div>
+            )}
+          </div>
+          
+          <Separator />
+
+          <div className="flex items-center justify-between p-4">
+            <span className="text-lg font-bold">Total Estimated Cost</span>
+            <span className="text-xl font-bold text-primary">₹ {totalEstimate}</span>
           </div>
 
           <div className="flex items-start gap-3 text-sm text-muted-foreground p-3 bg-muted/50 rounded-lg">
