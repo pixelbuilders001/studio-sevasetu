@@ -1,3 +1,4 @@
+
 {
     "appName": "SevaSetu",
     "heroTitle": "Trusted Local Repair for Phones & Home Appliances",
@@ -83,6 +84,8 @@
     "statusTechnicianAssigned": "Technician Assigned",
     "statusInProgress": "In Progress",
     "statusCompleted": "Completed",
+    "trackAnotherBooking": "Track Another Booking",
+    "closeButton": "Close",
     "satisfactionGuarantee": "100% Satisfaction Guarantee",
     "doorstepServiceTitle": "Doorstep Service",
     "doorstepServiceDesc": "Local: Easy repair nearby",

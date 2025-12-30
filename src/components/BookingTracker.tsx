@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState, useEffect, useRef } from 'react';
@@ -21,6 +22,17 @@ function SubmitButton() {
     );
 }
 
+function ResetButton() {
+    const { pending } = useFormStatus();
+    const { t } = useTranslation();
+    return (
+         <Button type="submit" disabled={pending} className="w-full sm:w-auto">
+            {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {t('trackAnotherBooking')}
+        </Button>
+    )
+}
+
 export default function BookingTracker() {
     const { t, language } = useTranslation();
     const { toast } = useToast();
@@ -32,7 +44,7 @@ export default function BookingTracker() {
     }
     const [state, dispatch, isPending] = useActionState(translatedTrackBooking, {});
     
-    const [resetState, resetDispatch, isResetPending] = useActionState(resetTrackerState, {});
+    const [resetState, resetDispatch] = useActionState(resetTrackerState, {});
 
 
     useEffect(() => {
@@ -46,12 +58,10 @@ export default function BookingTracker() {
     }, [state, toast, t]);
     
     useEffect(() => {
-        // This will reset the state when the reset action completes.
-        if(!isResetPending && formRef.current) {
-            // we don't actually need to inspect resetState, 
-            // the fact that the action completed is enough.
+        if (formRef.current && !isPending && state) {
+            // Potentially reset form if needed, but state handles view change
         }
-    }, [isResetPending])
+    }, [isPending, state])
 
 
     if(state?.history) {
@@ -72,10 +82,7 @@ export default function BookingTracker() {
                                 </div>
                             </div>
                              <form action={resetDispatch} className='mt-4'>
-                                <Button type="submit" disabled={isResetPending} className="w-full sm:w-auto">
-                                    {isResetPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                    {t('trackAnotherBooking')}
-                                </Button>
+                                <ResetButton />
                             </form>
                         </CardContent>
                     </Card>
