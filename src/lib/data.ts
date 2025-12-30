@@ -18,7 +18,10 @@ export const ICONS: Record<string, LucideIcon> = {
 export type Problem = {
   id: string; 
   name: string;
-  image: ImagePlaceholder;
+  image: {
+      imageUrl: string;
+      imageHint: string;
+  };
   category_id: string;
 };
 
@@ -50,16 +53,6 @@ const mapCategoryIcon = (slug: string): string => {
         'washing-machine': 'WashingMachine',
     };
     return iconMap[slug] || 'Smartphone';
-}
-
-const getImage = (id: string): ImagePlaceholder => {
-    const img = PlaceHolderImages.find(p => p.id === id);
-    if (!img) {
-        const defaultImg = PlaceHolderImages.find(p => p.id === 'other-issue');
-        if(defaultImg) return defaultImg;
-        throw new Error(`Placeholder image with id "${id}" not found and default image is also missing.`);
-    }
-    return img;
 }
 
 export async function getServiceCategories(): Promise<Omit<ServiceCategory, 'problems'>[]> {
@@ -103,7 +96,8 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
         .from('issues')
         .select('*')
         .eq('category_id', category.id)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
         
     if (problemsError) {
         console.error(`Failed to fetch problems for category ${category.id}:`, problemsError);
@@ -112,9 +106,12 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
 
     const problems = problemsData.map((p: any) => ({
         id: p.id,
-        name: p.name,
+        name: p.title,
         category_id: p.category_id,
-        image: getImage(p.image_id || 'other-issue')
+        image: {
+            imageUrl: p.icon_url,
+            imageHint: p.title.toLowerCase()
+        }
     }));
 
     return {
