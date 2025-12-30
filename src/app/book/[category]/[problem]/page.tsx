@@ -114,7 +114,7 @@ export default function PriceEstimationPage() {
                 <Wrench className="w-5 h-5 text-muted-foreground" />
                 <span className="font-medium text-muted-foreground">{t('fixedInspectionCharge')}</span>
               </div>
-              <span className="font-semibold">INR 199</span>
+              <span className="font-semibold">Rs. 199</span>
             </div>
             {problem.estimated_price > 0 && (
               <div className="flex items-center justify-between">
@@ -122,7 +122,7 @@ export default function PriceEstimationPage() {
                   <Hammer className="w-5 h-5 text-muted-foreground" />
                   <span className="font-medium text-muted-foreground">Estimated Repair Cost</span>
                 </div>
-                <span className="font-semibold">INR {problem.estimated_price}</span>
+                <span className="font-semibold">Rs. {problem.estimated_price}</span>
               </div>
             )}
           </div>
@@ -131,7 +131,7 @@ export default function PriceEstimationPage() {
 
           <div className="flex items-center justify-between p-4">
             <span className="text-lg font-bold">Total Estimated Cost</span>
-            <span className="text-xl font-bold text-primary">INR {totalEstimate}</span>
+            <span className="text-xl font-bold text-primary">Rs. {totalEstimate}</span>
           </div>
 
           <div className="flex items-start gap-3 text-sm text-muted-foreground p-3 bg-muted/50 rounded-lg">
