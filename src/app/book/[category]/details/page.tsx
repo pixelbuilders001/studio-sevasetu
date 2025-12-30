@@ -11,7 +11,7 @@ function BookingDetailsContent() {
   const params = useParams();
   const searchParams = useSearchParams();
 
-  const { category: categoryId } = params as { category: string };
+  const { category: categorySlug } = params as { category: string };
   const problemIds = searchParams.get('problems');
 
   const { t, getTranslatedCategory } = useTranslation();
@@ -20,9 +20,9 @@ function BookingDetailsContent() {
 
   useEffect(() => {
     const fetchCategory = async () => {
-      if (!categoryId) return;
+      if (!categorySlug) return;
       try {
-        const originalCategory = await getServiceCategory(categoryId as string);
+        const originalCategory = await getServiceCategory(categorySlug as string);
         if (!originalCategory) {
           notFound();
           return;
@@ -37,7 +37,7 @@ function BookingDetailsContent() {
       }
     };
     fetchCategory();
-  }, [categoryId, getTranslatedCategory]);
+  }, [categorySlug, getTranslatedCategory]);
   
   const selectedProblemNames = useMemo(() => {
     if (!category || !problemIds) return '';

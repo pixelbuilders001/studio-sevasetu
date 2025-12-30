@@ -4,7 +4,8 @@ import { notFound, useRouter, useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect }
+from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +44,7 @@ function CategorySkeleton() {
 
 export default function ProblemSelectionPage() {
   const params = useParams();
-  const categoryId = params.category as string;
+  const categorySlug = params.category as string;
   const { t, getTranslatedCategory } = useTranslation();
   const router = useRouter();
 
@@ -53,8 +54,9 @@ export default function ProblemSelectionPage() {
 
   useEffect(() => {
     const fetchCategory = async () => {
+      if (!categorySlug) return;
       try {
-        const originalCategory = await getServiceCategory(categoryId as string);
+        const originalCategory = await getServiceCategory(categorySlug as string);
         if (!originalCategory) {
           notFound();
           return;
@@ -69,10 +71,8 @@ export default function ProblemSelectionPage() {
       }
     };
 
-    if (categoryId) {
-      fetchCategory();
-    }
-  }, [categoryId, getTranslatedCategory]);
+    fetchCategory();
+  }, [categorySlug, getTranslatedCategory]);
 
 
   const toggleProblemSelection = (problem: Problem) => {
