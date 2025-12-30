@@ -141,7 +141,7 @@ export default function PriceEstimationPage() {
         </CardContent>
         <CardFooter>
           <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-            <Link href={`/book/${categoryId}/${problemId}/details`}>{t('proceedToBook')}</Link>
+            <Link href={`/book/${categoryId}/details?problems=${problemId}`}>{t('proceedToBook')}</Link>
           </Button>
         </CardFooter>
       </Card>
