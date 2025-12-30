@@ -85,8 +85,13 @@ export default function Header() {
              <BookingTrackerModal />
           </nav>
           <div className="flex items-center gap-2">
-            <div className="hidden md:flex items-center gap-2">
-              <LocationSelector />
+            <div className="flex items-center gap-2">
+              <div className="md:hidden">
+                 <LocationSelector />
+              </div>
+              <div className="hidden md:flex">
+                <LocationSelector />
+              </div>
               <LanguageSwitcher />
             </div>
 
@@ -129,10 +134,6 @@ export default function Header() {
                       ))}
                        <BookingTrackerModal isMobile={true} />
                     </nav>
-                    <div className="mt-auto border-t pt-4 space-y-4">
-                        <LocationSelector />
-                        <LanguageSwitcher />
-                    </div>
                   </div>
                 </SheetContent>
               </Sheet>
