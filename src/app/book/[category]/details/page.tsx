@@ -86,12 +86,6 @@ function BookingDetailsContent() {
         </CardHeader>
         <CardContent>
           <div className="mb-6 space-y-3">
-             <div className="flex justify-between items-center bg-muted/30 p-3 rounded-lg">
-                <p className="font-semibold text-muted-foreground">Service</p>
-                 <div className="flex flex-wrap justify-end gap-1">
-                    <Badge variant="secondary">{category.name}</Badge>
-                </div>
-             </div>
              <Separator />
              <div className="flex justify-between items-center p-3">
                 <p className="text-lg font-bold">Total Estimated Cost</p>
