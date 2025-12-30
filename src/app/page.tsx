@@ -106,14 +106,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-muted/30">
-        <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold font-headline mb-4">{t('trackYourBookingTitle')}</h2>
-            <p className="text-muted-foreground mb-6 max-w-xl mx-auto">{t('trackYourBookingDescription')}</p>
-            <BookingTrackerModal />
-        </div>
-      </section>
-
       <section id="services" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 font-headline text-center">{t('ourServices')}</h2>
