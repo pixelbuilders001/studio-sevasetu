@@ -1,13 +1,45 @@
 'use client';
-import { serviceCategories, type Problem } from '@/lib/data';
+import { type Problem, getServiceCategory } from '@/lib/data';
 import { notFound, useRouter, useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import type { ServiceCategory } from '@/lib/data';
+import { Skeleton } from '@/components/ui/skeleton';
+
+function CategorySkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <Card className="max-w-4xl mx-auto border-0 shadow-none">
+        <CardHeader className="text-center">
+          <Skeleton className="h-8 w-3/4 mx-auto" />
+          <Skeleton className="h-4 w-1/2 mx-auto mt-2" />
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 md:gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i} className="overflow-hidden">
+                <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
+                  <div className="relative w-full aspect-video bg-muted/30">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                  <div className="p-3 text-center w-full bg-card">
+                    <Skeleton className="h-5 w-3/4 mx-auto" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 
 export default function ProblemSelectionPage() {
   const params = useParams();
@@ -16,14 +48,32 @@ export default function ProblemSelectionPage() {
   const router = useRouter();
 
   const [selectedProblems, setSelectedProblems] = useState<Problem[]>([]);
+  const [category, setCategory] = useState<ServiceCategory | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const originalCategory = serviceCategories.find((c) => c.id === categoryId);
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const originalCategory = await getServiceCategory(categoryId as string);
+        if (!originalCategory) {
+          notFound();
+          return;
+        }
+        const translatedCategory = getTranslatedCategory(originalCategory);
+        setCategory(translatedCategory);
+      } catch (error) {
+        console.error("Failed to fetch category:", error);
+        notFound();
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!originalCategory) {
-    notFound();
-  }
+    if (categoryId) {
+      fetchCategory();
+    }
+  }, [categoryId, getTranslatedCategory]);
 
-  const category = getTranslatedCategory(originalCategory);
 
   const toggleProblemSelection = (problem: Problem) => {
     setSelectedProblems((prevSelected) => {
@@ -38,7 +88,6 @@ export default function ProblemSelectionPage() {
 
   const handleBookRepair = () => {
     if (selectedProblems.length === 0) {
-      // Maybe show a toast or message to select at least one problem
       return;
     }
     const problemIds = selectedProblems.map((p) => p.id).join(',');
@@ -48,6 +97,14 @@ export default function ProblemSelectionPage() {
   const removeProblem = (problemId: string) => {
     setSelectedProblems((prev) => prev.filter((p) => p.id !== problemId));
   };
+  
+  if (loading) {
+    return <CategorySkeleton />;
+  }
+
+  if (!category) {
+    notFound();
+  }
 
 
   return (

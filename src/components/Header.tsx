@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -20,13 +19,46 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Menu, Bike, ChevronDown } from 'lucide-react';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import BookingTrackerModal from './BookingTrackerModal';
-import { serviceCategories } from '@/lib/data';
+import { getServiceCategories, ServiceCategory } from '@/lib/data';
+import { Skeleton } from './ui/skeleton';
 
 function ServicesMenu() {
   const { getTranslatedCategory } = useTranslation();
-  const categories = serviceCategories.map(getTranslatedCategory);
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const originalCategories = await getServiceCategories();
+        const translated = originalCategories.map(cat => getTranslatedCategory(cat));
+        setCategories(translated);
+      } catch (error) {
+        console.error("Failed to fetch service categories", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, [getTranslatedCategory]);
+
+
+  if (loading) {
+    return (
+       <div className="p-4">
+        <div className="grid gap-4 services-mega-menu">
+          {Array.from({length: 5}).map((_, i) => (
+            <div key={i} className="flex items-center gap-3 p-2">
+              <Skeleton className="w-6 h-6 rounded-full" />
+              <Skeleton className="w-24 h-5" />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-4">

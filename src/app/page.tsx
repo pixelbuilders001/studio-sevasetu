@@ -1,23 +1,33 @@
 
-'use client';
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { serviceCategories } from '@/lib/data';
+import { getServiceCategories } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import TrustIndicators from '@/components/TrustIndicators';
 import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
-import { useTranslation } from '@/hooks/useTranslation';
+import { getTranslations } from '@/lib/get-translation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import PaymentIcons from '@/components/PaymentIcons';
 import { ShieldCheck, Truck, CreditCard } from 'lucide-react';
-import BookingTrackerModal from '@/components/BookingTrackerModal';
+import { getTranslatedCategory } from '@/context/LanguageContext';
 
-export default function Home() {
-  const { t, getTranslatedCategory } = useTranslation();
-  const categories = serviceCategories.map(getTranslatedCategory);
+export default async function Home({ searchParams }: { searchParams?: { lang?: string } }) {
+  const lang = searchParams?.lang || 'en';
+  const t = getTranslations(lang);
+  
+  let categories = [];
+  try {
+    const originalCategories = await getServiceCategories();
+    categories = originalCategories.map(c => getTranslatedCategory(c, t));
+  } catch (error) {
+    console.error(error);
+    // You can render an error message to the user here
+  }
+  
+
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
 
   const featureCards = [

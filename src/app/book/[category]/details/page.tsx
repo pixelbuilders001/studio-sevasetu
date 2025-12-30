@@ -1,10 +1,11 @@
 'use client';
-import { serviceCategories } from '@/lib/data';
+import { getServiceCategory } from '@/lib/data';
 import { notFound, useParams, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingForm } from '@/components/BookingForm';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useMemo, Suspense } from 'react';
+import { useMemo, Suspense, useState, useEffect } from 'react';
+import type { ServiceCategory } from '@/lib/data';
 
 function BookingDetailsContent() {
   const params = useParams();
@@ -14,14 +15,29 @@ function BookingDetailsContent() {
   const problemIds = searchParams.get('problems');
 
   const { t, getTranslatedCategory } = useTranslation();
+  const [category, setCategory] = useState<ServiceCategory | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const originalCategory = serviceCategories.find((c) => c.id === categoryId);
-
-  if (!originalCategory) {
-    notFound();
-  }
-
-  const category = getTranslatedCategory(originalCategory);
+  useEffect(() => {
+    const fetchCategory = async () => {
+      if (!categoryId) return;
+      try {
+        const originalCategory = await getServiceCategory(categoryId as string);
+        if (!originalCategory) {
+          notFound();
+          return;
+        }
+        const translatedCategory = getTranslatedCategory(originalCategory);
+        setCategory(translatedCategory);
+      } catch (error) {
+        console.error("Failed to fetch category:", error);
+        notFound();
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategory();
+  }, [categoryId, getTranslatedCategory]);
   
   const selectedProblemNames = useMemo(() => {
     if (!category || !problemIds) return '';
@@ -30,10 +46,7 @@ function BookingDetailsContent() {
   }, [category, problemIds]);
 
 
-  if (!category || !selectedProblemNames) {
-    // This can happen if the query param is missing or invalid
-    // Or if the component renders before client-side navigation is complete
-    // We could show a loading state or redirect
+  if (loading || !category || !selectedProblemNames) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <p>Loading booking details...</p>
