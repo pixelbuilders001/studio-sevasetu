@@ -8,6 +8,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, Suspense, useState, useEffect } from 'react';
 import type { ServiceCategory } from '@/lib/data';
 import { getTranslations } from '@/lib/get-translation';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 function BookingDetailsContent() {
   const params = useParams();
@@ -42,11 +44,21 @@ function BookingDetailsContent() {
     fetchCategory();
   }, [categorySlug, language]);
   
-  const selectedProblemNames = useMemo(() => {
-    if (!category || !problemIds) return '';
+  const selectedProblems = useMemo(() => {
+    if (!category || !problemIds) return [];
     const ids = problemIds.split(',');
-    return ids.map(id => category.problems.find(p => p.id === id)?.name).filter(Boolean).join(', ');
+    return ids.map(id => category.problems.find(p => p.id === id)).filter(Boolean);
   }, [category, problemIds]);
+
+  const selectedProblemNames = useMemo(() => {
+    return selectedProblems.map(p => p?.name).join(', ');
+  }, [selectedProblems]);
+
+  const totalEstimate = useMemo(() => {
+    if (!selectedProblems.length) return 0;
+    const problemsPrice = selectedProblems.reduce((sum, p) => sum + (p?.estimated_price || 0), 0);
+    return 199 + problemsPrice;
+  }, [selectedProblems]);
 
 
   if (loading) {
@@ -73,6 +85,19 @@ function BookingDetailsContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-6 space-y-3">
+             <div className="flex justify-between items-center bg-muted/30 p-3 rounded-lg">
+                <p className="font-semibold text-muted-foreground">{t('selected_issues')}</p>
+                 <div className="flex flex-wrap justify-end gap-1">
+                    {selectedProblems.map(p => p && <Badge key={p.id} variant="secondary">{p.name}</Badge>)}
+                </div>
+             </div>
+             <Separator />
+             <div className="flex justify-between items-center p-3">
+                <p className="text-lg font-bold">Total Estimated Cost</p>
+                <p className="text-xl font-bold text-primary">Rs. {totalEstimate}</p>
+             </div>
+          </div>
           <BookingForm category={category.name} problem={problemDescription} />
         </CardContent>
       </Card>
