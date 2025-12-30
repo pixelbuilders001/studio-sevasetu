@@ -4,10 +4,6 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Smartphone, Laptop, AirVent, Refrigerator, Fan, LucideIcon } from 'lucide-react';
 import type { TranslationFunc } from '@/context/LanguageContext';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-
 const ICONS: Record<string, LucideIcon> = {
     "MOBILE PHONES": Smartphone,
     "LAPTOPS": Laptop,
@@ -46,98 +42,73 @@ const getImage = (id: string): ImagePlaceholder => {
     return img;
 }
 
-const mapCategory = (category: any): Omit<ServiceCategory, 'problems'> => ({
-    id: category.id,
-    slug: category.slug,
-    name: category.name,
-    icon: ICONS[category.name] || Fan,
-    image: {
-        imageUrl: category.icon_url,
-        imageHint: category.name.toLowerCase(),
-    }
-});
+const serviceCategories: Omit<ServiceCategory, 'problems'>[] = [
+    { id: '1', slug: 'mobile-phones', name: 'Mobile Phone', icon: Smartphone, image: { imageUrl: getImage('phone-repair').imageUrl, imageHint: 'phone repair' } },
+    { id: '2', slug: 'laptop-repair', name: 'Laptop', icon: Laptop, image: { imageUrl: getImage('laptop-repair').imageUrl, imageHint: 'laptop repair' } },
+    { id: '3', slug: 'ac-repair', name: 'AC', icon: AirVent, image: { imageUrl: getImage('ac-repair').imageUrl, imageHint: 'ac repair' } },
+    { id: '4', slug: 'fridge-repair', name: 'Fridge', icon: Refrigerator, image: { imageUrl: getImage('fridge-repair').imageUrl, imageHint: 'fridge repair' } },
+    { id: '5', slug: 'cooler-repair', name: 'Air Cooler', icon: Fan, image: { imageUrl: getImage('cooler-repair').imageUrl, imageHint: 'cooler repair' } },
+];
 
-const mapProblem = (problem: any): Problem => ({
-    ...problem,
-    id: String(problem.id),
-    image: getImage(problem.image_id),
-});
+const problems: Omit<Problem, 'image'>[] = [
+    { id: 'screen-broken', name: 'Screen Broken', category_id: 1, image_id: 'phone-screen-broken' },
+    { id: 'battery-issue', name: 'Battery Issue', category_id: 1, image_id: 'phone-battery-issue' },
+    { id: 'charging-problem', name: 'Charging Problem', category_id: 1, image_id: 'phone-charging-problem' },
+    { id: 'mic-speaker-issue', name: 'Mic/Speaker Issue', category_id: 1, image_id: 'phone-mic-speaker-issue' },
+    { id: 'not-switching-on', name: 'Not Switching On', category_id: 1, image_id: 'phone-not-switching-on' },
+    { id: 'other', name: 'Other Issue', category_id: 1, image_id: 'other-issue' },
+
+    { id: 'screen-issue', name: 'Screen Issue', category_id: 2, image_id: 'laptop-screen-issue' },
+    { id: 'battery-issue', name: 'Battery Issue', category_id: 2, image_id: 'laptop-battery-issue' },
+    { id: 'slow-performance', name: 'Slow Performance', category_id: 2, image_id: 'laptop-slow-performance' },
+    { id: 'keyboard-issue', name: 'Keyboard Issue', category_id: 2, image_id: 'laptop-keyboard-issue' },
+    { id: 'os-software-issue', name: 'OS/Software Issue', category_id: 2, image_id: 'laptop-os-software-issue' },
+    { id: 'not-starting', name: 'Not Starting', category_id: 2, image_id: 'laptop-not-starting' },
+    { id: 'other', name: 'Other Issue', category_id: 2, image_id: 'other-issue' },
+
+    { id: 'not-cooling', name: 'Not Cooling', category_id: 3, image_id: 'ac-not-cooling' },
+    { id: 'gas-leakage', name: 'Gas Leakage', category_id: 3, image_id: 'ac-gas-leakage' },
+    { id: 'installation-uninstallation', name: 'Installation / Uninstallation', category_id: 3, image_id: 'ac-installation' },
+    { id: 'service-cleaning', name: 'Service / Cleaning', category_id: 3, image_id: 'ac-service-cleaning' },
+    { id: 'noise-issue', name: 'Noise Issue', category_id: 3, image_id: 'ac-noise-issue' },
+    { id: 'other', name: 'Other Issue', category_id: 3, image_id: 'other-issue' },
+
+    { id: 'not-cooling', name: 'Not Cooling', category_id: 4, image_id: 'fridge-not-cooling' },
+    { id: 'water-leakage', name: 'Water Leakage', category_id: 4, image_id: 'fridge-water-leakage' },
+    { id: 'compressor-issue', name: 'Compressor Issue', category_id: 4, image_id: 'fridge-compressor-issue' },
+    { id: 'noise-issue', name: 'Noise Issue', category_id: 4, image_id: 'fridge-noise-issue' },
+    { id: 'other', name: 'Other Issue', category_id: 4, image_id: 'other-issue' },
+
+    { id: 'not-cooling', name: 'Not Cooling', category_id: 5, image_id: 'cooler-not-cooling' },
+    { id: 'motor-issue', name: 'Motor Issue', category_id: 5, image_id: 'cooler-motor-issue' },
+    { id: 'water-pump-issue', name: 'Water Pump Issue', category_id: 5, image_id: 'cooler-water-pump-issue' },
+    { id: 'power-issue', name: 'Power Issue', category_id: 5, image_id: 'cooler-power-issue' },
+    { id: 'other', name: 'Other Issue', category_id: 5, image_id: 'other-issue' },
+].map(p => ({ ...p, image: getImage(p.image_id) }));
 
 
 export async function getServiceCategories(): Promise<Omit<ServiceCategory, 'problems'>[]> {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        throw new Error('Supabase URL and Anon Key must be provided in environment variables. Please check your .env file.');
-    }
-    const headers = {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-    };
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/categories?select=*&order=sort_order`, { headers, cache: 'no-store' });
-    
-    if (!response.ok) {
-        console.error('Failed to fetch categories:', await response.text());
-        throw new Error('Failed to fetch categories');
-    }
-    const data = await response.json();
-    return data.map(mapCategory);
+    return Promise.resolve(serviceCategories);
 }
 
 
 export async function getServiceCategory(slug: string): Promise<ServiceCategory | null> {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        throw new Error('Supabase URL and Anon Key must be provided in environment variables. Please check your .env file.');
-    }
-     const headers = {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-    };
-
-    // First, fetch the category by its slug
-    const categoryResponse = await fetch(`${SUPABASE_URL}/rest/v1/categories?slug=eq.${slug}&select=*`, { headers, cache: 'no-store' });
-
-    if (!categoryResponse.ok) {
-        console.error(`Failed to fetch category with slug ${slug}:`, await categoryResponse.text());
-        throw new Error(`Failed to fetch category with slug ${slug}`);
-    }
-
-    const categoryData = await categoryResponse.json();
-
-    if (categoryData.length === 0) {
-        return null;
-    }
-
-    const category = categoryData[0];
-
-    // Then, fetch the problems for that category using its ID
-    const problemsResponse = await fetch(`${SUPABASE_URL}/rest/v1/problems?category_id=eq.${category.id}`, { headers, cache: 'no-store' });
-
-    if (!problemsResponse.ok) {
-        console.error(`Failed to fetch problems for category ${category.id}:`, await problemsResponse.text());
-        // We can decide to return the category with empty problems or throw an error.
-        // For now, let's throw, as it indicates a data integrity issue.
-        throw new Error(`Failed to fetch problems for category ${category.name}`);
+    const categoryInfo = serviceCategories.find(c => c.slug === slug);
+    if (!categoryInfo) {
+        return Promise.resolve(null);
     }
     
-    const problemsData = await problemsResponse.json();
+    const categoryProblems = problems
+        .filter(p => p.category_id === parseInt(categoryInfo.id))
+        .map(p => ({
+            ...p,
+            image: getImage(p.image.id)
+        }));
 
-    const problems = (problemsData || []).map((p: any) => ({
-        id: p.id.toString(),
-        name: p.name,
-        category_id: p.category_id,
-        image: getImage(p.image_id || 'other-issue'),
-    }));
-    
-    return {
-        id: category.id,
-        slug: category.slug,
-        name: category.name,
-        icon: ICONS[category.name] || Fan,
-        image: {
-            imageUrl: category.icon_url,
-            imageHint: category.name.toLowerCase()
-        },
-        problems: problems,
-    };
+    return Promise.resolve({
+        ...categoryInfo,
+        problems: categoryProblems as Problem[],
+    });
 }
 
 

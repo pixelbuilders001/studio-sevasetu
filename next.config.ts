@@ -45,18 +45,9 @@ const nextConfig: NextConfig = {
         hostname: 'upload.wikimedia.org',
         port: '',
         pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'studio-sevasetu.vercel.app',
-        port: '',
-        pathname: '/**',
       }
     ],
   },
 };
 
 export default nextConfig;
-
-    
-    
