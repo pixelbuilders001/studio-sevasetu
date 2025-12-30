@@ -97,7 +97,7 @@
     "selected_issues": "चयनित:",
     "Home": "होम",
 
-    "category_phone_name": "मोबाइल फोन",
+    "category_mobile_phones_name": "मोबाइल फोन",
     "problem_phone_screen-broken_name": "स्क्रीन टूटी",
     "problem_phone_battery-issue_name": "बैटरी की समस्या",
     "problem_phone_charging-problem_name": "चार्जिंग की समस्या",
@@ -105,7 +105,7 @@
     "problem_phone_not-switching-on_name": "चालू नहीं हो रहा है",
     "problem_phone_other_name": "अन्य समस्या",
   
-    "category_laptop_name": "लैपटॉप",
+    "category_laptop-repair_name": "लैपटॉप",
     "problem_laptop_screen-issue_name": "स्क्रीन की समस्या",
     "problem_laptop_battery-issue_name": "बैटरी की समस्या",
     "problem_laptop_slow-performance_name": "धीमा प्रदर्शन",
@@ -114,7 +114,7 @@
     "problem_laptop_not-starting_name": "चालू नहीं हो रहा है",
     "problem_laptop_other_name": "अन्य समस्या",
   
-    "category_ac_name": "एसी",
+    "category_ac_repair_name": "एसी",
     "problem_ac_not-cooling_name": "ठंडा नहीं हो रहा",
     "problem_ac_gas-leakage_name": "गैस रिसाव",
     "problem_ac_installation-uninstallation_name": "इंस्टॉलेशन / अनइंस्टॉलेशन",
@@ -122,14 +122,14 @@
     "problem_ac_noise-issue_name": "शोर की समस्या",
     "problem_ac_other_name": "अन्य समस्या",
   
-    "category_fridge_name": "फ्रिज",
+    "category_repair_fridge_name": "फ्रिज",
     "problem_fridge_not-cooling_name": "ठंडा नहीं हो रहा",
     "problem_fridge_water-leakage_name": "पानी का रिसाव",
     "problem_fridge_compressor-issue_name": "कंप्रेसर की समस्या",
     "problem_fridge_noise-issue_name": "शोर की समस्या",
     "problem_fridge_other_name": "अन्य समस्या",
   
-    "category_cooler_name": "एयर कूलर",
+    "category_cooler-repair_name": "एयर कूलर",
     "problem_cooler_not-cooling_name": "ठंडा नहीं हो रहा",
     "problem_cooler_motor-issue_name": "मोटर की समस्या",
     "problem_cooler_water-pump-issue_name": "पानी पंप की समस्या",
@@ -146,5 +146,3 @@
     "validation.fixErrors": "कृपया फ़ॉर्म में त्रुटियों को ठीक करें।",
     "validation.unexpectedError": "एक अप्रत्याशित त्रुटि हुई। कृपया पुन: प्रयास करें।"
   }
-  
-  

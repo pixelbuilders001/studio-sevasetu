@@ -74,7 +74,7 @@ export default function ServicesSheet() {
                         <div className="grid grid-cols-3 gap-4 py-4">
                             {categories.map((category) => (
                             <SheetClose asChild key={category.id}>
-                                <Link href={`/book/${category.id}`} className="group">
+                                <Link href={`/book/${category.slug}`} className="group">
                                     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
                                         <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
                                             <div className="relative w-full aspect-square bg-muted/20">

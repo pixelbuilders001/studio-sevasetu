@@ -91,7 +91,7 @@ export default function ProblemSelectionPage() {
       return;
     }
     const problemIds = selectedProblems.map((p) => p.id).join(',');
-    router.push(`/book/${categoryId}/details?problems=${problemIds}`);
+    router.push(`/book/${category?.slug}/details?problems=${problemIds}`);
   };
 
   const removeProblem = (problemId: string) => {

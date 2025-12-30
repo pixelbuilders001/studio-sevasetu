@@ -9,7 +9,7 @@ export type Language = 'en' | 'hi';
 
 type Translations = typeof en;
 
-export type TranslationFunc = (key: keyof Translations, options?: { [key: string]: string | number }) => string;
+export type TranslationFunc = (key: keyof Translations, options?: { [key: string]: string | number | undefined }) => string;
 
 type LanguageContextType = {
   language: Language;
@@ -24,8 +24,11 @@ export const LanguageContext = createContext<LanguageContextType | undefined>(un
 
 export const getTranslations = (lang: string): TranslationFunc => {
   const langKey = lang === 'hi' ? 'hi' : 'en';
-  return (key: keyof Translations, options?: { [key: string]: string | number }): string => {
+  return (key: keyof Translations, options?: { [key: string]: string | number | undefined }): string => {
     let text = translations[langKey][key] || translations['en'][key] || key;
+    if (options && 'defaultValue' in options && text === key) {
+        text = String(options.defaultValue);
+    }
     if (options) {
       Object.keys(options).forEach(k => {
         text = text.replace(new RegExp(`{{${k}}}`, 'g'), String(options[k]));
@@ -36,10 +39,11 @@ export const getTranslations = (lang: string): TranslationFunc => {
 };
 
 export const getTranslatedCategory = (category: ServiceCategory, t: TranslationFunc): ServiceCategory => {
-  const translatedName = t(`category_${category.id}_name` as keyof Translations, { defaultValue: category.name });
+  const translatedName = t(`category_${category.slug}_name` as keyof Translations, { defaultValue: category.name });
   const translatedProblems = category.problems.map(problem => ({
     ...problem,
-    name: t(`problem_${category.id}_${problem.id}_name` as keyof Translations, { defaultValue: problem.name }),
+    // Assuming problem IDs/slugs are consistent for translation keys
+    name: t(`problem_${category.slug}_${problem.id}_name` as keyof Translations, { defaultValue: problem.name }),
   }));
   return { ...category, name: translatedName, problems: translatedProblems };
 };

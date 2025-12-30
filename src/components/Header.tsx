@@ -66,7 +66,7 @@ function ServicesMenu() {
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/book/${category.id}`}
+            href={`/book/${category.slug}`}
             className="group flex items-center gap-3 p-2 rounded-md hover:bg-accent/50"
           >
             <category.icon className="w-6 h-6 text-primary" />

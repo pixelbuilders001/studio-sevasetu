@@ -97,7 +97,7 @@
     "selected_issues": "Selected:",
     "Home": "Home",
 
-    "category_phone_name": "Mobile Phone",
+    "category_mobile_phones_name": "Mobile Phone",
     "problem_phone_screen-broken_name": "Screen Broken",
     "problem_phone_battery-issue_name": "Battery Issue",
     "problem_phone_charging-problem_name": "Charging Problem",
@@ -105,7 +105,7 @@
     "problem_phone_not-switching-on_name": "Not Switching On",
     "problem_phone_other_name": "Other Issue",
   
-    "category_laptop_name": "Laptop",
+    "category_laptop-repair_name": "Laptop",
     "problem_laptop_screen-issue_name": "Screen Issue",
     "problem_laptop_battery-issue_name": "Battery Issue",
     "problem_laptop_slow-performance_name": "Slow Performance",
@@ -114,7 +114,7 @@
     "problem_laptop_not-starting_name": "Not Starting",
     "problem_laptop_other_name": "Other Issue",
   
-    "category_ac_name": "AC",
+    "category_ac_repair_name": "AC",
     "problem_ac_not-cooling_name": "Not Cooling",
     "problem_ac_gas-leakage_name": "Gas Leakage",
     "problem_ac_installation-uninstallation_name": "Installation / Uninstallation",
@@ -122,14 +122,14 @@
     "problem_ac_noise-issue_name": "Noise Issue",
     "problem_ac_other_name": "Other Issue",
   
-    "category_fridge_name": "Fridge",
+    "category_repair_fridge_name": "Fridge",
     "problem_fridge_not-cooling_name": "Not Cooling",
     "problem_fridge_water-leakage_name": "Water Leakage",
     "problem_fridge_compressor-issue_name": "Compressor Issue",
     "problem_fridge_noise-issue_name": "Noise Issue",
     "problem_fridge_other_name": "Other Issue",
   
-    "category_cooler_name": "Air Cooler",
+    "category_cooler-repair_name": "Air Cooler",
     "problem_cooler_not-cooling_name": "Not Cooling",
     "problem_cooler_motor-issue_name": "Motor Issue",
     "problem_cooler_water-pump-issue_name": "Water Pump Issue",
@@ -146,5 +146,3 @@
     "validation.fixErrors": "Please fix the errors in the form.",
     "validation.unexpectedError": "An unexpected error occurred. Please try again."
   }
-  
-  

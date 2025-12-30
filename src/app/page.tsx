@@ -20,13 +20,13 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
   let categories = [];
   try {
     const originalCategories = await getServiceCategories();
-    categories = originalCategories.map(c => getTranslatedCategory(c, t));
+    // Assuming getTranslatedCategory is adapted to work server-side or you have an alternative
+    categories = originalCategories.map(c => ({...c, name: t(`category_${c.slug}_name`, { defaultValue: c.name })}));
   } catch (error) {
     console.error(error);
     // You can render an error message to the user here
   }
   
-
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
 
   const featureCards = [
@@ -120,7 +120,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
           <h2 className="text-3xl font-bold mb-8 font-headline text-center">{t('ourServices')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             {categories.map((category) => (
-              <Link href={`/book/${category.id}`} key={category.id} className="group">
+              <Link href={`/book/${category.slug}`} key={category.id} className="group">
                 <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
                   <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
                     <div className="relative w-full aspect-square">

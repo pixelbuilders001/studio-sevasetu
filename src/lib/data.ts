@@ -8,28 +8,29 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 
 const ICONS: Record<string, LucideIcon> = {
-    Smartphone,
-    Laptop,
-    AirVent,
-    Refrigerator,
-    Fan,
+    "MOBILE PHONES": Smartphone,
+    "LAPTOPS": Laptop,
+    "AC": AirVent,
+    "FRIDGE": Refrigerator,
+    "AIR COOLER": Fan,
 }
 
 export type Problem = {
-  id: string; // Keep as string to match previous structure
+  id: string; 
   name: string;
-  image_id: string;
   image: ImagePlaceholder;
   category_id: number;
 };
 
 export type ServiceCategory = {
-  id: string; // Keep as string to match previous structure
+  id: string; // The UUID
+  slug: string; // The slug for URL
   name: string;
-  icon_name: string;
   icon: React.ComponentType<{ className?: string }>;
-  image_id: string;
-  image: ImagePlaceholder;
+  image: {
+      imageUrl: string;
+      imageHint: string;
+  };
   problems: Problem[];
 };
 
@@ -45,11 +46,15 @@ const getImage = (id: string): ImagePlaceholder => {
 }
 
 const mapCategory = (category: any): ServiceCategory => ({
-    ...category,
-    id: String(category.id),
-    icon: ICONS[category.icon_name] || Fan,
-    image: getImage(category.image_id),
-    problems: [],
+    id: category.id,
+    slug: category.slug,
+    name: category.name,
+    icon: ICONS[category.name] || Fan,
+    image: {
+        imageUrl: category.icon_url,
+        imageHint: category.name.toLowerCase(),
+    },
+    problems: category.problems?.map(mapProblem) || [],
 });
 
 const mapProblem = (problem: any): Problem => ({
@@ -67,20 +72,17 @@ export async function getServiceCategories(): Promise<ServiceCategory[]> {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
     };
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/categories?select=*,problems(*)`, { headers, cache: 'no-store' });
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/categories?select=*&order=sort_order`, { headers, cache: 'no-store' });
     if (!response.ok) {
         console.error('Failed to fetch categories:', await response.text());
         throw new Error('Failed to fetch categories');
     }
     const data = await response.json();
-    return data.map((category: any) => ({
-        ...mapCategory(category),
-        problems: category.problems.map(mapProblem)
-    }));
+    return data.map(mapCategory);
 }
 
 
-export async function getServiceCategory(id: string): Promise<ServiceCategory | null> {
+export async function getServiceCategory(slug: string): Promise<ServiceCategory | null> {
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
         throw new Error('Supabase URL and Anon Key must be provided in environment variables. Please check your .env file.');
     }
@@ -88,18 +90,36 @@ export async function getServiceCategory(id: string): Promise<ServiceCategory | 
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
     };
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/categories?id=eq.${id}&select=*,problems(*)`, { headers, cache: 'no-store' });
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/categories?slug=eq.${slug}&select=*,problems(*)`, { headers, cache: 'no-store' });
     if (!response.ok) {
-        console.error(`Failed to fetch category with id ${id}:`, await response.text());
-        throw new Error(`Failed to fetch category with id ${id}`);
+        console.error(`Failed to fetch category with slug ${slug}:`, await response.text());
+        throw new Error(`Failed to fetch category with slug ${slug}`);
     }
     const data = await response.json();
     if (data.length === 0) {
         return null;
     }
-    const category = data[0];
+    
+    // The data mapping for problems from a real API would be more complex
+    // For now, we'll use placeholder images for problems as before.
+    const categoryData = data[0];
+    const problems = categoryData.problems.map((p: any) => ({
+        id: p.id.toString(),
+        name: p.name,
+        category_id: p.category_id,
+        // This part needs to be adapted if the problems API also changes
+        image: getImage(p.image_id || 'other-issue'),
+    }));
+    
     return {
-        ...mapCategory(category),
-        problems: category.problems.map(mapProblem)
+        id: categoryData.id,
+        slug: categoryData.slug,
+        name: categoryData.name,
+        icon: ICONS[categoryData.name] || Fan,
+        image: {
+            imageUrl: categoryData.icon_url,
+            imageHint: categoryData.name.toLowerCase()
+        },
+        problems: problems,
     };
 }
