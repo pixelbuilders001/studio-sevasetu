@@ -124,6 +124,6 @@ export const getTranslatedCategory = (category: ServiceCategory, t: TranslationF
 export const getTranslatedCategories = (categories: Omit<ServiceCategory, 'problems'>[], t: TranslationFunc): Omit<ServiceCategory, 'problems'>[] => {
     return categories.map(category => ({
         ...category,
-        name: t(`category_${category.slug}_name` as any, { defaultValue: category.name })
+        name: category.name
     }));
 };
