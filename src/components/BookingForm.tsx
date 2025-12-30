@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState, useEffect, useRef } from 'react';
@@ -31,7 +32,7 @@ function SubmitButton() {
   );
 }
 
-export function BookingForm({ category, problem }: { category: string; problem: string }) {
+export function BookingForm({ category, problem, totalEstimate }: { category: string; problem: string; totalEstimate: number; }) {
   const { t, language } = useTranslation();
   const initialState: FormState = { message: '', errors: {}, success: false };
   
@@ -125,6 +126,11 @@ export function BookingForm({ category, problem }: { category: string; problem: 
             <AlertDescription>{state.message}</AlertDescription>
         </Alert>
       )}
+
+      <div className="flex justify-between items-center text-sm bg-muted/50 p-3 rounded-md">
+        <p className="font-medium text-muted-foreground">Total Estimated Cost</p>
+        <p className="font-bold text-foreground">Rs. {totalEstimate}</p>
+      </div>
 
       <SubmitButton />
     </form>

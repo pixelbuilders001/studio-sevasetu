@@ -8,8 +8,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, Suspense, useState, useEffect } from 'react';
 import type { ServiceCategory } from '@/lib/data';
 import { getTranslations } from '@/lib/get-translation';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 
 function BookingDetailsContent() {
   const params = useParams();
@@ -85,14 +83,11 @@ function BookingDetailsContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-6 space-y-3">
-             <Separator />
-             <div className="flex justify-between items-center p-3">
-                <p className="text-lg font-bold">Total Estimated Cost</p>
-                <p className="text-xl font-bold text-primary">Rs. {totalEstimate}</p>
-             </div>
-          </div>
-          <BookingForm category={category.name} problem={problemDescription} />
+          <BookingForm 
+            category={category.name} 
+            problem={problemDescription}
+            totalEstimate={totalEstimate}
+          />
         </CardContent>
       </Card>
     </div>
