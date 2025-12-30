@@ -28,7 +28,7 @@ export default function RootLayout({
         <LanguageProvider>
           <LocationProvider>
             <Header />
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow pb-16 md:pb-0">{children}</main>
             <Footer />
             <BottomNavBar />
           </LocationProvider>

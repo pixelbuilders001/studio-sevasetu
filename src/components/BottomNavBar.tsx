@@ -1,9 +1,10 @@
+
 'use client';
 import Link from 'next/link';
-import { Home, LayoutGrid, MessageSquare } from 'lucide-react';
+import { Home, LayoutGrid, MessageSquare, Bike } from 'lucide-react';
 import BookingTrackerModal from './BookingTrackerModal';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Bike } from 'lucide-react';
+import ServicesSheet from './ServicesSheet';
 
 export default function BottomNavBar() {
   const { t } = useTranslation();
@@ -19,10 +20,7 @@ export default function BottomNavBar() {
             </Link>
           </li>
           <li className="flex-1">
-            <Link href="/#services" className="flex flex-col items-center justify-center text-center text-muted-foreground hover:text-primary transition-colors">
-              <LayoutGrid className="w-6 h-6 mb-1" />
-              <span className="text-xs font-medium">{t('ourServices')}</span>
-            </Link>
+            <ServicesSheet />
           </li>
           <li className="flex-1">
              <BookingTrackerModal isMobile={true} asChild={true}>

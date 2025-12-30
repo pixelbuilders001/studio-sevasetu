@@ -1,0 +1,66 @@
+
+'use client';
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+    SheetClose,
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { LayoutGrid } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { serviceCategories } from '@/lib/data';
+import Link from 'next/link';
+import { Card, CardContent } from '@/components/ui/card';
+import Image from 'next/image';
+
+export default function ServicesSheet() {
+    const { t, getTranslatedCategory } = useTranslation();
+    const categories = serviceCategories.map(getTranslatedCategory);
+
+    return (
+        <Sheet>
+            <SheetTrigger asChild>
+                <button className="w-full flex flex-col items-center justify-center text-center text-muted-foreground hover:text-primary transition-colors">
+                    <LayoutGrid className="w-6 h-6 mb-1" />
+                    <span className="text-xs font-medium">{t('ourServices')}</span>
+                </button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[80vh] flex flex-col">
+                <SheetHeader>
+                    <SheetTitle>{t('ourServices')}</SheetTitle>
+                </SheetHeader>
+                <div className="flex-grow overflow-y-auto -mx-6 px-6">
+                    <div className="grid grid-cols-3 gap-4 py-4">
+                        {categories.map((category) => (
+                          <SheetClose asChild key={category.id}>
+                            <Link href={`/book/${category.id}`} className="group">
+                                <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+                                    <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
+                                        <div className="relative w-full aspect-square bg-muted/20">
+                                            <Image
+                                                src={category.image.imageUrl}
+                                                alt={category.name}
+                                                fill
+                                                sizes="33vw"
+                                                className="object-contain transition-transform duration-300 group-hover:scale-105 p-2"
+                                                data-ai-hint={category.image.imageHint}
+                                            />
+                                        </div>
+                                        <div className="p-2 text-center w-full bg-card">
+                                            <h3 className="font-bold text-sm">{category.name}</h3>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                           </SheetClose>
+                        ))}
+                    </div>
+                </div>
+            </SheetContent>
+        </Sheet>
+    )
+}
+
