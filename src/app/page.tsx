@@ -14,6 +14,7 @@ import { ShieldCheck, Truck, CreditCard, ArrowRight } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import AllServicesSheet from '@/components/AllServicesSheet';
+import VerifiedTechnicians from '@/components/VerifiedTechnicians';
 
 const serviceSubTexts: Record<string, string> = {
     'phone': 'Screen · Battery · Charging',
@@ -50,7 +51,7 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
                     {subText}
                 </p>
             </CardContent>
-            <div className="p-4 bg-card pt-0 mt-auto">
+            <div className="p-4 bg-card pt-0">
                  <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
                     <Link href={`/book/${category.slug}`}>
                         {`Book Repair`} <ArrowRight className="ml-2" />
@@ -181,6 +182,8 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
       <div id="how-it-works">
         <HowItWorks />
       </div>
+
+      <VerifiedTechnicians />
 
       <section id="why-choose-us" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
