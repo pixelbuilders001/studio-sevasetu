@@ -70,6 +70,18 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.britannica.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.padminiappliances.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'quickinsure.s3.ap-south-1.amazonaws.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
