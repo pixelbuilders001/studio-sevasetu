@@ -12,6 +12,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import PaymentIcons from '@/components/PaymentIcons';
 import { ShieldCheck, Truck, CreditCard } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default async function Home({ searchParams }: { searchParams?: { lang?: string } }) {
   const lang = searchParams?.lang || 'en';
@@ -109,7 +110,35 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
       <section id="services" className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 font-headline text-center">{t('ourServices')}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+          <div className="md:hidden">
+            <ScrollArea className="w-full whitespace-nowrap rounded-lg">
+                <div className="flex w-max space-x-4 pb-4 px-1">
+                    {categories.map((category) => (
+                        <Link href={`/book/${category.slug}`} key={category.id} className="group shrink-0">
+                            <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 w-[140px] h-full flex flex-col">
+                                <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
+                                <div className="relative w-full aspect-square">
+                                    <Image
+                                        src={category.image.imageUrl}
+                                        alt={category.name}
+                                        fill
+                                        sizes="33vw"
+                                        className="object-contain transition-transform duration-300 group-hover:scale-105 p-2"
+                                        data-ai-hint={category.image.imageHint}
+                                    />
+                                </div>
+                                <div className="p-3 text-center w-full bg-card">
+                                    <h3 className="font-semibold text-sm whitespace-normal leading-tight">{category.name}</h3>
+                                </div>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
+          <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             {categories.map((category) => {
               const Icon = ICONS[category.icon] || ICONS['Smartphone'];
               return (
