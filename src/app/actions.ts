@@ -27,16 +27,18 @@ export async function bookService(
     pincode: formData.get('pincode'),
   };
 
-  const otherIssueStrings = ['other issue', 'अन्य समस्या'];
-
-  if (otherIssueStrings.includes((rawData.problemDescription as string).toLowerCase()) && !rawData.problemDescription) {
-    return {
-        success: false,
-        errors: {
-            problemDescription: [t('validation.problemDescription.required')],
-        },
-        message: t('validation.problemDescription.required'),
-    }
+  // Basic validation (you can add more comprehensive validation here)
+  if (!rawData.name || !rawData.mobile || !rawData.address || !rawData.timeSlot || !rawData.categoryId || !rawData.problemIds) {
+      return {
+          success: false,
+          message: t('validation.fixErrors'),
+          errors: {
+              name: !rawData.name ? [t('validation.name.min')] : undefined,
+              mobile: !rawData.mobile ? [t('validation.mobile.regex')] : undefined,
+              address: !rawData.address ? [t('validation.address.min')] : undefined,
+              timeSlot: !rawData.timeSlot ? [t('validation.timeSlot.required')] : undefined,
+          }
+      }
   }
   
   try {
@@ -49,15 +51,23 @@ export async function bookService(
     }
     apiFormData.append('category_id', rawData.categoryId as string);
     
+    // The API seems to take a single issue_id, so we'll send the first one.
     const issueIds = (rawData.problemIds as string).split(',');
-    apiFormData.append('issue_id', issueIds[0]); // Assuming single issue for now based on curl
+    if (issueIds.length > 0) {
+        apiFormData.append('issue_id', issueIds[0]);
+    }
 
     apiFormData.append('preferred_time_slot', rawData.timeSlot as string);
-    if (rawData.media && (rawData.media as File).size > 0) {
-        apiFormData.append('media', rawData.media as File);
+    
+    const mediaFile = rawData.media as File;
+    if (mediaFile && mediaFile.size > 0) {
+        apiFormData.append('media', mediaFile);
     }
     if(rawData.pincode) {
         apiFormData.append('pincode', rawData.pincode as string);
+    }
+    if (rawData.problemDescription) {
+        apiFormData.append('problem_description', rawData.problemDescription as string);
     }
 
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
@@ -69,16 +79,16 @@ export async function bookService(
         body: apiFormData,
     });
 
+    const result = await response.json();
+
     if (!response.ok) {
-        const errorData = await response.json();
-        console.error('API Error:', errorData);
+        console.error('API Error:', result);
         return {
             success: false,
-            message: errorData.message || t('validation.unexpectedError'),
+            message: result.message || t('validation.unexpectedError'),
         };
     }
 
-    const result = await response.json();
     const bookingId = result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
     redirect(`/confirmation?bookingId=${bookingId}`);
 

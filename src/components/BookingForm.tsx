@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState, useEffect, useRef, useMemo } from 'react';
 import { useFormStatus } from 'react-dom';
 import { bookService } from '@/app/actions';
 import type { FormState } from '@/lib/types';
@@ -21,6 +21,7 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
+import { getServiceCategory, getTranslatedCategory, type Problem } from '@/lib/data';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -51,11 +52,17 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
 
+  const problemDescription = "General Checkup";
+  const otherIssueStrings = ['other issue', 'अन्य समस्या'];
+  const isOtherProblem = useMemo(() => {
+    return otherIssueStrings.includes(problemDescription.toLowerCase());
+  }, [problemDescription]);
+
   useEffect(() => {
-    if (state.message && !state.success && Object.keys(state.errors || {}).length > 0) {
+    if (state.message && !state.success) {
       toast({
         variant: 'destructive',
-        title: t('bookingError'),
+        title: state.errors && Object.keys(state.errors).length > 0 ? t('bookingError') : t('errorTitle'),
         description: state.message,
       });
     }
@@ -64,8 +71,6 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
     }
   }, [state, toast, t]);
 
-  const problemDescription = "General Checkup";
-  const isOtherProblem = problemDescription.toLowerCase() === 'other issue' || problemDescription === 'अन्य समस्या';
 
   return (
     <form ref={formRef} action={dispatch} className="space-y-4">
@@ -123,7 +128,7 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
         {state?.errors?.media && <p className="text-sm font-medium text-destructive mt-1">{state.errors.media[0]}</p>}
       </div>
       
-      {state.message && !state.success && Object.keys(state.errors || {}).length > 0 && (
+      {state.message && !state.success && Object.keys(state.errors || {}).length === 0 && (
         <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>{t('errorTitle')}</AlertTitle>
@@ -131,8 +136,8 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
         </Alert>
       )}
 
-      <div className="flex justify-between items-center text-sm bg-muted/50 p-3 rounded-md">
-        <p className="font-medium text-muted-foreground">Total Estimated Cost</p>
+       <div className="flex justify-between items-center text-sm text-muted-foreground pt-2">
+        <p>Total Estimated Cost</p>
         <p className="font-bold text-foreground">Rs. {totalEstimate}</p>
       </div>
 
