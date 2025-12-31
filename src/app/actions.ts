@@ -75,7 +75,8 @@ export async function bookService(
         return { message: "Error", error: result.message || "An unexpected error occurred." };
     }
 
-    const bookingId = result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
+    const bookingId = result.order_id || result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
+    
     // Instead of redirecting here, we return the bookingId
     return { message: "Success", bookingId };
     
