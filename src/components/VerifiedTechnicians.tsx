@@ -30,11 +30,18 @@ const technicians = [
     imageHint: 'technician portrait',
     rating: 4,
   },
-    {
+  {
     name: 'Anjali Gupta',
     expertise: 'TV & Audio Expert',
     imageUrl: 'https://picsum.photos/seed/tech4/300/300',
     imageHint: 'female technician',
+    rating: 5,
+  },
+  {
+    name: 'Prakash Rao',
+    expertise: 'Washing Machine Pro',
+    imageUrl: 'https://picsum.photos/seed/tech5/300/300',
+    imageHint: 'male technician tools',
     rating: 5,
   }
 ];
