@@ -20,6 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useLocation } from '@/context/LocationContext';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -32,12 +33,16 @@ function SubmitButton() {
   );
 }
 
-export function BookingForm({ category, problem, totalEstimate }: { category: string; problem: string; totalEstimate: number; }) {
+export function BookingForm({ categoryId, problemIds, totalEstimate }: { categoryId: string; problemIds: string; totalEstimate: number; }) {
   const { t, language } = useTranslation();
+  const { location } = useLocation();
   const initialState: FormState = { message: '', errors: {}, success: false };
   
   const translatedBookService = async (prevState: FormState, formData: FormData): Promise<FormState> => {
     formData.append('lang', language);
+    formData.append('categoryId', categoryId);
+    formData.append('problemIds', problemIds);
+    formData.append('pincode', location.pincode);
     return bookService(prevState, formData);
   }
 
@@ -59,12 +64,11 @@ export function BookingForm({ category, problem, totalEstimate }: { category: st
     }
   }, [state, toast, t]);
 
-  const isOtherProblem = problem.toLowerCase() === 'other issue' || problem === 'अन्य समस्या';
+  const problemDescription = "General Checkup";
+  const isOtherProblem = problemDescription.toLowerCase() === 'other issue' || problemDescription === 'अन्य समस्या';
 
   return (
     <form ref={formRef} action={dispatch} className="space-y-4">
-      <input type="hidden" name="category" value={category} />
-      <input type="hidden" name="problem" value={problem} />
       
       <div>
         <Label htmlFor="name">{t('nameLabel')}</Label>

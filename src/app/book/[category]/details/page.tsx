@@ -48,10 +48,6 @@ function BookingDetailsContent() {
     return ids.map(id => category.problems.find(p => p.id === id)).filter(Boolean);
   }, [category, problemIds]);
 
-  const selectedProblemNames = useMemo(() => {
-    return selectedProblems.map(p => p?.name).join(', ');
-  }, [selectedProblems]);
-
   const totalEstimate = useMemo(() => {
     if (!selectedProblems.length) return 0;
     const problemsPrice = selectedProblems.reduce((sum, p) => sum + (p?.estimated_price || 0), 0);
@@ -67,11 +63,9 @@ function BookingDetailsContent() {
     );
   }
   
-  if (!category) {
+  if (!category || !problemIds) {
     return notFound();
   }
-
-  const problemDescription = selectedProblemNames || category.problems[0]?.name || 'General Checkup';
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -84,8 +78,8 @@ function BookingDetailsContent() {
         </CardHeader>
         <CardContent>
           <BookingForm 
-            category={category.name} 
-            problem={problemDescription}
+            categoryId={category.id}
+            problemIds={problemIds}
             totalEstimate={totalEstimate}
           />
         </CardContent>

@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -20,14 +21,15 @@ export async function bookService(
     landmark: formData.get('landmark'),
     timeSlot: formData.get('timeSlot'),
     media: formData.get('media'),
-    category: formData.get('category'),
-    problem: formData.get('problem'),
+    categoryId: formData.get('categoryId'),
+    problemIds: formData.get('problemIds'),
     problemDescription: formData.get('problemDescription'),
+    pincode: formData.get('pincode'),
   };
 
   const otherIssueStrings = ['other issue', 'अन्य समस्या'];
 
-  if (otherIssueStrings.includes((rawData.problem as string).toLowerCase()) && !rawData.problemDescription) {
+  if (otherIssueStrings.includes((rawData.problemDescription as string).toLowerCase()) && !rawData.problemDescription) {
     return {
         success: false,
         errors: {
@@ -38,9 +40,48 @@ export async function bookService(
   }
   
   try {
-    // In a real app, you would save the booking details and media to a database.
-    // The media file can be uploaded to a storage service like Firebase Storage.
-    // For this example, we're just proceeding to confirmation.
+    const apiFormData = new FormData();
+    apiFormData.append('user_name', rawData.name as string);
+    apiFormData.append('mobile_number', rawData.mobile as string);
+    apiFormData.append('full_address', rawData.address as string);
+    if (rawData.landmark) {
+        apiFormData.append('landmark', rawData.landmark as string);
+    }
+    apiFormData.append('category_id', rawData.categoryId as string);
+    
+    const issueIds = (rawData.problemIds as string).split(',');
+    apiFormData.append('issue_id', issueIds[0]); // Assuming single issue for now based on curl
+
+    apiFormData.append('preferred_time_slot', rawData.timeSlot as string);
+    if (rawData.media && (rawData.media as File).size > 0) {
+        apiFormData.append('media', rawData.media as File);
+    }
+    if(rawData.pincode) {
+        apiFormData.append('pincode', rawData.pincode as string);
+    }
+
+    const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer sb_publishable_De7PU9kf1DOwFBC_f71xcA_3nIGlbKS',
+            'apikey': 'sb_publishable_De7PU9kf1DOwFBC_f71xcA_3nIGlbKS',
+        },
+        body: apiFormData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        return {
+            success: false,
+            message: errorData.message || t('validation.unexpectedError'),
+        };
+    }
+
+    const result = await response.json();
+    const bookingId = result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
+    redirect(`/confirmation?bookingId=${bookingId}`);
+
   } catch (error) {
     console.error('Booking failed:', error);
     return {
@@ -48,8 +89,6 @@ export async function bookService(
       message: t('validation.unexpectedError'),
     };
   }
-  
-  redirect(`/confirmation?bookingId=${`SS-${Math.floor(100000 + Math.random() * 900000)}`}`);
 }
 
 
