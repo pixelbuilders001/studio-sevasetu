@@ -9,34 +9,52 @@ import { subDays, format } from 'date-fns';
 
 
 export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string; } > {
-  const phone = formData.get('phone');
+  const orderId = formData.get('order_id');
   const lang = (formData.get('lang') as string) || 'en';
   const t = getTranslations(lang);
 
-  const PhoneSchema = z.string().regex(/^(\+91)?[6-9]\d{9}$/, { message: t('validation.mobile.regex') });
-  const validation = PhoneSchema.safeParse(phone);
+  const OrderIdSchema = z.string().min(1, { message: 'Order ID cannot be empty.' });
+  const validation = OrderIdSchema.safeParse(orderId);
 
   if (!validation.success) {
     return { error: validation.error.flatten().formErrors[0] };
   }
 
-  // This is a simulation. In a real app, you'd query your database.
-  const now = new Date();
-  const dateFormat = "MMM d, yyyy 'at' h:mm a";
-  const statuses = [
-    { status: t('statusBooked'), date: format(subDays(now, 2), dateFormat)},
-    { status: t('statusTechnicianAssigned'), date: format(subDays(now, 1), dateFormat)},
-    { status: t('statusInProgress'), date: format(now, dateFormat)},
-    { status: t('statusCompleted'), date: format(now, dateFormat)},
-  ];
-  const lastDigit = parseInt((phone as string).slice(-1));
+  try {
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking_status_history?order_id=eq.${orderId}&select=order_id,status,note,created_at`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer sb_publishable_De7PU9kf1DOwFBC_f71xcA_3nIGlbKS',
+        'apikey': 'sb_publishable_De7PU9kf1DOwFBC_f71xcA_3nIGlbKS',
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        return { error: errorData.message || 'Failed to fetch booking status.' };
+    }
 
-  if (lastDigit < 8) { // Simulate found booking
-    const statusIndex = lastDigit % statuses.length;
-    const history = statuses.slice(0, statusIndex + 1);
+    const historyData = await response.json();
+
+    if (!historyData || historyData.length === 0) {
+      return { error: t('bookingNotFound') };
+    }
+    
+    const dateFormat = "MMM d, yyyy 'at' h:mm a";
+    const history = historyData.map((item: any) => ({
+      status: item.status,
+      date: format(new Date(item.created_at), dateFormat),
+      note: item.note,
+    }));
+
     return { history };
-  } else { // Simulate not found
-    return { error: t('bookingNotFound') };
+
+  } catch (error) {
+    console.error('Tracking failed:', error);
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+    return { error: errorMessage };
   }
 }
 

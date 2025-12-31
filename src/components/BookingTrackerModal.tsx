@@ -19,7 +19,7 @@ import { Loader2, Search, XCircle, CheckCircle, History, Bike } from 'lucide-rea
 import React from 'react';
 
 type View = 'form' | 'history' | 'error';
-type TrackResult = { history?: { status: string; date: string }[]; error?: string; } | null;
+type TrackResult = { history?: { status: string; date: string, note?: string }[]; error?: string; } | null;
 
 export default function BookingTrackerModal({ isMobile = false, asChild = false, children }: { isMobile?: boolean, asChild?: boolean, children?: React.ReactNode }) {
   const { t, language } = useTranslation();
@@ -97,7 +97,7 @@ export default function BookingTrackerModal({ isMobile = false, asChild = false,
             <form ref={formRef} action={trackAction} className="space-y-4 py-4">
             <div className="flex flex-col sm:flex-row items-start gap-2">
                 <div className="flex-grow w-full">
-                <Input name="phone" type="tel" placeholder={t('enterPhoneNumberPlaceholder')} required className="text-base" />
+                <Input name="order_id" type="text" placeholder={t('enterOrderIdPlaceholder')} required className="text-base" />
                 </div>
                 <Button type="submit" disabled={isTrackPending} className="w-full sm:w-auto">
                     {isTrackPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
@@ -137,6 +137,7 @@ export default function BookingTrackerModal({ isMobile = false, asChild = false,
                     <div className="pl-4 ml-4">
                        <p className={`font-semibold ${index === trackResult.history.length-1 ? 'text-primary' : 'text-foreground'}`}>{item.status}</p>
                        <p className="text-sm text-muted-foreground">{item.date}</p>
+                       {item.note && <p className="text-xs text-muted-foreground mt-1">{item.note}</p>}
                     </div>
                   </div>
                 ))}
