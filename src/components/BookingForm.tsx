@@ -1,10 +1,8 @@
 
 'use client';
 
-import { useActionState, useEffect, useRef, useMemo } from 'react';
-import { useFormStatus } from 'react-dom';
-import { bookService } from '@/app/actions';
-import type { FormState } from '@/lib/types';
+import { useState, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -21,29 +19,16 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
-import { getServiceCategory, getTranslatedCategory, type Problem } from '@/lib/data';
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  const { t } = useTranslation();
-  return (
-    <Button type="submit" disabled={pending} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-      {t('confirmBooking')}
-    </Button>
-  );
-}
 
 export function BookingForm({ categoryId, problemIds, totalEstimate }: { categoryId: string; problemIds: string; totalEstimate: number; }) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { location } = useLocation();
-  const initialState: FormState = { message: '', errors: {}, success: false };
-  
-  const bookServiceWithLang = bookService.bind(null, { lang: language, categoryId, problemIds, pincode: location.pincode });
-  const [state, dispatch] = useActionState(bookServiceWithLang, initialState);
-  
+  const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const problemDescription = "General Checkup";
   const otherIssueStrings = ['other issue', 'अन्य समस्या'];
@@ -51,39 +36,117 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
     return otherIssueStrings.includes(problemDescription.toLowerCase());
   }, [problemDescription]);
 
-  useEffect(() => {
-    if (state.message && !state.success) {
-      toast({
-        variant: 'destructive',
-        title: state.errors && Object.keys(state.errors).length > 0 ? t('bookingError') : t('errorTitle'),
-        description: state.message,
-      });
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+    
+    const rawData = {
+        name: formData.get('name'),
+        mobile: formData.get('mobile'),
+        address: formData.get('address'),
+        landmark: formData.get('landmark'),
+        timeSlot: formData.get('timeSlot'),
+        media: formData.get('media'),
+        problemDescription: formData.get('problemDescription'),
+    };
+
+    if (!rawData.name || !rawData.mobile || !rawData.address || !rawData.timeSlot) {
+        toast({
+            variant: 'destructive',
+            title: t('bookingError'),
+            description: t('validation.fixErrors'),
+        });
+        setIsLoading(false);
+        return;
     }
-    if (state.success) {
-        formRef.current?.reset();
+  
+    try {
+        const apiFormData = new FormData();
+        apiFormData.append('user_name', rawData.name as string);
+        apiFormData.append('mobile_number', rawData.mobile as string);
+        apiFormData.append('full_address', rawData.address as string);
+        if (rawData.landmark) {
+            apiFormData.append('landmark', rawData.landmark as string);
+        }
+        apiFormData.append('category_id', categoryId);
+        
+        const issueIds = problemIds.split(',');
+        if (issueIds.length > 0) {
+            apiFormData.append('issue_id', issueIds[0]);
+        }
+
+        apiFormData.append('preferred_time_slot', rawData.timeSlot as string);
+        
+        const mediaFile = rawData.media as File;
+        if (mediaFile && mediaFile.size > 0) {
+            apiFormData.append('media', mediaFile);
+        }
+        if(location.pincode) {
+            apiFormData.append('pincode', location.pincode);
+        }
+        if (rawData.problemDescription) {
+            apiFormData.append('problem_description', rawData.problemDescription as string);
+        }
+
+        const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer sb_publishable_De7PU9kf1DOwFBC_f71xcA_3nIGlbKS',
+                'apikey': 'sb_publishable_De7PU9kf1DOwFBC_f71xcA_3nIGlbKS',
+            },
+            body: apiFormData,
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error('API Error:', result);
+            setError(result.message || t('validation.unexpectedError'));
+            toast({
+                variant: 'destructive',
+                title: t('errorTitle'),
+                description: result.message || t('validation.unexpectedError'),
+            });
+            setIsLoading(false);
+            return;
+        }
+
+        const bookingId = result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
+        router.push(`/confirmation?bookingId=${bookingId}`);
+
+    } catch (error) {
+        console.error('Booking failed:', error);
+        const errorMessage = error instanceof Error ? error.message : t('validation.unexpectedError');
+        setError(errorMessage);
+        toast({
+            variant: 'destructive',
+            title: t('errorTitle'),
+            description: errorMessage,
+        });
+        setIsLoading(false);
     }
-  }, [state, toast, t]);
+  };
 
 
   return (
-    <form ref={formRef} action={dispatch} className="space-y-4">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
       
       <div>
         <Label htmlFor="name">{t('nameLabel')}</Label>
         <Input id="name" name="name" required />
-        {state?.errors?.name && <p className="text-sm font-medium text-destructive mt-1">{state.errors.name[0]}</p>}
       </div>
 
       <div>
         <Label htmlFor="mobile">{t('mobileLabel')}</Label>
         <Input id="mobile" name="mobile" type="tel" required />
-        {state?.errors?.mobile && <p className="text-sm font-medium text-destructive mt-1">{state.errors.mobile[0]}</p>}
       </div>
 
       <div>
         <Label htmlFor="address">{t('addressLabel')}</Label>
         <Textarea id="address" name="address" required />
-        {state?.errors?.address && <p className="text-sm font-medium text-destructive mt-1">{state.errors.address[0]}</p>}
       </div>
 
       <div>
@@ -95,7 +158,6 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
         <div>
             <Label htmlFor="problemDescription">{t('describeProblemLabel')}</Label>
             <Textarea id="problemDescription" name="problemDescription" required />
-            {state?.errors?.problemDescription && <p className="text-sm font-medium text-destructive mt-1">{state.errors.problemDescription[0]}</p>}
         </div>
       )}
 
@@ -111,21 +173,19 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
                 <SelectItem value="evening">{t('timeSlotEvening')}</SelectItem>
             </SelectContent>
         </Select>
-        {state?.errors?.timeSlot && <p className="text-sm font-medium text-destructive mt-1">{state.errors.timeSlot[0]}</p>}
       </div>
 
       <div>
         <Label htmlFor="media">{t('mediaLabel')}</Label>
         <Input id="media" name="media" type="file" accept="image/jpeg,image/png,video/mp4" />
         <p className="text-sm text-muted-foreground mt-1">{t('mediaHelpText')}</p>
-        {state?.errors?.media && <p className="text-sm font-medium text-destructive mt-1">{state.errors.media[0]}</p>}
       </div>
       
-      {state.message && !state.success && Object.keys(state.errors || {}).length === 0 && (
+      {error && (
         <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>{t('errorTitle')}</AlertTitle>
-            <AlertDescription>{state.message}</AlertDescription>
+            <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
@@ -134,7 +194,10 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
         <p className="font-bold text-foreground">Rs. {totalEstimate}</p>
       </div>
 
-      <SubmitButton />
+      <Button type="submit" disabled={isLoading} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        {t('confirmBooking')}
+      </Button>
     </form>
   );
 }
