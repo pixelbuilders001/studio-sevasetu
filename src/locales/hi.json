@@ -96,6 +96,7 @@
     "select_all_issues": "आप जिन सभी समस्याओं का सामना कर रहे हैं, उनका चयन करें।",
     "selected_issues": "चयनित:",
     "Home": "होम",
+    "viewAll": "सभी देखें",
 
     "category_mobile-phones_name": "मोबाइल फोन",
     "problem_mobile-phones_screen-broken_name": "स्क्रीन टूटी",

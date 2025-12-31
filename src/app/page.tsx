@@ -13,6 +13,7 @@ import PaymentIcons from '@/components/PaymentIcons';
 import { ShieldCheck, Truck, CreditCard, ArrowRight } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import AllServicesSheet from '@/components/AllServicesSheet';
 
 const serviceSubTexts: Record<string, string> = {
     'phone': 'Screen · Battery · Charging',
@@ -156,11 +157,16 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
 
       <section id="services" className="py-16 md:py-24 bg-muted/20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 font-headline text-center">{t('ourServices')}</h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold font-headline">{t('ourServices')}</h2>
+            <AllServicesSheet>
+              <Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})} <ArrowRight className="w-4 h-4 ml-2" /></Button>
+            </AllServicesSheet>
+          </div>
           <div className="md:hidden">
             <ScrollArea className="w-full whitespace-nowrap rounded-lg">
                 <div className="flex w-max space-x-4 pb-4 px-1">
-                    {categories.map((category) => (
+                    {categories.slice(0, 5).map((category) => (
                         <div key={category.id} className="w-[200px] shrink-0">
                            <ServiceCard category={category}/>
                         </div>
@@ -170,7 +176,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
             </ScrollArea>
           </div>
           <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category) => (
+            {categories.slice(0, 8).map((category) => (
                 <div key={category.id}>
                     <ServiceCard category={category}/>
                 </div>
