@@ -24,6 +24,7 @@ import React, { useState, useEffect } from 'react';
 import BookingTrackerModal from './BookingTrackerModal';
 import { getServiceCategories, ServiceCategory, ICONS } from '@/lib/data';
 import { Skeleton } from './ui/skeleton';
+import Image from 'next/image';
 
 function ServicesMenu() {
   const { language } = useTranslation();
@@ -64,14 +65,22 @@ function ServicesMenu() {
     <div className="p-4">
       <div className="grid gap-4 services-mega-menu">
         {categories.map((category) => {
-          const Icon = ICONS[category.icon] || ICONS['Smartphone'];
           return (
             <Link
               key={category.id}
               href={`/book/${category.slug}`}
               className="group flex items-center gap-3 p-2 rounded-md hover:bg-accent/50"
             >
-              {Icon && <Icon className="w-6 h-6 text-primary" />}
+               <div className="relative w-8 h-8">
+                <Image
+                    src={category.image.imageUrl}
+                    alt={category.name}
+                    fill
+                    sizes="32px"
+                    className="object-contain"
+                    data-ai-hint={category.image.imageHint}
+                />
+              </div>
               <span className="font-semibold text-sm">{category.name}</span>
             </Link>
           );
