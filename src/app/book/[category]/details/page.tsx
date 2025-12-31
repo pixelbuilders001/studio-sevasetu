@@ -7,7 +7,6 @@ import { BookingForm } from '@/components/BookingForm';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, Suspense, useState, useEffect } from 'react';
 import type { ServiceCategory } from '@/lib/data';
-import { getTranslations } from '@/lib/get-translation';
 
 function BookingDetailsContent() {
   const params = useParams();
@@ -29,8 +28,7 @@ function BookingDetailsContent() {
           notFound();
           return;
         }
-        const trans = getTranslations(language)
-        const translatedCategory = getTranslatedCategory(originalCategory, trans);
+        const translatedCategory = getTranslatedCategory(originalCategory, t);
         setCategory(translatedCategory);
       } catch (error) {
         console.error("Failed to fetch category:", error);
@@ -40,7 +38,7 @@ function BookingDetailsContent() {
       }
     };
     fetchCategory();
-  }, [categorySlug, language]);
+  }, [categorySlug, language, t]);
   
   const selectedProblems = useMemo(() => {
     if (!category || !problemIds) return [];
