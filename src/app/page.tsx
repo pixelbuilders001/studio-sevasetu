@@ -166,7 +166,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
           <div>
             <ScrollArea className="w-full whitespace-nowrap rounded-lg">
                 <div className="flex w-max space-x-4 pb-4 px-1">
-                    {categories.slice(0, 5).map((category) => (
+                    {categories.map((category) => (
                         <div key={category.id} className="w-[200px] md:w-[240px] shrink-0">
                            <ServiceCard category={category}/>
                         </div>
