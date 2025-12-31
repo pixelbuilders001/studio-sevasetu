@@ -17,7 +17,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 function ServiceCard({ category }: { category: Omit<ServiceCategory, 'problems' | 'icon'> & { problems: {id: string, name: string}[]} }) {
     return (
         <Card className="bg-card border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full">
-            <CardContent className="p-4 md:p-6 flex flex-col items-center justify-start flex-grow">
+            <CardContent className="p-4 md:p-6 flex flex-col items-center justify-start">
                 <div className="relative w-full h-24 md:h-28 mb-4">
                     <Image
                         src={category.image.imageUrl}
