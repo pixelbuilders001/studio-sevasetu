@@ -14,7 +14,23 @@ import { ShieldCheck, Truck, CreditCard, ArrowRight } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
+const serviceSubTexts: Record<string, string> = {
+    'phone': 'Screen · Battery · Charging',
+    'laptop': 'Slow · Display · Keyboard',
+    'ac': 'No Cooling · Gas · Service',
+    'fridge': 'Not Cooling · Noise · Gas',
+    'mixer-grinder': 'Motor · Blade · Power',
+    'gas-chulha': 'Burner · Gas Leak · Knob',
+    'bike-repair': 'Engine · Brake · Service',
+    'washing-machine': 'Not Spinning · Drain · Noise',
+    'tv': 'Screen · Sound · Power',
+    'wifi': 'No Internet · Slow Speed',
+    'cooler': 'Not Cooling · Motor · Pump'
+};
+
+
 function ServiceCard({ category }: { category: ServiceCategory }) {
+    const subText = serviceSubTexts[category.slug] || category.problems.slice(0, 3).map(p => p.name).join(' · ');
     return (
         <Card className="bg-card border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full">
             <CardContent className="p-4 md:p-6 pb-2 flex flex-col items-center justify-start">
@@ -30,7 +46,7 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
                 </div>
                 <h3 className="font-bold text-base md:text-lg text-foreground">{category.name}</h3>
                 <p className="text-xs md:text-sm text-muted-foreground mt-1 h-8">
-                    {category.problems.slice(0, 3).map(p => p.name).join(' · ')}
+                    {subText}
                 </p>
             </CardContent>
             <div className="p-4 bg-card pt-0 mt-auto">
