@@ -7,11 +7,19 @@ import type { FormState } from '@/lib/types';
 import { getTranslations } from '@/lib/get-translation';
 import { subDays, format } from 'date-fns';
 
+type BoundBookServiceParams = {
+  lang: string;
+  categoryId: string;
+  problemIds: string;
+  pincode: string;
+};
+
 export async function bookService(
+  boundParams: BoundBookServiceParams,
   prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  const lang = (formData.get('lang') as string) || 'en';
+  const { lang, categoryId, problemIds, pincode } = boundParams;
   const t = getTranslations(lang);
 
   const rawData = {
@@ -21,14 +29,11 @@ export async function bookService(
     landmark: formData.get('landmark'),
     timeSlot: formData.get('timeSlot'),
     media: formData.get('media'),
-    categoryId: formData.get('categoryId'),
-    problemIds: formData.get('problemIds'),
     problemDescription: formData.get('problemDescription'),
-    pincode: formData.get('pincode'),
   };
 
   // Basic validation (you can add more comprehensive validation here)
-  if (!rawData.name || !rawData.mobile || !rawData.address || !rawData.timeSlot || !rawData.categoryId || !rawData.problemIds) {
+  if (!rawData.name || !rawData.mobile || !rawData.address || !rawData.timeSlot) {
       return {
           success: false,
           message: t('validation.fixErrors'),
@@ -49,10 +54,10 @@ export async function bookService(
     if (rawData.landmark) {
         apiFormData.append('landmark', rawData.landmark as string);
     }
-    apiFormData.append('category_id', rawData.categoryId as string);
+    apiFormData.append('category_id', categoryId);
     
     // The API seems to take a single issue_id, so we'll send the first one.
-    const issueIds = (rawData.problemIds as string).split(',');
+    const issueIds = problemIds.split(',');
     if (issueIds.length > 0) {
         apiFormData.append('issue_id', issueIds[0]);
     }
@@ -63,8 +68,8 @@ export async function bookService(
     if (mediaFile && mediaFile.size > 0) {
         apiFormData.append('media', mediaFile);
     }
-    if(rawData.pincode) {
-        apiFormData.append('pincode', rawData.pincode as string);
+    if(pincode) {
+        apiFormData.append('pincode', pincode);
     }
     if (rawData.problemDescription) {
         apiFormData.append('problem_description', rawData.problemDescription as string);

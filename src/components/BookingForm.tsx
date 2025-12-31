@@ -39,15 +39,8 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
   const { location } = useLocation();
   const initialState: FormState = { message: '', errors: {}, success: false };
   
-  const translatedBookService = async (prevState: FormState, formData: FormData): Promise<FormState> => {
-    formData.append('lang', language);
-    formData.append('categoryId', categoryId);
-    formData.append('problemIds', problemIds);
-    formData.append('pincode', location.pincode);
-    return bookService(prevState, formData);
-  }
-
-  const [state, dispatch] = useActionState(translatedBookService, initialState);
+  const bookServiceWithLang = bookService.bind(null, { lang: language, categoryId, problemIds, pincode: location.pincode });
+  const [state, dispatch] = useActionState(bookServiceWithLang, initialState);
   
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
