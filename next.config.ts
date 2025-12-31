@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -41,7 +42,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https',
+        protocol: 'https://',
         hostname: 'upload.wikimedia.org',
         port: '',
         pathname: '/**',
@@ -61,6 +62,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'whirlpoolindia.vtexassets.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.britannica.com',
         port: '',
         pathname: '/**',
       }
