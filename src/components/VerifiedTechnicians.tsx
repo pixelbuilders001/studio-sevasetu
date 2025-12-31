@@ -6,34 +6,49 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 
 const technicians = [
   {
     name: 'Ramesh Kumar',
     expertise: 'Phone & Laptop Expert',
     imageUrl: 'https://picsum.photos/seed/tech1/300/300',
-    imageHint: 'male technician portrait'
+    imageHint: 'male technician portrait',
+    rating: 5,
   },
   {
     name: 'Suresh Singh',
     expertise: 'AC & Fridge Specialist',
     imageUrl: 'https://picsum.photos/seed/tech2/300/300',
-    imageHint: 'male technician smiling'
+    imageHint: 'male technician smiling',
+    rating: 5,
   },
   {
     name: 'Vikas Sharma',
     expertise: 'Appliance Repair Pro',
     imageUrl: 'https://picsum.photos/seed/tech3/300/300',
-    imageHint: 'technician portrait'
+    imageHint: 'technician portrait',
+    rating: 4,
   },
     {
     name: 'Anjali Gupta',
     expertise: 'TV & Audio Expert',
     imageUrl: 'https://picsum.photos/seed/tech4/300/300',
-    imageHint: 'female technician'
+    imageHint: 'female technician',
+    rating: 5,
   }
 ];
+
+const StarRating = ({ rating }: { rating: number }) => (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 5 }, (_, i) => (
+        <Star
+          key={i}
+          className={`w-4 h-4 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/30'}`}
+        />
+      ))}
+    </div>
+);
 
 function TechnicianCard({ technician }: { technician: typeof technicians[0] }) {
   const { t } = useTranslation();
@@ -52,6 +67,9 @@ function TechnicianCard({ technician }: { technician: typeof technicians[0] }) {
         </div>
         <h3 className="font-bold text-lg text-foreground">{technician.name}</h3>
         <p className="text-sm text-accent-foreground font-semibold mt-1">{technician.expertise}</p>
+        <div className="mt-2">
+            <StarRating rating={technician.rating} />
+        </div>
       </CardContent>
       <div className="p-4 bg-card pt-2">
         <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
