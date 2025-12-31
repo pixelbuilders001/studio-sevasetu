@@ -10,9 +10,40 @@ import Testimonials from '@/components/Testimonials';
 import { getTranslations } from '@/lib/get-translation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import PaymentIcons from '@/components/PaymentIcons';
-import { ShieldCheck, Truck, CreditCard } from 'lucide-react';
+import { ShieldCheck, Truck, CreditCard, ArrowRight } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+
+function ServiceCard({ category }: { category: Omit<ServiceCategory, 'problems' | 'icon'> & { problems: {id: string, name: string}[]} }) {
+    return (
+        <Card className="bg-card border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full">
+            <CardContent className="p-4 md:p-6 flex flex-col items-center justify-start flex-grow">
+                <div className="relative w-full h-32 md:h-36 mb-4">
+                    <Image
+                        src={category.image.imageUrl}
+                        alt={category.name}
+                        fill
+                        sizes="(max-width: 768px) 30vw, 15vw"
+                        className="object-contain"
+                        data-ai-hint={category.image.imageHint}
+                    />
+                </div>
+                <h3 className="font-bold text-base md:text-lg text-foreground">{category.name}</h3>
+                <p className="text-xs md:text-sm text-muted-foreground mt-1 h-8">
+                    {category.problems.slice(0, 3).map(p => p.name).join(' · ')}
+                </p>
+            </CardContent>
+            <div className="p-4 bg-card mt-auto">
+                 <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
+                    <Link href={`/book/${category.slug}`}>
+                        {`Book Repair`} <ArrowRight className="ml-2" />
+                    </Link>
+                </Button>
+            </div>
+        </Card>
+    );
+}
+
 
 export default async function Home({ searchParams }: { searchParams?: { lang?: string } }) {
   const lang = searchParams?.lang || 'en';
@@ -107,63 +138,27 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
         </div>
       </section>
 
-      <section id="services" className="py-16 md:py-24">
+      <section id="services" className="py-16 md:py-24 bg-muted/20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 font-headline text-center">{t('ourServices')}</h2>
           <div className="md:hidden">
             <ScrollArea className="w-full whitespace-nowrap rounded-lg">
                 <div className="flex w-max space-x-4 pb-4 px-1">
                     {categories.map((category) => (
-                        <Link href={`/book/${category.slug}`} key={category.id} className="group shrink-0">
-                            <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 w-[140px] h-full flex flex-col">
-                                <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
-                                <div className="relative w-full aspect-square">
-                                    <Image
-                                        src={category.image.imageUrl}
-                                        alt={category.name}
-                                        fill
-                                        sizes="33vw"
-                                        className="object-contain transition-transform duration-300 group-hover:scale-105 p-2"
-                                        data-ai-hint={category.image.imageHint}
-                                    />
-                                </div>
-                                <div className="p-3 text-center w-full bg-card">
-                                    <h3 className="font-semibold text-sm whitespace-normal leading-tight">{category.name}</h3>
-                                </div>
-                                </CardContent>
-                            </Card>
-                        </Link>
+                        <div key={category.id} className="w-[200px] shrink-0">
+                           <ServiceCard category={{...category, problems: []}}/>
+                        </div>
                     ))}
                 </div>
                 <ScrollBar orientation="horizontal" />
             </ScrollArea>
           </div>
-          <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-            {categories.map((category) => {
-              const Icon = ICONS[category.icon] || ICONS['Smartphone'];
-              return (
-              <Link href={`/book/${category.slug}`} key={category.id} className="group">
-                <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
-                  <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
-                    <div className="relative w-full aspect-square">
-                      <Image
-                        src={category.image.imageUrl}
-                        alt={category.name}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 20vw"
-                        className="object-contain transition-transform duration-300 group-hover:scale-105 p-2"
-                        data-ai-hint={category.image.imageHint}
-                      />
-                    </div>
-                    <div className="p-4 text-center w-full bg-card">
-                      {Icon && <Icon className="w-8 h-8 text-primary mx-auto mb-2" />}
-                      <h3 className="font-bold text-base md:text-lg">{category.name}</h3>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {categories.map((category) => (
+                <div key={category.id}>
+                    <ServiceCard category={{...category, problems: []}}/>
+                </div>
+            ))}
           </div>
         </div>
       </section>
