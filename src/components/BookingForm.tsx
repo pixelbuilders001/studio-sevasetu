@@ -2,6 +2,7 @@
 'use client';
 
 import { useMemo, useEffect, useActionState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,11 +20,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
 import { bookService } from '@/app/actions';
-import { redirect } from 'next/navigation';
 
 const initialState = {
   message: "",
   error: "",
+  bookingId: undefined,
 };
 
 
@@ -31,6 +32,7 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
   const { t } = useTranslation();
   const { location } = useLocation();
   const { toast } = useToast();
+  const router = useRouter();
 
   const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
@@ -50,7 +52,10 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
           description: state.error,
       });
     }
-  }, [state, t, toast]);
+    if (state?.bookingId) {
+      router.push(`/confirmation?bookingId=${state.bookingId}`);
+    }
+  }, [state, t, toast, router]);
   
 
   return (
@@ -103,7 +108,7 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
         <p className="text-sm text-muted-foreground mt-1">{t('mediaHelpText')}</p>
       </div>
       
-      {state?.error && (
+      {state?.error && !state.bookingId && (
         <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>{t('errorTitle')}</AlertTitle>

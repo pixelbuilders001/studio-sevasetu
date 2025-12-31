@@ -76,7 +76,8 @@ export async function bookService(
     }
 
     const bookingId = result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
-    redirect(`/confirmation?bookingId=${bookingId}`);
+    // Instead of redirecting here, we return the bookingId
+    return { message: "Success", bookingId };
     
   } catch (error) {
       console.error('Booking failed:', error);
