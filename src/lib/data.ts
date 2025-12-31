@@ -56,11 +56,13 @@ const mapCategoryIcon = (slug: string): string => {
     return iconMap[slug] || 'Smartphone';
 }
 
-export async function getServiceCategories(): Promise<Omit<ServiceCategory, 'problems'>[]> {
+export async function getServiceCategories(): Promise<ServiceCategory[]> {
     const { data, error } = await supabase
         .from('categories')
-        .select('*')
-        .order('sort_order', { ascending: true });
+        .select('*, issues(*)')
+        .order('sort_order', { ascending: true })
+        .eq('issues.is_active', true);
+
 
     if (error) {
         console.error("Failed to fetch service categories:", error);
@@ -75,7 +77,17 @@ export async function getServiceCategories(): Promise<Omit<ServiceCategory, 'pro
         image: {
             imageUrl: category.icon_url,
             imageHint: category.name.toLowerCase()
-        }
+        },
+        problems: category.issues.map((p: any) => ({
+            id: p.id,
+            name: p.title,
+            category_id: p.category_id,
+            estimated_price: p.estimated_price,
+            image: {
+                imageUrl: p.icon_url,
+                imageHint: p.title.toLowerCase()
+            }
+        })).sort((a: any, b: any) => a.sort_order - b.sort_order)
     }));
 }
 

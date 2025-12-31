@@ -14,7 +14,7 @@ import { ShieldCheck, Truck, CreditCard, ArrowRight } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-function ServiceCard({ category }: { category: Omit<ServiceCategory, 'problems' | 'icon'> & { problems: {id: string, name: string}[]} }) {
+function ServiceCard({ category }: { category: ServiceCategory }) {
     return (
         <Card className="bg-card border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full">
             <CardContent className="p-4 md:p-6 pb-2 flex flex-col items-center justify-start">
@@ -33,7 +33,7 @@ function ServiceCard({ category }: { category: Omit<ServiceCategory, 'problems' 
                     {category.problems.slice(0, 3).map(p => p.name).join(' · ')}
                 </p>
             </CardContent>
-            <div className="p-4 bg-card pt-0">
+            <div className="p-4 bg-card pt-0 mt-auto">
                  <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
                     <Link href={`/book/${category.slug}`}>
                         {`Book Repair`} <ArrowRight className="ml-2" />
@@ -49,7 +49,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
   const lang = searchParams?.lang || 'en';
   const t = getTranslations(lang);
   
-  const categories: Omit<ServiceCategory, 'problems'>[] = await getServiceCategories();
+  const categories: ServiceCategory[] = await getServiceCategories();
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-image');
 
   const featureCards = [
@@ -146,7 +146,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
                 <div className="flex w-max space-x-4 pb-4 px-1">
                     {categories.map((category) => (
                         <div key={category.id} className="w-[200px] shrink-0">
-                           <ServiceCard category={{...category, problems: []}}/>
+                           <ServiceCard category={category}/>
                         </div>
                     ))}
                 </div>
@@ -156,7 +156,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
           <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((category) => (
                 <div key={category.id}>
-                    <ServiceCard category={{...category, problems: []}}/>
+                    <ServiceCard category={category}/>
                 </div>
             ))}
           </div>
