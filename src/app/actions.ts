@@ -39,3 +39,31 @@ export async function trackBooking(prevState: any, formData: FormData): Promise<
     return { error: t('bookingNotFound') };
   }
 }
+
+export async function bookService(prevState: any, formData: FormData): Promise<{ message: string, error?: string, bookingId?: string }> {
+  try {
+    const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer sb_publishable_De7PU9kf1DOwFBC_f71xcA_3nIGlbKS',
+            'apikey': 'sb_publishable_De7PU9kf1DOwFBC_f71xcA_3nIGlbKS',
+        },
+        body: formData,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        console.error('API Error:', result);
+        return { message: "Error", error: result.message || "An unexpected error occurred." };
+    }
+
+    const bookingId = result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
+    redirect(`/confirmation?bookingId=${bookingId}`);
+    
+  } catch (error) {
+      console.error('Booking failed:', error);
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+      return { message: "Error", error: errorMessage };
+  }
+}
