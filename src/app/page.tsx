@@ -18,7 +18,7 @@ function ServiceCard({ category }: { category: Omit<ServiceCategory, 'problems' 
     return (
         <Card className="bg-card border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full">
             <CardContent className="p-4 md:p-6 flex flex-col items-center justify-start flex-grow">
-                <div className="relative w-full h-32 md:h-36 mb-4">
+                <div className="relative w-full h-24 md:h-28 mb-4">
                     <Image
                         src={category.image.imageUrl}
                         alt={category.name}
