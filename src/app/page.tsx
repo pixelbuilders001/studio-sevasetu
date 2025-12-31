@@ -163,24 +163,17 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
               <Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})} <ArrowRight className="w-4 h-4 ml-2" /></Button>
             </AllServicesSheet>
           </div>
-          <div className="md:hidden">
+          <div>
             <ScrollArea className="w-full whitespace-nowrap rounded-lg">
                 <div className="flex w-max space-x-4 pb-4 px-1">
                     {categories.slice(0, 5).map((category) => (
-                        <div key={category.id} className="w-[200px] shrink-0">
+                        <div key={category.id} className="w-[200px] md:w-[240px] shrink-0">
                            <ServiceCard category={category}/>
                         </div>
                     ))}
                 </div>
                 <ScrollBar orientation="horizontal" />
             </ScrollArea>
-          </div>
-          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.slice(0, 8).map((category) => (
-                <div key={category.id}>
-                    <ServiceCard category={category}/>
-                </div>
-            ))}
           </div>
         </div>
       </section>
