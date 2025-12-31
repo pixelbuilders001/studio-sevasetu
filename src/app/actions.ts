@@ -40,7 +40,24 @@ export async function trackBooking(prevState: any, formData: FormData): Promise<
   }
 }
 
-export async function bookService(prevState: any, formData: FormData): Promise<{ message: string, error?: string, bookingId?: string }> {
+export async function bookService(
+  categoryId: string, 
+  problemIds: string,
+  pincode: string | undefined,
+  prevState: any, 
+  formData: FormData
+): Promise<{ message: string, error?: string, bookingId?: string }> {
+  
+  // Append additional data to formData
+  formData.append('category_id', categoryId);
+  const issueIds = problemIds.split(',');
+  if (issueIds.length > 0) {
+      formData.append('issue_id', issueIds[0]);
+  }
+  if (pincode) {
+      formData.append('pincode', pincode);
+  }
+
   try {
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
         method: 'POST',

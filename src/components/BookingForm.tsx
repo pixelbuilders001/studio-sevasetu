@@ -1,8 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useRef, useEffect, useActionState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useMemo, useEffect, useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,9 +19,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
 import { bookService } from '@/app/actions';
+import { redirect } from 'next/navigation';
 
 const initialState = {
   message: "",
+  error: "",
 };
 
 
@@ -30,9 +31,9 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
   const { t } = useTranslation();
   const { location } = useLocation();
   const { toast } = useToast();
-  const formRef = useRef<HTMLFormElement>(null);
-  
-  const [state, formAction, isPending] = useActionState(bookService, initialState);
+
+  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode);
+  const [state, formAction, isPending] = useActionState(boundBookService, initialState);
 
 
   const problemDescription = "General Checkup";
@@ -51,25 +52,9 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
     }
   }, [state, t, toast]);
   
-  const handleFormAction = (formData: FormData) => {
-    // Append additional data not present in the form fields
-    formData.append('category_id', categoryId);
-    
-    const issueIds = problemIds.split(',');
-    if (issueIds.length > 0) {
-        formData.append('issue_id', issueIds[0]);
-    }
-    
-    if(location.pincode) {
-        formData.append('pincode', location.pincode);
-    }
-    
-    formAction(formData);
-  };
-
 
   return (
-    <form ref={formRef} action={handleFormAction} className="space-y-4">
+    <form action={formAction} className="space-y-4">
       
       <div>
         <Label htmlFor="user_name">{t('nameLabel')}</Label>
