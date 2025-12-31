@@ -17,7 +17,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 function ServiceCard({ category }: { category: Omit<ServiceCategory, 'problems' | 'icon'> & { problems: {id: string, name: string}[]} }) {
     return (
         <Card className="bg-card border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full">
-            <CardContent className="p-4 md:p-6 flex flex-col items-center justify-start">
+            <CardContent className="p-4 md:p-6 pb-2 flex flex-col items-center justify-start">
                 <div className="relative w-full h-24 md:h-28 mb-4">
                     <Image
                         src={category.image.imageUrl}
@@ -33,7 +33,7 @@ function ServiceCard({ category }: { category: Omit<ServiceCategory, 'problems' 
                     {category.problems.slice(0, 3).map(p => p.name).join(' · ')}
                 </p>
             </CardContent>
-            <div className="p-4 bg-card mt-auto">
+            <div className="p-4 bg-card pt-0">
                  <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
                     <Link href={`/book/${category.slug}`}>
                         {`Book Repair`} <ArrowRight className="ml-2" />
