@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { getServiceCategories } from '@/lib/data';
@@ -117,9 +118,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
               <h2 className="text-3xl font-bold font-headline">What's broken?</h2>
               <p className="text-muted-foreground">CHOOSE YOUR DEVICE</p>
             </div>
-            <AllServicesSheet>
-              <Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})}</Button>
-            </AllServicesSheet>
+            <AllServicesSheet trigger={<Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})}</Button>} />
           </div>
           <div className="grid services-grid gap-4">
             {categories.slice(0, 6).map((category) => (

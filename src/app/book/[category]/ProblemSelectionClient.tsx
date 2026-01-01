@@ -42,7 +42,11 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
       return;
     }
     const problemIds = selectedProblems.map(p => p.id).join(',');
-    router.push(`/book/${category.slug}/details?problems=${problemIds}`);
+    if (selectedProblems.length === 1) {
+      router.push(`/book/${category.slug}/${problemIds}`);
+    } else {
+      router.push(`/book/${category.slug}/details?problems=${problemIds}`);
+    }
   };
 
   const removeProblem = (problemId: string) => {
