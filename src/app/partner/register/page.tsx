@@ -196,9 +196,14 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
             <FormField
               control={form.control}
               name="aadharFront"
-              render={({ field }) => (
+              render={({ field: { onChange, onBlur, name, ref } }) => (
                  <FileUpload 
-                    field={{...aadharFrontRef, onChange: (e) => field.onChange(e.target.files) }} 
+                    field={{
+                      name,
+                      ref,
+                      onBlur,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.files)
+                    }} 
                     label="Aadhaar Front" 
                     isUploaded={!!aadharFrontWatch && aadharFrontWatch.length > 0} 
                  />
@@ -207,9 +212,14 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
             <FormField
               control={form.control}
               name="aadharBack"
-               render={({ field }) => (
+               render={({ field: { onChange, onBlur, name, ref } }) => (
                  <FileUpload 
-                    field={{...aadharBackRef, onChange: (e) => field.onChange(e.target.files) }} 
+                    field={{
+                      name,
+                      ref,
+                      onBlur,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.files)
+                    }}
                     label="Aadhaar Back" 
                     isUploaded={!!aadharBackWatch && aadharBackWatch.length > 0}
                  />
@@ -222,9 +232,14 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
             <FormField
               control={form.control}
               name="selfie"
-              render={({ field }) => (
+              render={({ field: { onChange, onBlur, name, ref } }) => (
                  <FileUpload 
-                    field={{...selfieRef, onChange: (e) => field.onChange(e.target.files) }} 
+                    field={{
+                      name,
+                      ref,
+                      onBlur,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.files)
+                    }}
                     label="Upload Selfie"
                     isUploaded={!!selfieWatch && selfieWatch.length > 0}
                  />
@@ -375,7 +390,6 @@ export default function PartnerOnboardingPage() {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // Final submission logic
       router.push('/partner/success');
     }
   };
@@ -432,5 +446,3 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
-
-    
