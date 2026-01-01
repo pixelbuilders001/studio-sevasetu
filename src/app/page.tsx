@@ -92,7 +92,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight">
                         Quick Repairs<br />
-                        <span className="text-blue-300">At Your Doorstep</span>
+                        <span className="text-sky-400">At Your Doorstep</span>
                     </h1>
                     <p className="text-base text-white/80 max-w-sm mb-8">
                        Verified experts for Mobile, Laptop & AC. Fixed in 60 minutes.
