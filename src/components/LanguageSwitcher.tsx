@@ -15,7 +15,7 @@ export default function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Switch language">
+        <Button variant="ghost" size="icon" aria-label="Switch language" className='hidden md:inline-flex'>
           <Languages className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>

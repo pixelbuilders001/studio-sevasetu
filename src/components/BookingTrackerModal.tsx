@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useActionState, useState, useEffect, useRef } from 'react';
@@ -15,7 +14,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { DialogFooter } from './ui/dialog';
-import { Loader2, Search, XCircle, CheckCircle, History, Bike } from 'lucide-react';
+import { Loader2, Search, XCircle, CheckCircle, History, Briefcase } from 'lucide-react';
 import React from 'react';
 
 type View = 'form' | 'history' | 'error';
@@ -71,12 +70,12 @@ export default function BookingTrackerModal({ isMobile = false, asChild = false,
   const Trigger = asChild ? children : (
     isMobile ? (
       <button className="text-lg font-medium text-foreground transition-colors hover:text-primary w-full text-left flex items-center gap-2">
-        <Bike />
+        <Briefcase />
         {t('trackBooking')}
       </button>
     ) : (
       <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
-        <Bike className="mr-2" />
+        <Briefcase className="mr-2" />
         {t('trackBooking')}
       </Button>
     )

@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -13,177 +12,81 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Menu, Bike, ChevronDown } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
 import BookingTrackerModal from './BookingTrackerModal';
-import { getServiceCategories, ServiceCategory, ICONS } from '@/lib/data';
-import { Skeleton } from './ui/skeleton';
-import Image from 'next/image';
 
-function ServicesMenu() {
-  const { language } = useTranslation();
-  const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems'>[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const originalCategories = await getServiceCategories();
-        setCategories(originalCategories);
-      } catch (error) {
-        console.error("Failed to fetch service categories", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCategories();
-  }, [language]);
-
-
-  if (loading) {
-    return (
-       <div className="p-4">
-        <div className="grid gap-4 services-mega-menu">
-          {Array.from({length: 5}).map((_, i) => (
-            <div key={i} className="flex items-center gap-3 p-2">
-              <Skeleton className="w-6 h-6 rounded-full" />
-              <Skeleton className="w-24 h-5" />
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="p-4">
-      <div className="grid gap-4 services-mega-menu">
-        {categories.map((category) => {
-          return (
-            <Link
-              key={category.id}
-              href={`/book/${category.slug}`}
-              className="group flex items-center gap-3 p-2 rounded-md hover:bg-accent/50"
-            >
-               <div className="relative w-8 h-8">
-                <Image
-                    src={category.image.imageUrl}
-                    alt={category.name}
-                    fill
-                    sizes="32px"
-                    className="object-contain"
-                    data-ai-hint={category.image.imageHint}
-                />
-              </div>
-              <span className="font-semibold text-sm">{category.name}</span>
-            </Link>
-          );
-        })}
-      </div>
+const Logo = () => (
+  <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+    <div className="w-9 h-9 bg-primary rounded-md flex items-center justify-center">
+      <span className="text-2xl font-bold text-primary-foreground">S</span>
     </div>
-  );
-}
+    <div className="flex flex-col">
+      <span className="text-lg font-bold text-primary-foreground leading-tight">SevaSetu</span>
+      <span className="text-xs font-semibold text-muted-foreground leading-tight tracking-wide">TRUSTED REPAIR</span>
+    </div>
+  </Link>
+)
 
 export default function Header() {
   const { t } = useTranslation();
   const navItems = [
     { href: '#how-it-works', label: t('howItWorksTitle') },
     { href: '#why-choose-us', label: t('whyChooseUs') },
+    { href: '#services', label: t('ourServices') },
   ];
 
   return (
-    <header className="bg-background/80 backdrop-blur-sm border-b sticky top-0 z-40">
+    <header className="bg-background border-b sticky top-0 z-40">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="text-2xl font-bold text-primary font-headline">
-            {t('appName')}
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                  {t('ourServices')}
-                  <ChevronDown className="h-4 w-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-screen max-w-md" align="start" sideOffset={10}>
-                <ServicesMenu />
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                {item.label}
-              </Link>
-            ))}
-             <BookingTrackerModal asChild={true}>
-                <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                    <Bike className="mr-2" />
-                    {t('trackBooking')}
-                </Button>
-            </BookingTrackerModal>
-          </nav>
-          <div className="flex items-center gap-2">
-            <div className="hidden md:flex items-center gap-2">
-                <LocationSelector />
-                <LanguageSwitcher />
-            </div>
-
-            <div className="md:hidden flex items-center gap-2">
-              <LocationSelector />
+        <div className="flex items-center justify-between h-20">
+          <div className="flex items-center gap-4">
+            <div className="md:hidden">
               <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Menu className="h-6 w-6" />
-                    <span className="sr-only">Open menu</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-                  <SheetHeader className="border-b pb-4 mb-4 flex-row justify-between items-center">
-                    <SheetClose asChild>
-                      <Link href="/" className="text-2xl font-bold text-primary font-headline">
-                          {t('appName')}
-                      </Link>
-                    </SheetClose>
-                    <LanguageSwitcher />
-                    <SheetTitle className="sr-only">Menu</SheetTitle>
-                  </SheetHeader>
-                  <div className="flex flex-col h-full">
-                    <nav className="flex flex-col gap-4">
-                       <SheetClose asChild>
-                          <Link
-                            href="/#services"
-                            className="text-lg font-medium text-foreground transition-colors hover:text-primary"
-                          >
-                            {t('ourServices')}
-                          </Link>
-                        </SheetClose>
-                      {navItems.map((item) => (
-                        <SheetClose asChild key={item.href}>
-                          <Link
-                            href={item.href}
-                            className="text-lg font-medium text-foreground transition-colors hover:text-primary"
-                          >
-                            {item.label}
-                          </Link>
-                        </SheetClose>
-                      ))}
-                       <BookingTrackerModal isMobile={true} />
-                    </nav>
-                  </div>
-                </SheetContent>
-              </Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Menu className="h-6 w-6" />
+                      <span className="sr-only">Open menu</span>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+                    <SheetHeader className="border-b pb-4 mb-4">
+                      <Logo />
+                      <SheetTitle className="sr-only">Menu</SheetTitle>
+                    </SheetHeader>
+                    <div className="flex flex-col h-full">
+                      <nav className="flex flex-col gap-4">
+                        {navItems.map((item) => (
+                          <SheetClose asChild key={item.href}>
+                            <Link
+                              href={item.href}
+                              className="text-lg font-medium text-foreground transition-colors hover:text-primary"
+                            >
+                              {item.label}
+                            </Link>
+                          </SheetClose>
+                        ))}
+                         <BookingTrackerModal isMobile={true} />
+                      </nav>
+                      <div className="mt-auto">
+                        <LanguageSwitcher />
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
             </div>
+            <div className='hidden md:block'>
+              <Logo />
+            </div>
+          </div>
+          
+          <div className='md:hidden'>
+             <Logo />
+          </div>
+
+          <div className="flex items-center gap-2">
+              <LocationSelector />
+              <LanguageSwitcher />
           </div>
         </div>
       </div>
