@@ -64,18 +64,8 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
         try {
           const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
           const data = await response.json();
-          if (data && data.address) {
-            const { house_number, road, neighbourhood, suburb, city, state, postcode } = data.address;
-            const fullAddress = [
-                house_number,
-                road,
-                neighbourhood,
-                suburb,
-                city,
-                state,
-                postcode
-            ].filter(Boolean).join(', ');
-            setAddress(fullAddress || data.display_name);
+          if (data && data.display_name) {
+            setAddress(data.display_name);
           } else {
              toast({
               variant: 'destructive',
