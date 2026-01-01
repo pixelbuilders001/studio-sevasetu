@@ -1,3 +1,4 @@
+
 'use client';
 import { useTranslation } from '@/hooks/useTranslation';
 import Link from 'next/link';
@@ -25,6 +26,7 @@ export default function Footer() {
                         <li><a href="#services" className="text-muted-foreground hover:text-primary">{t('ourServices')}</a></li>
                         <li><a href="#how-it-works" className="text-muted-foreground hover:text-primary">{t('howItWorksTitle')}</a></li>
                         <li><a href="#why-choose-us" className="text-muted-foreground hover:text-primary">{t('whyChooseUs')}</a></li>
+                        <li><Link href="/partner/register" className="text-muted-foreground hover:text-primary">Become a Partner</Link></li>
                     </ul>
                 </div>
                 <div>
