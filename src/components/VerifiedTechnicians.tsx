@@ -84,7 +84,7 @@ function TechnicianCard({ technician }: { technician: typeof technicians[0] }) {
 export default function VerifiedTechnicians() {
     const { t } = useTranslation();
     return (
-        <section className="py-16 md:py-24 bg-muted/20">
+        <section className="py-12 md:py-16 bg-muted/20">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-3xl font-bold font-headline">Top Local Technicians</h2>

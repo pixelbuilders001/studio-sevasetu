@@ -15,7 +15,7 @@ export default function BecomePartner() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4">
         <Card className="bg-gray-900 text-white rounded-2xl shadow-xl overflow-hidden border-0">
           <CardContent className="p-8">

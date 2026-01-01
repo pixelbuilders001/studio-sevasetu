@@ -22,8 +22,8 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
     return (
         <Link href={`/book/${category.slug}`} className="group">
             <Card className="bg-card border rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full aspect-square justify-center items-center bg-white">
-                <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center gap-2">
-                    <div className="relative w-12 h-12 md:w-20 md:h-20">
+                <CardContent className="p-2 flex flex-col items-center justify-center gap-2">
+                    <div className="relative w-12 h-12">
                         <Image
                             src={category.image.imageUrl}
                             alt={category.name}
@@ -33,7 +33,7 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
                             data-ai-hint={category.image.imageHint}
                         />
                     </div>
-                    <h3 className="font-bold text-xs md:text-base text-foreground">{category.name}</h3>
+                    <h3 className="font-bold text-xs text-foreground">{category.name}</h3>
                 </CardContent>
             </Card>
         </Link>
@@ -103,7 +103,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
         </div>
       </section>
 
-      <section className="py-8 md:py-12 bg-background">
+      <section className="py-8 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-3 gap-2 md:gap-4">
             {featureCards.map((card, index) => (
@@ -121,7 +121,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
         </div>
       </section>
 
-      <section id="services" className="py-16 md:py-24 bg-muted/20">
+      <section id="services" className="py-12 md:py-16 bg-muted/20">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -137,7 +137,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
               </SheetContent>
             </Sheet>
           </div>
-          <div className="services-grid grid gap-4">
+          <div className="services-grid grid gap-2">
             {categories.slice(0, 6).map((category) => (
                 <ServiceCard key={category.id} category={category}/>
             ))}
@@ -151,7 +151,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
 
       <VerifiedTechnicians />
 
-      <section id="why-choose-us" className="py-16 md:py-24">
+      <section id="why-choose-us" className="py-12 md:py-16">
         <div className="container mx-auto px-4">
           <TrustIndicators />
         </div>
