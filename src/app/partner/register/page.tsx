@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, ComponentProps } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info } from 'lucide-react';
+import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { cn } from '@/lib/utils';
 
 const PersonalInfoSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
@@ -103,6 +104,128 @@ function PersonalInfoStep({ onNext }: { onNext: () => void }) {
   );
 }
 
+const DocumentsSchema = z.object({
+  aadharNumber: z.string().regex(/^\d{12}$/, { message: 'Please enter a valid 12-digit Aadhar number.' }),
+  aadharFront: z.any().refine(file => file?.length == 1, 'Aadhar front picture is required.'),
+  aadharBack: z.any().refine(file => file?.length == 1, 'Aadhar back picture is required.'),
+  selfie: z.any().refine(file => file?.length == 1, 'Selfie with Aadhar is required.'),
+});
+
+type DocumentsForm = z.infer<typeof DocumentsSchema>;
+
+
+function FileUpload({ field, label, isUploaded }: { field: any, label: string, isUploaded: boolean }) {
+  return (
+    <FormItem className="w-full">
+      <FormControl>
+        <label className={cn(
+          "flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer",
+          isUploaded ? "border-green-500 bg-green-50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+        )}>
+          {isUploaded ? (
+            <div className="text-center text-green-600">
+              <CheckCircle className="mx-auto mb-1 w-8 h-8" />
+              <span className="font-semibold text-sm">UPLOADED</span>
+            </div>
+          ) : (
+            <div className="text-center text-gray-500">
+              <UploadCloud className="mx-auto mb-1 w-8 h-8" />
+              <span className="font-semibold text-sm">{label}</span>
+            </div>
+          )}
+          <Input type="file" className="hidden" {...field} />
+        </label>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  );
+}
+
+function DocumentsStep({ onNext }: { onNext: () => void }) {
+  const form = useForm<DocumentsForm>({
+    resolver: zodResolver(DocumentsSchema),
+  });
+
+  const onSubmit = (data: DocumentsForm) => {
+    console.log('Documents Info:', data);
+    onNext();
+  };
+  
+  const aadharFrontWatch = form.watch('aadharFront');
+  const aadharBackWatch = form.watch('aadharBack');
+  const selfieWatch = form.watch('selfie');
+
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex items-center gap-2 mb-4">
+          <CreditCard className="w-5 h-5 text-primary" />
+          <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Identity Documents</h2>
+        </div>
+        
+        <FormField
+          control={form.control}
+          name="aadharNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input icon={CreditCard} placeholder="Aadhar Card Number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="aadharFront"
+              render={({ field: { onChange, onBlur, name, ref } }) => (
+                 <FileUpload 
+                    field={{ onChange, onBlur, name, ref }} 
+                    label="Aadhaar Front" 
+                    isUploaded={!!aadharFrontWatch && aadharFrontWatch.length > 0} 
+                 />
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="aadharBack"
+               render={({ field: { onChange, onBlur, name, ref } }) => (
+                 <FileUpload 
+                    field={{ onChange, onBlur, name, ref }} 
+                    label="Aadhaar Back" 
+                    isUploaded={!!aadharBackWatch && aadharBackWatch.length > 0}
+                 />
+              )}
+            />
+        </div>
+
+        <div>
+            <Label className="text-muted-foreground font-semibold ml-1 mb-2 block">Selfie with Aadhaar</Label>
+            <FormField
+              control={form.control}
+              name="selfie"
+              render={({ field: { onChange, onBlur, name, ref } }) => (
+                 <FileUpload 
+                    field={{ onChange, onBlur, name, ref }} 
+                    label="Upload Selfie"
+                    isUploaded={!!selfieWatch && selfieWatch.length > 0}
+                 />
+              )}
+            />
+        </div>
+        
+        <Button type="submit" size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+          Continue
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+      </form>
+    </FormProvider>
+  );
+}
+
+
 export default function PartnerOnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -132,7 +255,9 @@ export default function PartnerOnboardingPage() {
     switch (step) {
       case 1:
         return <PersonalInfoStep onNext={handleNext} />;
-      // Add case 2 and 3 for other steps later
+      case 2:
+        return <DocumentsStep onNext={handleNext} />;
+      // Add case 3 for other steps later
       default:
         return <PersonalInfoStep onNext={handleNext} />;
     }
@@ -141,7 +266,7 @@ export default function PartnerOnboardingPage() {
   const getStepTitle = () => {
     switch (step) {
         case 1: return "Personal Info";
-        case 2: return "Professional Info";
+        case 2: return "Documents";
         case 3: return "Document Upload";
         default: return "Personal Info";
     }
