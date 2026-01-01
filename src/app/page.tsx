@@ -14,6 +14,7 @@ import { ArrowRight, Award, ShieldCheck, Clock, Shield } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import AllServicesSheet from '@/components/AllServicesSheet';
 import BecomePartner from '@/components/BecomePartner';
+import HeroCTA from '@/components/HeroCTA';
 
 
 function ServiceCard({ category }: { category: ServiceCategory }) {
@@ -87,11 +88,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
                     <p className="text-base md:text-lg text-primary-foreground/80 max-w-sm mb-8">
                        Expert technicians for Mobile, Laptop, AC & Home Appliances.
                     </p>
-                    <AllServicesSheet trigger={
-                      <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-10 h-14 rounded-full">
-                        BOOK NOW <ArrowRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    } />
+                    <HeroCTA />
                 </div>
             </div>
         </div>
