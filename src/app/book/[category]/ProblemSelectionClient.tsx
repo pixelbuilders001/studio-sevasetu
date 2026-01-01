@@ -1,7 +1,7 @@
 
 'use client';
 import { type Problem, type ServiceCategory, ICONS } from '@/lib/data';
-import { useRouter } from 'next/navigation';
+import { useRouter, notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -9,14 +9,23 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type ClientCategory = Omit<ServiceCategory, 'icon'> & { iconName: string };
 
 export default function ProblemSelectionClient({ category }: { category: ClientCategory }) {
-  const { t } = useTranslation();
+  const { t, getTranslatedCategory } = useTranslation();
   const router = useRouter();
 
   const [selectedProblems, setSelectedProblems] = useState<Problem[]>([]);
+
+  if (!category) {
+    notFound();
+  }
+
+  const translatedCategory = getTranslatedCategory(category);
+
 
   const toggleProblemSelection = (problem: Problem) => {
     setSelectedProblems((prevSelected) => {
@@ -33,8 +42,8 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
     if (selectedProblems.length === 0) {
       return;
     }
-    const problemId = selectedProblems[0].id;
-    router.push(`/book/${category?.slug}/${problemId}`);
+    const problemIds = selectedProblems.map(p => p.id).join(',');
+    router.push(`/book/${category.slug}/details?problems=${problemIds}`);
   };
 
   const removeProblem = (problemId: string) => {
@@ -43,44 +52,46 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-4xl mx-auto border-0 shadow-none">
-        <CardHeader className="text-center">
+      <Card className="max-w-xl mx-auto border-0 shadow-none">
+        <CardHeader className="text-center px-0">
           <CardTitle className="text-2xl md:text-3xl font-headline">
-            {t('whatsTheProblemWithYour')} {category.name}?
+             {t('whatsTheProblemWithYour', { name: translatedCategory.name })}
           </CardTitle>
-          <CardDescription>{t('select_all_issues', {defaultValue: "Select all issues you are facing."})}</CardDescription>
+          <CardDescription>{t('select_all_issues', {defaultValue: "Select one or more issues"})}</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 md:gap-6">
-            {category.problems.map((problem) => {
+        <CardContent className="px-0">
+          <div className="space-y-3">
+            {translatedCategory.problems.map((problem) => {
               const isSelected = selectedProblems.some((p) => p.id === problem.id);
               return (
                 <Card
                   key={problem.id}
                   onClick={() => toggleProblemSelection(problem)}
-                  className={`cursor-pointer overflow-hidden group transition-all duration-300 h-full flex flex-col hover:shadow-lg relative ${
-                    isSelected ? 'border-accent shadow-lg' : 'border-border'
-                  }`}
-                >
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 z-10 bg-accent text-accent-foreground rounded-full p-1">
-                      <CheckCircle className="w-4 h-4" />
-                    </div>
+                  className={cn(
+                    'cursor-pointer transition-all duration-200',
+                    isSelected ? 'border-primary bg-primary/5' : 'bg-card'
                   )}
-                  <CardContent className="p-0 flex flex-col items-center justify-center flex-grow">
-                    <div className="relative w-full aspect-video bg-muted/30">
-                      <Image
+                >
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="relative w-14 h-14 bg-muted/40 rounded-lg flex items-center justify-center p-2">
+                       <Image
                         src={problem.image.imageUrl}
                         alt={problem.name}
-                        fill
-                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        className="object-contain transition-transform duration-300 group-hover:scale-105 p-4"
+                        width={40}
+                        height={40}
+                        className="object-contain"
                         data-ai-hint={problem.image.imageHint}
                       />
                     </div>
-                    <div className="p-3 text-center w-full bg-card">
-                      <h3 className="font-semibold text-sm md:text-base">{problem.name}</h3>
+                    <div className="flex-grow">
+                      <h3 className="font-semibold text-base">{problem.name}</h3>
+                       {problem.estimated_price > 0 && (
+                        <p className="text-sm text-muted-foreground">
+                          ESTIMATED: Rs. {problem.estimated_price}
+                        </p>
+                      )}
                     </div>
+                     <Checkbox checked={isSelected} className="w-5 h-5 rounded-full" />
                   </CardContent>
                 </Card>
               );
@@ -90,26 +101,24 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
       </Card>
       
       {selectedProblems.length > 0 && (
-         <div className="mt-8">
-            <div className="container mx-auto px-4 py-4">
-                <div className="max-w-4xl mx-auto flex items-center justify-between gap-4 bg-background border shadow-lg p-4 rounded-lg">
-                    <div className="flex-grow flex items-center gap-2 overflow-hidden">
-                       <p className="font-semibold hidden sm:inline">{t('selected_issues', { defaultValue: 'Selected:'})}</p>
-                       <div className="flex gap-2 overflow-x-auto">
-                         {selectedProblems.map(p => (
-                             <Badge key={p.id} variant="secondary" className="flex items-center gap-1.5 whitespace-nowrap">
-                                 {p.name}
-                                 <button onClick={() => removeProblem(p.id)} className="rounded-full hover:bg-muted-foreground/20">
-                                     <X className="w-3 h-3" />
-                                 </button>
-                             </Badge>
-                         ))}
-                       </div>
-                    </div>
-                    <Button onClick={handleBookRepair} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold shrink-0">
-                      {t('bookRepairNow')}
-                    </Button>
+         <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50 md:static md:bg-transparent md:border-none md:p-0 md:mt-8">
+            <div className="max-w-xl mx-auto flex items-center justify-between gap-4">
+                <div className="flex-grow hidden md:flex items-center gap-2 overflow-hidden">
+                   <p className="font-semibold">{t('selected_issues', { defaultValue: 'Selected:'})}</p>
+                   <div className="flex gap-2 overflow-x-auto">
+                     {selectedProblems.map(p => (
+                         <Badge key={p.id} variant="secondary" className="flex items-center gap-1.5 whitespace-nowrap">
+                             {p.name}
+                             <button onClick={() => removeProblem(p.id)} className="rounded-full hover:bg-muted-foreground/20">
+                                 <X className="w-3 h-3" />
+                             </button>
+                         </Badge>
+                     ))}
+                   </div>
                 </div>
+                <Button onClick={handleBookRepair} size="lg" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
+                  {t('proceedToBook')}
+                </Button>
             </div>
          </div>
       )}
