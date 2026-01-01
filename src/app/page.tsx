@@ -12,6 +12,7 @@ import VerifiedTechnicians from '@/components/VerifiedTechnicians';
 import { ArrowRight, Award, ShieldCheck, Clock, Shield } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import AllServicesSheet from '@/components/AllServicesSheet';
+import BecomePartner from '@/components/BecomePartner';
 
 
 function ServiceCard({ category }: { category: ServiceCategory }) {
@@ -141,6 +142,8 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
       </section>
 
       <Testimonials />
+
+      <BecomePartner />
     </>
   );
 }
