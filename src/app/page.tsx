@@ -10,11 +10,11 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { getTranslations } from '@/lib/get-translation';
 import VerifiedTechnicians from '@/components/VerifiedTechnicians';
-import { ArrowRight, Award, ShieldCheck, Clock, Shield } from 'lucide-react';
+import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import BecomePartner from '@/components/BecomePartner';
 import HeroCTA from '@/components/HeroCTA';
-import { Sheet, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import AllServicesSheet from '@/components/AllServicesSheet';
 
 
@@ -76,18 +76,26 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
     <>
       <section className="bg-background text-foreground">
         <div className="container mx-auto px-4 pt-4 pb-8 md:pt-8 md:pb-12">
-            <div className="relative bg-primary text-primary-foreground rounded-xl p-8 shadow-xl overflow-hidden">
-                <HeroHouse />
+            <div 
+                className="relative text-white rounded-2xl p-8 shadow-xl overflow-hidden bg-cover bg-center"
+                style={{backgroundImage: "url('https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/only%20illustration%20not%20texts%20and%20all.jpg')"}}
+            >
+                <div className="absolute inset-0 bg-blue-900/50"></div>
                 <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 bg-primary-foreground/20 text-primary-foreground font-semibold px-3 py-1 rounded-full text-sm mb-4">
-                        <Award className="w-5 h-5"/>
-                        #1 LOCAL REPAIR SERVICE
+                    <div className="absolute top-0 right-0 bg-accent text-accent-foreground font-bold px-3 py-2 rounded-bl-lg">
+                        <span className="text-xl">60</span>
+                        <span className="block text-xs leading-none">MINS</span>
+                    </div>
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white font-semibold px-3 py-1.5 rounded-full text-xs mb-4">
+                        <Zap className="w-4 h-4 text-yellow-300"/>
+                        INDIA'S TRUSTED REPAIR APP
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight">
-                        Doorstep Repair<br />In 60 Mins
+                        Quick Repairs<br />
+                        <span className="text-blue-300">At Your Doorstep</span>
                     </h1>
-                    <p className="text-base md:text-lg text-primary-foreground/80 max-w-sm mb-8">
-                       Expert technicians for Mobile, Laptop, AC & Home Appliances.
+                    <p className="text-base text-white/80 max-w-sm mb-8">
+                       Verified experts for Mobile, Laptop & AC. Fixed in 60 minutes.
                     </p>
                     <HeroCTA />
                 </div>
@@ -124,7 +132,9 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
               <SheetTrigger asChild>
                 <Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})}</Button>
               </SheetTrigger>
-              <AllServicesSheet />
+              <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-2xl">
+                 <AllServicesSheet />
+              </SheetContent>
             </Sheet>
           </div>
           <div className="grid services-grid gap-4">
