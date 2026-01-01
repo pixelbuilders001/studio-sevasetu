@@ -1,11 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { LocationProvider } from '@/context/LocationContext';
-import { LanguageProvider } from '@/context/LanguageContext';
-import BottomNavBar from '@/components/BottomNavBar';
+import AppShell from '@/components/AppShell';
 
 export const metadata: Metadata = {
   title: 'SevaSetu - Trusted Local Repair',
@@ -25,14 +21,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background">
-        <LanguageProvider>
-          <LocationProvider>
-            <Header />
-            <main className="flex-grow pb-16 md:pb-0">{children}</main>
-            <Footer />
-            <BottomNavBar />
-          </LocationProvider>
-        </LanguageProvider>
+        <AppShell>{children}</AppShell>
         <Toaster />
       </body>
     </html>
