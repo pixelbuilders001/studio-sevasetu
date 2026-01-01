@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Home, LayoutGrid, MessageSquare, Briefcase } from 'lucide-react';
 import BookingTrackerModal from './BookingTrackerModal';
 import { useTranslation } from '@/hooks/useTranslation';
-import ServicesSheet from './ServicesSheet';
+import AllServicesSheet from './AllServicesSheet';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -24,7 +24,14 @@ export default function BottomNavBar() {
       label: 'Services',
       icon: LayoutGrid,
       isActive: false,
-      component: <ServicesSheet />
+      component: (
+        <AllServicesSheet>
+          <button className={cn("flex flex-col items-center justify-center text-center transition-colors w-full h-full", 'text-muted-foreground')}>
+            <LayoutGrid className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Services</span>
+          </button>
+        </AllServicesSheet>
+      )
     },
     {
       href: '#',
