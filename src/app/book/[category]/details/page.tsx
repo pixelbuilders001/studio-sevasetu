@@ -1,6 +1,6 @@
 
 'use client';
-import { getServiceCategory, getTranslatedCategory } from '@/lib/data';
+import { getServiceCategory } from '@/lib/data';
 import { notFound, useParams, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingForm } from '@/components/BookingForm';
@@ -15,7 +15,7 @@ function BookingDetailsContent() {
   const { category: categorySlug } = params as { category: string };
   const problemIds = searchParams.get('problems');
 
-  const { t, language } = useTranslation();
+  const { t, getTranslatedCategory } = useTranslation();
   const [category, setCategory] = useState<ServiceCategory | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,7 +28,7 @@ function BookingDetailsContent() {
           notFound();
           return;
         }
-        const translatedCategory = getTranslatedCategory(originalCategory, t);
+        const translatedCategory = getTranslatedCategory(originalCategory);
         setCategory(translatedCategory);
       } catch (error) {
         console.error("Failed to fetch category:", error);
@@ -38,7 +38,7 @@ function BookingDetailsContent() {
       }
     };
     fetchCategory();
-  }, [categorySlug, language, t]);
+  }, [categorySlug, getTranslatedCategory]);
   
   const selectedProblems = useMemo(() => {
     if (!category || !problemIds) return [];
@@ -67,14 +67,14 @@ function BookingDetailsContent() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-lg mx-auto">
-        <CardHeader>
+      <Card className="max-w-lg mx-auto border-0 shadow-none">
+        <CardHeader className="px-0">
           <CardTitle className="text-2xl font-headline">{t('yourDetailsTitle')}</CardTitle>
           <CardDescription>
             {t('yourDetailsDescription', { categoryName: category.name })}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0">
           <BookingForm 
             categoryId={category.id}
             problemIds={problemIds}
