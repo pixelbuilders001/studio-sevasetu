@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
@@ -67,15 +67,17 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
                 Use GPS
             </Button>
         </div>
-        <div className="bg-card rounded-xl border p-2">
+        <div className="bg-card rounded-xl border p-2 space-y-2">
             <Textarea 
                 icon={MapPin}
                 id="full_address" 
                 name="full_address" 
-                placeholder="House No, Building, Area, LandMark..." 
+                placeholder="House No, Building, Area..." 
                 required 
                 className="border-0 bg-transparent text-base min-h-[60px]"
             />
+             <div className="h-px bg-border" />
+            <Input icon={Flag} id="landmark" name="landmark" placeholder="Landmark (Optional)" className="border-0 bg-transparent text-base" />
         </div>
       </div>
       
