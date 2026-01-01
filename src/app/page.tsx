@@ -12,9 +12,10 @@ import { getTranslations } from '@/lib/get-translation';
 import VerifiedTechnicians from '@/components/VerifiedTechnicians';
 import { ArrowRight, Award, ShieldCheck, Clock, Shield } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
-import AllServicesSheet from '@/components/AllServicesSheet';
 import BecomePartner from '@/components/BecomePartner';
 import HeroCTA from '@/components/HeroCTA';
+import { Sheet, SheetTrigger } from '@/components/ui/sheet';
+import AllServicesSheet from '@/components/AllServicesSheet';
 
 
 function ServiceCard({ category }: { category: ServiceCategory }) {
@@ -119,9 +120,12 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
               <h2 className="text-3xl font-bold font-headline">What's broken?</h2>
               <p className="text-muted-foreground">CHOOSE YOUR DEVICE</p>
             </div>
-            <AllServicesSheet>
-              <Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})}</Button>
-            </AllServicesSheet>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})}</Button>
+              </SheetTrigger>
+              <AllServicesSheet />
+            </Sheet>
           </div>
           <div className="grid services-grid gap-4">
             {categories.slice(0, 6).map((category) => (

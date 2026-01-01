@@ -7,6 +7,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import AllServicesSheet from './AllServicesSheet';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Sheet, SheetTrigger } from './ui/sheet';
 
 export default function BottomNavBar() {
   const { t } = useTranslation();
@@ -26,12 +27,13 @@ export default function BottomNavBar() {
       icon: LayoutGrid,
       isActive: false,
       component: (
-        <AllServicesSheet>
-          <button className={cn("flex flex-col items-center justify-center text-center transition-colors w-full h-full", 'text-muted-foreground')}>
-            <LayoutGrid className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">Services</span>
-          </button>
-        </AllServicesSheet>
+        <Sheet>
+            <SheetTrigger className={cn("flex flex-col items-center justify-center text-center transition-colors w-full h-full", 'text-muted-foreground')}>
+                <LayoutGrid className="w-6 h-6 mb-1" />
+                <span className="text-xs font-medium">Services</span>
+            </SheetTrigger>
+            <AllServicesSheet />
+        </Sheet>
       )
     },
     {

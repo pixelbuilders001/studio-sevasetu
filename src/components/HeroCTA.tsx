@@ -6,6 +6,7 @@ import AllServicesSheet from './AllServicesSheet';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { Sheet, SheetTrigger } from './ui/sheet';
 
 export default function HeroCTA() {
   const isMobile = useIsMobile();
@@ -18,9 +19,12 @@ export default function HeroCTA() {
 
   if (isMobile) {
     return (
-      <AllServicesSheet>
-        <CtaButton />
-      </AllServicesSheet>
+      <Sheet>
+        <SheetTrigger asChild>
+          <CtaButton />
+        </SheetTrigger>
+        <AllServicesSheet />
+      </Sheet>
     );
   }
 
