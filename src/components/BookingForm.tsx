@@ -31,7 +31,8 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   
   const [selectedDay, setSelectedDay] = useState('today');
   const [selectedTime, setSelectedTime] = useState('best');
-
+  const [address, setAddress] = useState('');
+  const [isGpsLoading, setIsGpsLoading] = useState(false);
 
   useEffect(() => {
     if (state?.error) {
@@ -46,6 +47,52 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     }
   }, [state, t, toast, router]);
   
+  const handleUseGps = () => {
+    if (!navigator.geolocation) {
+      toast({
+        variant: 'destructive',
+        title: 'GPS Not Supported',
+        description: 'Your browser does not support geolocation.',
+      });
+      return;
+    }
+
+    setIsGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await response.json();
+          if (data && data.display_name) {
+            setAddress(data.display_name);
+          } else {
+             toast({
+              variant: 'destructive',
+              title: 'Error',
+              description: 'Could not fetch address details.',
+            });
+          }
+        } catch (error) {
+           toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to fetch address.',
+          });
+        } finally {
+            setIsGpsLoading(false);
+        }
+      },
+      (error) => {
+        toast({
+          variant: 'destructive',
+          title: 'GPS Error',
+          description: error.message,
+        });
+        setIsGpsLoading(false);
+      }
+    );
+  };
 
   return (
     <form action={formAction} className="space-y-8">
@@ -62,8 +109,8 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       <div>
         <div className="flex justify-between items-center mb-3">
             <h2 className="text-sm font-bold uppercase text-muted-foreground">Service Address</h2>
-            <Button variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 text-primary border-blue-200 h-7 text-xs">
-                <LocateFixed className="mr-1.5 h-3.5 w-3.5"/>
+            <Button type="button" onClick={handleUseGps} disabled={isGpsLoading} variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 text-primary border-blue-200 h-7 text-xs">
+                {isGpsLoading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <LocateFixed className="mr-1.5 h-3.5 w-3.5"/>}
                 Use GPS
             </Button>
         </div>
@@ -71,7 +118,9 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
             <Textarea 
                 icon={MapPin}
                 id="full_address" 
-                name="full_address" 
+                name="full_address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 placeholder="House No, Building, Area..." 
                 required 
                 className="border-0 bg-transparent text-base min-h-[60px]"
