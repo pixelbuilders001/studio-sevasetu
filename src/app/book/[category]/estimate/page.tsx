@@ -1,13 +1,13 @@
 
 'use client';
 import { getServiceCategory } from '@/lib/data';
-import { notFound, useParams } from 'next/navigation';
+import { notFound, useParams, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { AlertCircle, Wrench, Hammer } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { ServiceCategory, Problem } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
@@ -53,32 +53,26 @@ function PriceEstimationSkeleton() {
 
 export default function PriceEstimationPage() {
   const params = useParams();
-  const { category: categoryId, problem: problemId } = params as { category: string, problem: string };
+  const searchParams = useSearchParams();
+  const { category: categorySlug } = params as { category: string };
+  const problemIds = searchParams.get('problems');
+
   const { t, getTranslatedCategory } = useTranslation();
   
   const [category, setCategory] = useState<ServiceCategory | null>(null);
-  const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategoryAndProblem = async () => {
-      if (!categoryId || !problemId) return;
+      if (!categorySlug || !problemIds) return;
       try {
-        const originalCategory = await getServiceCategory(categoryId as string);
+        const originalCategory = await getServiceCategory(categorySlug as string);
         if (!originalCategory) {
           notFound();
           return;
         }
         const translatedCategory = getTranslatedCategory(originalCategory);
-        const currentProblem = translatedCategory.problems.find((p) => p.id === problemId);
-
-        if (!currentProblem) {
-          notFound();
-          return;
-        }
-
         setCategory(translatedCategory);
-        setProblem(currentProblem);
       } catch (error) {
         console.error("Failed to fetch data:", error);
         notFound();
@@ -88,24 +82,37 @@ export default function PriceEstimationPage() {
     };
 
     fetchCategoryAndProblem();
-  }, [categoryId, problemId, getTranslatedCategory]);
+  }, [categorySlug, problemIds, getTranslatedCategory]);
+
+  const selectedProblems = useMemo(() => {
+    if (!category || !problemIds) return [];
+    const ids = problemIds.split(',');
+    return category.problems.filter((p) => ids.includes(p.id));
+  }, [category, problemIds]);
+
+  const totalEstimate = useMemo(() => {
+    if (selectedProblems.length === 0) return 199;
+    const problemsTotal = selectedProblems.reduce((acc, problem) => acc + (problem.estimated_price || 0), 0);
+    return 199 + problemsTotal;
+  }, [selectedProblems]);
+
 
   if (loading) {
     return <PriceEstimationSkeleton />;
   }
 
-  if (!category || !problem) {
+  if (!category || !problemIds || selectedProblems.length === 0) {
     notFound();
   }
 
-  const totalEstimate = 199 + (problem.estimated_price || 0);
+  const problemNames = selectedProblems.map(p => p.name).join(', ');
 
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-md mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-headline">{t('priceEstimateTitle')}</CardTitle>
-          <CardDescription>{t('priceEstimateDescription', { category: category.name, problem: problem.name })}</CardDescription>
+          <CardDescription>{t('priceEstimateDescription', { category: category.name, problem: problemNames })}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="p-4 bg-muted/30 rounded-lg space-y-3">
@@ -116,15 +123,17 @@ export default function PriceEstimationPage() {
               </div>
               <span className="font-semibold">Rs. 199</span>
             </div>
-            {problem.estimated_price > 0 && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Hammer className="w-5 h-5 text-muted-foreground" />
-                  <span className="font-medium text-muted-foreground">Estimated Repair Cost</span>
+            {selectedProblems.map(problem => (
+              problem.estimated_price > 0 && (
+                <div key={problem.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Hammer className="w-5 h-5 text-muted-foreground" />
+                    <span className="font-medium text-muted-foreground">{problem.name}</span>
+                  </div>
+                  <span className="font-semibold">Rs. {problem.estimated_price}</span>
                 </div>
-                <span className="font-semibold">Rs. {problem.estimated_price}</span>
-              </div>
-            )}
+              )
+            ))}
           </div>
           
           <Separator />
@@ -141,7 +150,7 @@ export default function PriceEstimationPage() {
         </CardContent>
         <CardFooter>
           <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-            <Link href={`/book/${categoryId}/details?problems=${problemId}`}>{t('proceedToBook')}</Link>
+            <Link href={`/book/${categorySlug}/details?problems=${problemIds}`}>{t('proceedToBook')}</Link>
           </Button>
         </CardFooter>
       </Card>
