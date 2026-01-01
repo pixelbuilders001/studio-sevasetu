@@ -1,4 +1,3 @@
-
 'use client';
 import { type Problem, type ServiceCategory, ICONS } from '@/lib/data';
 import { useRouter, notFound } from 'next/navigation';
@@ -7,7 +6,7 @@ import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, X } from 'lucide-react';
+import { CheckCircle, X, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -101,26 +100,18 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
       </Card>
       
       {selectedProblems.length > 0 && (
-         <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50 md:static md:bg-transparent md:border-none md:p-0 md:mt-8">
-            <div className="max-w-xl mx-auto flex items-center justify-between gap-4">
-                <div className="flex-grow hidden md:flex items-center gap-2 overflow-hidden">
-                   <p className="font-semibold">{t('selected_issues', { defaultValue: 'Selected:'})}</p>
-                   <div className="flex gap-2 overflow-x-auto">
-                     {selectedProblems.map(p => (
-                         <Badge key={p.id} variant="secondary" className="flex items-center gap-1.5 whitespace-nowrap">
-                             {p.name}
-                             <button onClick={() => removeProblem(p.id)} className="rounded-full hover:bg-muted-foreground/20">
-                                 <X className="w-3 h-3" />
-                             </button>
-                         </Badge>
-                     ))}
-                   </div>
-                </div>
-                <Button onClick={handleBookRepair} size="lg" className="w-full md:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-                  {t('proceedToBook')}
-                </Button>
-            </div>
-         </div>
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50">
+          <div className="max-w-xl mx-auto">
+            <Button
+              onClick={handleBookRepair}
+              size="lg"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg h-14 rounded-full"
+            >
+              {`Next (${selectedProblems.length} issue${selectedProblems.length > 1 ? 's' : ''})`}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );
