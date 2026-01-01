@@ -38,7 +38,7 @@ export default function Testimonials() {
   return (
     <section className="py-8 md:py-12 bg-muted/20">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8 font-headline text-center">Loved by Locals</h2>
+        <h2 className="text-3xl font-bold mb-8 font-headline">Loved by Locals</h2>
         <div className="md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8">
             <ScrollArea className="w-full whitespace-nowrap md:whitespace-normal">
               <div className="flex w-max space-x-4 md:space-x-0 md:grid">

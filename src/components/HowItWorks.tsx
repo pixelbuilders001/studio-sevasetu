@@ -34,9 +34,9 @@ export default function HowItWorks() {
   ];
   
   return (
-    <section className="py-12 md:py-16 bg-muted/30">
+    <section className="py-8 md:py-12 bg-muted/30">
       <div className="container mx-auto px-4 max-w-2xl">
-        <div className="text-center mb-12">
+        <div className="mb-8">
             <h2 className="text-3xl font-bold font-headline">How SevaSetu Works</h2>
             <p className="text-muted-foreground uppercase text-sm font-semibold tracking-wider">SIMPLE 4-STEP PROCESS</p>
         </div>

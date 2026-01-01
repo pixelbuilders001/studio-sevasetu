@@ -40,7 +40,7 @@ export default function TrustIndicators() {
 
   return (
     <section>
-      <div className="text-center mb-8">
+      <div className="mb-8">
         <h2 className="text-3xl font-bold font-headline">{t('whyChooseUs')}</h2>
         <p className="text-muted-foreground uppercase text-sm font-semibold tracking-wider">RELIABLE SERVICE, GUARANTEED.</p>
       </div>
