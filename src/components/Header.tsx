@@ -1,19 +1,20 @@
+
 'use client';
 
 import Link from 'next/link';
 import LocationSelector from './LocationSelector';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
   SheetClose,
+  SheetHeader,
+  SheetTitle
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Menu, Bike, ChevronDown } from 'lucide-react';
 import BookingTrackerModal from './BookingTrackerModal';
 
 const Logo = () => (
@@ -22,7 +23,7 @@ const Logo = () => (
       <span className="text-2xl font-bold text-primary-foreground">S</span>
     </div>
     <div className="flex flex-col">
-      <span className="text-lg font-bold text-primary-foreground leading-tight">SevaSetu</span>
+      <span className="text-lg font-bold text-primary leading-tight">SevaSetu</span>
       <span className="text-xs font-semibold text-muted-foreground leading-tight tracking-wide">TRUSTED REPAIR</span>
     </div>
   </Link>
@@ -51,7 +52,7 @@ export default function Header() {
                   </SheetTrigger>
                   <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                     <SheetHeader className="border-b pb-4 mb-4">
-                      <Logo />
+                       <Logo />
                       <SheetTitle className="sr-only">Menu</SheetTitle>
                     </SheetHeader>
                     <div className="flex flex-col h-full">
@@ -76,7 +77,7 @@ export default function Header() {
                 </Sheet>
             </div>
             <div className='hidden md:block'>
-              <Logo />
+               <Logo />
             </div>
           </div>
           
