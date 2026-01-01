@@ -70,15 +70,6 @@ function BookingDetailsContent() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-       <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
-          <ArrowLeft />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold font-headline">Booking Details</h1>
-          <p className="text-muted-foreground uppercase text-sm">for {category.name} Repair</p>
-        </div>
-      </div>
       <BookingForm 
         categoryId={category.id}
         problemIds={problemIds}
