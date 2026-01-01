@@ -33,7 +33,7 @@ function ServicesSheetSkeleton() {
     );
 }
 
-export default function AllServicesSheet({ trigger }: { trigger: React.ReactNode }) {
+export default function AllServicesSheet({ children }: { children: React.ReactNode }) {
     const { t, language } = useTranslation();
     const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems'>[]>([]);
     const [loading, setLoading] = useState(true);
@@ -57,7 +57,7 @@ export default function AllServicesSheet({ trigger }: { trigger: React.ReactNode
     return (
         <Sheet>
             <SheetTrigger asChild>
-                {trigger}
+                {children}
             </SheetTrigger>
             <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-2xl">
                 <SheetHeader>

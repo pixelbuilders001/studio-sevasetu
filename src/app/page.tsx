@@ -119,7 +119,9 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
               <h2 className="text-3xl font-bold font-headline">What's broken?</h2>
               <p className="text-muted-foreground">CHOOSE YOUR DEVICE</p>
             </div>
-            <AllServicesSheet trigger={<Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})}</Button>} />
+            <AllServicesSheet>
+              <Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})}</Button>
+            </AllServicesSheet>
           </div>
           <div className="grid services-grid gap-4">
             {categories.slice(0, 6).map((category) => (

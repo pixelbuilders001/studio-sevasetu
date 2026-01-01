@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -17,7 +18,9 @@ export default function HeroCTA() {
 
   if (isMobile) {
     return (
-      <AllServicesSheet trigger={<CtaButton />} />
+      <AllServicesSheet>
+        <CtaButton />
+      </AllServicesSheet>
     );
   }
 
