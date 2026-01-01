@@ -3,8 +3,7 @@
 import {
     SheetHeader,
     SheetTitle,
-    SheetClose,
-    SheetContent
+    SheetClose
 } from '@/components/ui/sheet';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getServiceCategories, ServiceCategory } from '@/lib/data';
@@ -53,7 +52,7 @@ export default function AllServicesSheet() {
 
 
     return (
-        <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-2xl">
+        <>
             <SheetHeader>
                 <SheetTitle>What's broken?</SheetTitle>
             </SheetHeader>
@@ -84,6 +83,6 @@ export default function AllServicesSheet() {
                     </div>
                 )}
             </div>
-        </SheetContent>
+        </>
     )
 }

@@ -7,7 +7,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import AllServicesSheet from './AllServicesSheet';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetTrigger, SheetContent } from './ui/sheet';
 
 export default function BottomNavBar() {
   const { t } = useTranslation();
@@ -32,7 +32,9 @@ export default function BottomNavBar() {
                 <LayoutGrid className="w-6 h-6 mb-1" />
                 <span className="text-xs font-medium">Services</span>
             </SheetTrigger>
-            <AllServicesSheet />
+            <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-2xl">
+                <AllServicesSheet />
+            </SheetContent>
         </Sheet>
       )
     },
