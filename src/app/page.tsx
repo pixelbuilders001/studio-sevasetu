@@ -22,18 +22,18 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
     return (
         <Link href={`/book/${category.slug}`} className="group">
             <Card className="bg-card border rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full aspect-square justify-center items-center bg-white">
-                <CardContent className="p-4 flex flex-col items-center justify-center gap-2">
-                    <div className="relative w-16 h-16 md:w-20 md:h-20">
+                <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center gap-2">
+                    <div className="relative w-12 h-12 md:w-20 md:h-20">
                         <Image
                             src={category.image.imageUrl}
                             alt={category.name}
                             fill
-                            sizes="(max-width: 768px) 20vw, 10vw"
+                            sizes="(max-width: 768px) 15vw, 10vw"
                             className="object-contain"
                             data-ai-hint={category.image.imageHint}
                         />
                     </div>
-                    <h3 className="font-bold text-sm md:text-base text-foreground">{category.name}</h3>
+                    <h3 className="font-bold text-xs md:text-base text-foreground">{category.name}</h3>
                 </CardContent>
             </Card>
         </Link>
@@ -137,7 +137,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
               </SheetContent>
             </Sheet>
           </div>
-          <div className="grid services-grid gap-4">
+          <div className="services-grid grid gap-4">
             {categories.slice(0, 6).map((category) => (
                 <ServiceCard key={category.id} category={category}/>
             ))}
