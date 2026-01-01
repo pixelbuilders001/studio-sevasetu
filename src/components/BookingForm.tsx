@@ -13,6 +13,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
 import { bookService } from '@/app/actions';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 const initialState = {
   message: "",
@@ -33,6 +34,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   const [selectedTime, setSelectedTime] = useState('best');
   const [address, setAddress] = useState('');
   const [isGpsLoading, setIsGpsLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (state?.error) {
@@ -93,6 +95,15 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       }
     );
   };
+  
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImagePreview(null);
+    }
+  };
 
   return (
     <form action={formAction} className="space-y-8">
@@ -132,11 +143,18 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       
        <div>
         <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Add Problem Photos (Optional)</h2>
-        <label htmlFor="media" className="relative flex flex-col items-center justify-center w-32 h-32 cursor-pointer bg-card border-2 border-dashed rounded-xl hover:bg-muted/50">
-            <Camera className="w-8 h-8 text-muted-foreground mb-2" />
-            <span className="text-sm font-semibold text-muted-foreground">Add Photo</span>
-            <Input id="media" name="media" type="file" accept="image/jpeg,image/png,video/mp4" className="sr-only" />
-        </label>
+        <div className="flex items-center gap-4">
+          <label htmlFor="media" className="relative flex flex-col items-center justify-center w-32 h-32 cursor-pointer bg-card border-2 border-dashed rounded-xl hover:bg-muted/50">
+              <Camera className="w-8 h-8 text-muted-foreground mb-2" />
+              <span className="text-sm font-semibold text-muted-foreground">Add Photo</span>
+              <Input id="media" name="media" type="file" accept="image/jpeg,image/png,video/mp4" className="sr-only" onChange={handleImageChange} />
+          </label>
+          {imagePreview && (
+            <div className="relative w-32 h-32 rounded-xl overflow-hidden border">
+              <Image src={imagePreview} alt="Image preview" layout="fill" objectFit="cover" />
+            </div>
+          )}
+        </div>
       </div>
 
       <div>
