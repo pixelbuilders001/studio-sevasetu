@@ -31,60 +31,12 @@ const Logo = () => (
 
 export default function Header() {
   const { t } = useTranslation();
-  const navItems = [
-    { href: '#how-it-works', label: t('howItWorksTitle') },
-    { href: '#why-choose-us', label: t('whyChooseUs') },
-    { href: '#services', label: t('ourServices') },
-  ];
-
+  
   return (
     <header className="bg-background border-b sticky top-0 z-40">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          <div className="flex items-center gap-4">
-            <div className="md:hidden">
-              <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Menu className="h-6 w-6" />
-                      <span className="sr-only">Open menu</span>
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-                    <SheetHeader className="border-b pb-4 mb-4">
-                       <Logo />
-                      <SheetTitle className="sr-only">Menu</SheetTitle>
-                    </SheetHeader>
-                    <div className="flex flex-col h-full">
-                      <nav className="flex flex-col gap-4">
-                        {navItems.map((item) => (
-                          <SheetClose asChild key={item.href}>
-                            <Link
-                              href={item.href}
-                              className="text-lg font-medium text-foreground transition-colors hover:text-primary"
-                            >
-                              {item.label}
-                            </Link>
-                          </SheetClose>
-                        ))}
-                         <BookingTrackerModal isMobile={true} />
-                      </nav>
-                      <div className="mt-auto">
-                        <LanguageSwitcher />
-                      </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
-            </div>
-            <div className='hidden md:block'>
-               <Logo />
-            </div>
-          </div>
-          
-          <div className='md:hidden'>
-             <Logo />
-          </div>
-
+          <Logo />
           <div className="flex items-center gap-2">
               <LocationSelector />
               <LanguageSwitcher />
