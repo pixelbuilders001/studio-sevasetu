@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, ComponentProps } from 'react';
+import { useState, ComponentProps, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle } from 'lucide-react';
+import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,8 +17,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { getServiceCategories } from '@/lib/data';
+import type { ServiceCategory } from '@/lib/data';
+import { Textarea } from '@/components/ui/textarea';
+
 
 const PersonalInfoSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
@@ -227,6 +238,129 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
 }
 
 
+const ExperienceSchema = z.object({
+  primarySkill: z.string().min(1, { message: 'Please select your primary skill.' }),
+  totalExperience: z.string().min(1, { message: 'Please select your total experience.' }),
+  toolsOwned: z.string().optional(),
+});
+
+type ExperienceForm = z.infer<typeof ExperienceSchema>;
+
+function ExperienceStep({ onNext }: { onNext: () => void }) {
+  const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
+
+  useEffect(() => {
+    async function fetchSkills() {
+      const skills = await getServiceCategories();
+      setCategories(skills);
+    }
+    fetchSkills();
+  }, []);
+
+  const experienceLevels = [
+    '0-1 Year',
+    '1-3 Years',
+    '3-5 Years',
+    '5+ Years',
+  ];
+  
+  const form = useForm<ExperienceForm>({
+    resolver: zodResolver(ExperienceSchema),
+  });
+
+  const onSubmit = (data: ExperienceForm) => {
+    console.log('Experience Info:', data);
+    onNext();
+  };
+
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Briefcase className="w-5 h-5 text-primary" />
+          <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
+        </div>
+
+        <FormField
+          control={form.control}
+          name="primarySkill"
+          render={({ field }) => (
+            <FormItem>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                    <div className='relative'>
+                        <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <SelectTrigger className="pl-10 text-base h-12 rounded-lg">
+                            <SelectValue placeholder="Select Primary Skill" />
+                        </SelectTrigger>
+                    </div>
+                </FormControl>
+                <SelectContent>
+                  {categories.map(cat => (
+                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="totalExperience"
+          render={({ field }) => (
+            <FormItem>
+               <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                    <div className='relative'>
+                        <Star className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <SelectTrigger className="pl-10 text-base h-12 rounded-lg">
+                            <SelectValue placeholder="Total Experience" />
+                        </SelectTrigger>
+                    </div>
+                </FormControl>
+                <SelectContent>
+                  {experienceLevels.map(exp => (
+                    <SelectItem key={exp} value={exp}>{exp}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="toolsOwned"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Textarea icon={Wrench} placeholder="Tools you own (Optional)" {...field} className="pl-10 min-h-[80px]" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <Alert className="bg-orange-50 border-orange-200 text-orange-800">
+          <Info className="h-4 w-4 !text-orange-500" />
+          <AlertDescription>
+           By submitting, you agree to our <a href="#" className="font-bold underline">Partner Terms</a> and code of conduct.
+          </AlertDescription>
+        </Alert>
+
+        <Button type="submit" size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+          SUBMIT APPLICATION
+          <CheckCircle className="ml-2 h-5 w-5" />
+        </Button>
+      </form>
+    </FormProvider>
+  );
+}
+
+
 export default function PartnerOnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -258,7 +392,8 @@ export default function PartnerOnboardingPage() {
         return <PersonalInfoStep onNext={handleNext} />;
       case 2:
         return <DocumentsStep onNext={handleNext} />;
-      // Add case 3 for other steps later
+      case 3:
+        return <ExperienceStep onNext={handleNext} />;
       default:
         return <PersonalInfoStep onNext={handleNext} />;
     }
@@ -268,7 +403,7 @@ export default function PartnerOnboardingPage() {
     switch (step) {
         case 1: return "Personal Info";
         case 2: return "Documents";
-        case 3: return "Document Upload";
+        case 3: return "Experience";
         default: return "Personal Info";
     }
   }
