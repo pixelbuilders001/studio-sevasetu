@@ -2,43 +2,59 @@
 'use client';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Wrench, ReceiptText, ShieldCheck } from 'lucide-react';
+import { Gem, Award, ReceiptText, ShieldAlert } from 'lucide-react';
 
 export default function TrustIndicators() {
   const { t } = useTranslation();
   
   const indicators = [
     {
-      icon: Wrench,
-      title: t('trustIndicator1Title'),
-      description: t('trustIndicator1Desc'),
+      icon: Gem,
+      title: 'ASLI PARTS',
+      description: 'Only 100% genuine spare parts used.',
+      bgColor: 'bg-purple-100/60 dark:bg-purple-900/30',
+      iconColor: 'text-purple-600 dark:text-purple-400'
+    },
+    {
+      icon: Award,
+      title: 'EXPERT PROS',
+      description: 'Certified & background verified.',
+      bgColor: 'bg-blue-100/60 dark:bg-blue-900/30',
+      iconColor: 'text-blue-600 dark:text-blue-400'
     },
     {
       icon: ReceiptText,
-      title: t('trustIndicator2Title'),
-      description: t('trustIndicator2Desc'),
+      title: 'PAKKA BILL',
+      description: 'Transparent pricing with no surprises.',
+      bgColor: 'bg-green-100/60 dark:bg-green-900/30',
+      iconColor: 'text-green-600 dark:text-green-400'
     },
     {
-      icon: ShieldCheck,
-      title: t('trustIndicator3Title'),
-      description: t('trustIndicator3Desc'),
+      icon: ShieldAlert,
+      title: 'WARRANTY',
+      description: '30-day post-service guarantee.',
+      bgColor: 'bg-orange-100/60 dark:bg-orange-900/30',
+      iconColor: 'text-orange-600 dark:text-orange-400'
     },
   ];
 
   return (
     <section>
-      <h2 className="text-3xl font-bold mb-8 font-headline text-center">{t('whyChooseUs')}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-left">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold font-headline">{t('whyChooseUs')}</h2>
+        <p className="text-muted-foreground uppercase text-sm font-semibold tracking-wider">RELIABLE SERVICE, GUARANTEED.</p>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-left">
         {indicators.map((indicator, index) => (
           <Card key={index} className="hover:shadow-md transition-shadow bg-card border-0 shadow-sm rounded-2xl">
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center gap-4">
-                <indicator.icon className="w-8 h-8 md:w-10 md:h-10 text-primary shrink-0" />
+            <CardContent className="p-6">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${indicator.bgColor}`}>
+                    <indicator.icon className={`w-7 h-7 ${indicator.iconColor}`} />
+                </div>
                 <div>
-                  <h3 className="font-bold text-base md:text-lg mb-1">{indicator.title}</h3>
+                  <h3 className="font-bold text-base md:text-lg mb-1 uppercase">{indicator.title}</h3>
                   <p className="text-sm text-muted-foreground">{indicator.description}</p>
                 </div>
-              </div>
             </CardContent>
           </Card>
         ))}
