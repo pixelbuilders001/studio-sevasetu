@@ -16,6 +16,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Skeleton } from './ui/skeleton';
+import { cn } from '@/lib/utils';
 
 
 function ServicesSheetSkeleton() {
@@ -60,9 +61,9 @@ export default function ServicesSheet() {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <button className="w-full flex flex-col items-center justify-center text-center text-muted-foreground hover:text-primary transition-colors">
+                <button className={cn("flex flex-col items-center justify-center text-center transition-colors w-full h-full", 'text-muted-foreground')}>
                     <LayoutGrid className="w-6 h-6 mb-1" />
-                    <span className="text-xs font-medium">{t('ourServices')}</span>
+                    <span className="text-xs font-medium">Services</span>
                 </button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[80vh] flex flex-col">
