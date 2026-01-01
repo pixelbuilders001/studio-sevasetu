@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, X, ArrowRight } from 'lucide-react';
+import { CheckCircle, X, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -51,13 +51,18 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-xl mx-auto border-0 shadow-none">
-        <CardHeader className="text-center px-0">
+       <div className="flex items-center gap-4 mb-6">
+        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <ArrowLeft />
+        </Button>
+        <CardHeader className="text-left px-0 py-0">
           <CardTitle className="text-2xl md:text-3xl font-headline">
              {t('whatsTheProblemWithYour', { name: translatedCategory.name })}
           </CardTitle>
           <CardDescription>{t('select_all_issues', {defaultValue: "Select one or more issues"})}</CardDescription>
         </CardHeader>
+      </div>
+      <Card className="max-w-xl mx-auto border-0 shadow-none">
         <CardContent className="px-0">
           <div className="space-y-3">
             {translatedCategory.problems.map((problem) => {
