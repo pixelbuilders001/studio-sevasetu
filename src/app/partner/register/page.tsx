@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench } from 'lucide-react';
+import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -29,6 +29,7 @@ import { Label } from '@/components/ui/label';
 import { getServiceCategories } from '@/lib/data';
 import type { ServiceCategory } from '@/lib/data';
 import { Textarea } from '@/components/ui/textarea';
+import Image from 'next/image';
 
 
 const PersonalInfoSchema = z.object({
@@ -126,19 +127,40 @@ const DocumentsSchema = z.object({
 type DocumentsForm = z.infer<typeof DocumentsSchema>;
 
 
-function FileUpload({ field, label, isUploaded }: { field: any, label: string, isUploaded: boolean }) {
+function FileUpload({ 
+  field, 
+  label, 
+  previewUrl,
+  onRemove
+}: { 
+  field: any, 
+  label: string, 
+  previewUrl: string | null,
+  onRemove: () => void 
+}) {
   return (
     <FormItem className="w-full">
       <FormControl>
         <label className={cn(
-          "flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer",
-          isUploaded ? "border-green-500 bg-green-50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+          "relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer overflow-hidden",
+          previewUrl ? "border-green-500 bg-green-50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
         )}>
-          {isUploaded ? (
-            <div className="text-center text-green-600">
-              <CheckCircle className="mx-auto mb-1 w-8 h-8" />
-              <span className="font-semibold text-sm">UPLOADED</span>
-            </div>
+          {previewUrl ? (
+             <>
+              <Image src={previewUrl} alt={label} layout="fill" objectFit="cover" />
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="absolute top-1 right-1 h-6 w-6 z-10 rounded-full"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onRemove();
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </>
           ) : (
             <div className="text-center text-gray-500">
               <UploadCloud className="mx-auto mb-1 w-8 h-8" />
@@ -158,18 +180,35 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
     resolver: zodResolver(DocumentsSchema),
   });
 
+  const [previews, setPreviews] = useState({
+    aadharFront: null as string | null,
+    aadharBack: null as string | null,
+    selfie: null as string | null,
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof typeof previews) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setPreviews(prev => ({...prev, [fieldName]: previewUrl}));
+      form.setValue(fieldName, e.target.files as any);
+    }
+  };
+
+  const handleRemove = (fieldName: keyof typeof previews) => {
+    setPreviews(prev => ({...prev, [fieldName]: null}));
+    form.setValue(fieldName, null as any);
+    // Also reset the file input
+    const fileInput = document.getElementById(fieldName) as HTMLInputElement | null;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
+
   const onSubmit = (data: DocumentsForm) => {
     console.log('Documents Info:', data);
     onNext();
   };
-  
-  const aadharFrontWatch = form.watch('aadharFront');
-  const aadharBackWatch = form.watch('aadharBack');
-  const selfieWatch = form.watch('selfie');
-  
-  const aadharFrontRef = form.register("aadharFront");
-  const aadharBackRef = form.register("aadharBack");
-  const selfieRef = form.register("selfie");
 
   return (
     <FormProvider {...form}>
@@ -196,32 +235,36 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
             <FormField
               control={form.control}
               name="aadharFront"
-              render={({ field: { onChange, onBlur, name, ref } }) => (
+              render={({ field: { ref, onBlur, name } }) => (
                  <FileUpload 
                     field={{
+                      id: name,
                       name,
                       ref,
                       onBlur,
-                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.files)
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e, name)
                     }} 
                     label="Aadhaar Front" 
-                    isUploaded={!!aadharFrontWatch && aadharFrontWatch.length > 0} 
+                    previewUrl={previews.aadharFront}
+                    onRemove={() => handleRemove(name)}
                  />
               )}
             />
             <FormField
               control={form.control}
               name="aadharBack"
-               render={({ field: { onChange, onBlur, name, ref } }) => (
+               render={({ field: { ref, onBlur, name } }) => (
                  <FileUpload 
                     field={{
+                      id: name,
                       name,
                       ref,
                       onBlur,
-                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.files)
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e, name)
                     }}
                     label="Aadhaar Back" 
-                    isUploaded={!!aadharBackWatch && aadharBackWatch.length > 0}
+                    previewUrl={previews.aadharBack}
+                    onRemove={() => handleRemove(name)}
                  />
               )}
             />
@@ -232,16 +275,18 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
             <FormField
               control={form.control}
               name="selfie"
-              render={({ field: { onChange, onBlur, name, ref } }) => (
+              render={({ field: { ref, onBlur, name } }) => (
                  <FileUpload 
                     field={{
+                      id: name,
                       name,
                       ref,
                       onBlur,
-                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.files)
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e, name)
                     }}
                     label="Upload Selfie"
-                    isUploaded={!!selfieWatch && selfieWatch.length > 0}
+                    previewUrl={previews.selfie}
+                    onRemove={() => handleRemove(name)}
                  />
               )}
             />
