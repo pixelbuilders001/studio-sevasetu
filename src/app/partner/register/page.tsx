@@ -118,9 +118,9 @@ function PersonalInfoStep({ onNext }: { onNext: () => void }) {
 
 const DocumentsSchema = z.object({
   aadharNumber: z.string().regex(/^\d{12}$/, { message: 'Please enter a valid 12-digit Aadhar number.' }),
-  aadharFront: z.any().refine(file => file?.length == 1, 'Aadhar front picture is required.'),
-  aadharBack: z.any().refine(file => file?.length == 1, 'Aadhar back picture is required.'),
-  selfie: z.any().refine(file => file?.length == 1, 'Selfie with Aadhar is required.'),
+  aadharFront: z.any().refine((files) => files?.length === 1, 'Aadhar front picture is required.'),
+  aadharBack: z.any().refine((files) => files?.length === 1, 'Aadhar back picture is required.'),
+  selfie: z.any().refine((files) => files?.length === 1, 'Selfie with Aadhar is required.'),
 });
 
 type DocumentsForm = z.infer<typeof DocumentsSchema>;
@@ -166,6 +166,10 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
   const aadharFrontWatch = form.watch('aadharFront');
   const aadharBackWatch = form.watch('aadharBack');
   const selfieWatch = form.watch('selfie');
+  
+  const aadharFrontRef = form.register("aadharFront");
+  const aadharBackRef = form.register("aadharBack");
+  const selfieRef = form.register("selfie");
 
   return (
     <FormProvider {...form}>
@@ -192,9 +196,9 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
             <FormField
               control={form.control}
               name="aadharFront"
-              render={({ field: { onChange, onBlur, name, ref } }) => (
+              render={({ field }) => (
                  <FileUpload 
-                    field={{ onChange, onBlur, name, ref }} 
+                    field={{...aadharFrontRef, onChange: (e) => field.onChange(e.target.files) }} 
                     label="Aadhaar Front" 
                     isUploaded={!!aadharFrontWatch && aadharFrontWatch.length > 0} 
                  />
@@ -203,9 +207,9 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
             <FormField
               control={form.control}
               name="aadharBack"
-               render={({ field: { onChange, onBlur, name, ref } }) => (
+               render={({ field }) => (
                  <FileUpload 
-                    field={{ onChange, onBlur, name, ref }} 
+                    field={{...aadharBackRef, onChange: (e) => field.onChange(e.target.files) }} 
                     label="Aadhaar Back" 
                     isUploaded={!!aadharBackWatch && aadharBackWatch.length > 0}
                  />
@@ -218,9 +222,9 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
             <FormField
               control={form.control}
               name="selfie"
-              render={({ field: { onChange, onBlur, name, ref } }) => (
+              render={({ field }) => (
                  <FileUpload 
-                    field={{ onChange, onBlur, name, ref }} 
+                    field={{...selfieRef, onChange: (e) => field.onChange(e.target.files) }} 
                     label="Upload Selfie"
                     isUploaded={!!selfieWatch && selfieWatch.length > 0}
                  />
@@ -428,3 +432,5 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
+
+    
