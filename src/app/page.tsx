@@ -1,4 +1,5 @@
 
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { getServiceCategories } from '@/lib/data';
@@ -86,9 +87,11 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
                     <p className="text-base md:text-lg text-primary-foreground/80 max-w-sm mb-8">
                        Expert technicians for Mobile, Laptop, AC & Home Appliances.
                     </p>
-                    <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-10 h-14 rounded-full">
-                        <a href="#services">BOOK NOW <ArrowRight className="w-5 h-5 ml-2" /></a>
-                    </Button>
+                    <AllServicesSheet trigger={
+                      <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-10 h-14 rounded-full">
+                        BOOK NOW <ArrowRight className="w-5 h-5 ml-2" />
+                      </Button>
+                    } />
                 </div>
             </div>
         </div>
