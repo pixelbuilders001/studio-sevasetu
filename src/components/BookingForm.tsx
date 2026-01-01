@@ -1,25 +1,18 @@
 
 'use client';
 
-import { useMemo, useEffect, useActionState } from 'react';
+import { useMemo, useEffect, useActionState, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
 import { bookService } from '@/app/actions';
+import { cn } from '@/lib/utils';
 
 const initialState = {
   message: "",
@@ -27,8 +20,7 @@ const initialState = {
   bookingId: undefined,
 };
 
-
-export function BookingForm({ categoryId, problemIds, totalEstimate }: { categoryId: string; problemIds: string; totalEstimate: number; }) {
+export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; totalEstimate: number; }) {
   const { t } = useTranslation();
   const { location } = useLocation();
   const { toast } = useToast();
@@ -36,13 +28,10 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
 
   const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
+  
+  const [selectedDay, setSelectedDay] = useState('today');
+  const [selectedTime, setSelectedTime] = useState('best');
 
-
-  const problemDescription = "General Checkup";
-  const otherIssueStrings = ['other issue', 'अन्य समस्या'];
-  const isOtherProblem = useMemo(() => {
-    return otherIssueStrings.includes(problemDescription.toLowerCase());
-  }, [problemDescription]);
 
   useEffect(() => {
     if (state?.error) {
@@ -59,55 +48,62 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
   
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-8">
       
       <div>
-        <Label htmlFor="user_name">{t('nameLabel')}</Label>
-        <Input id="user_name" name="user_name" required />
-      </div>
-
-      <div>
-        <Label htmlFor="mobile_number">{t('mobileLabel')}</Label>
-        <Input id="mobile_number" name="mobile_number" type="tel" required />
-      </div>
-
-      <div>
-        <Label htmlFor="full_address">{t('addressLabel')}</Label>
-        <Textarea id="full_address" name="full_address" required />
-      </div>
-
-      <div>
-        <Label htmlFor="landmark">{t('landmarkLabel')}</Label>
-        <Input id="landmark" name="landmark" />
-      </div>
-
-      {isOtherProblem && (
-        <div>
-            <Label htmlFor="problem_description">{t('describeProblemLabel')}</Label>
-            <Textarea id="problem_description" name="problem_description" required />
+        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Contact Information</h2>
+        <div className="bg-card rounded-xl border p-2 space-y-2">
+            <Input icon={User} id="user_name" name="user_name" placeholder="Full Name" required className="border-0 bg-transparent text-base" />
+            <div className="h-px bg-border" />
+            <Input icon={Phone} id="mobile_number" name="mobile_number" type="tel" placeholder="Mobile Number" required className="border-0 bg-transparent text-base" />
         </div>
-      )}
-
-      <div>
-        <Label htmlFor="preferred_time_slot">{t('timeSlotLabel')}</Label>
-        <Select name="preferred_time_slot" required>
-            <SelectTrigger id="preferred_time_slot">
-                <SelectValue placeholder={t('selectTimeSlotPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="morning">{t('timeSlotMorning')}</SelectItem>
-                <SelectItem value="afternoon">{t('timeSlotAfternoon')}</SelectItem>
-                <SelectItem value="evening">{t('timeSlotEvening')}</SelectItem>
-            </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="media">{t('mediaLabel')}</Label>
-        <Input id="media" name="media" type="file" accept="image/jpeg,image/png,video/mp4" />
-        <p className="text-sm text-muted-foreground mt-1">{t('mediaHelpText')}</p>
       </div>
       
+      <div>
+        <div className="flex justify-between items-center mb-3">
+            <h2 className="text-sm font-bold uppercase text-muted-foreground">Service Address</h2>
+            <Button variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 text-primary border-blue-200 h-7 text-xs">
+                <LocateFixed className="mr-1.5 h-3.5 w-3.5"/>
+                Use GPS
+            </Button>
+        </div>
+        <div className="bg-card rounded-xl border p-2">
+            <Textarea 
+                icon={MapPin}
+                id="full_address" 
+                name="full_address" 
+                placeholder="House No, Building, Area, LandMark..." 
+                required 
+                className="border-0 bg-transparent text-base min-h-[60px]"
+            />
+        </div>
+      </div>
+      
+       <div>
+        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Add Problem Photos (Optional)</h2>
+        <label htmlFor="media" className="relative flex flex-col items-center justify-center w-32 h-32 cursor-pointer bg-card border-2 border-dashed rounded-xl hover:bg-muted/50">
+            <Camera className="w-8 h-8 text-muted-foreground mb-2" />
+            <span className="text-sm font-semibold text-muted-foreground">Add Photo</span>
+            <Input id="media" name="media" type="file" accept="image/jpeg,image/png,video/mp4" className="sr-only" />
+        </label>
+      </div>
+
+      <div>
+        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Pick a Time</h2>
+        <div className="grid grid-cols-2 gap-2 mb-3">
+            <Button type="button" variant={selectedDay === 'today' ? 'default' : 'outline'} onClick={() => setSelectedDay('today')}>Today</Button>
+            <Button type="button" variant={selectedDay === 'tomorrow' ? 'default' : 'outline'} onClick={() => setSelectedDay('tomorrow')}>Tomorrow</Button>
+        </div>
+        <div className="bg-card rounded-xl border p-3 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-primary"/>
+                <span className="font-semibold">Best Available Slot</span>
+            </div>
+            <span className="text-sm font-bold text-primary">WITHIN 60 MINS</span>
+        </div>
+        <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-${selectedTime}`} />
+      </div>
+
       {state?.error && !state.bookingId && (
         <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -116,15 +112,12 @@ export function BookingForm({ categoryId, problemIds, totalEstimate }: { categor
         </Alert>
       )}
 
-       <div className="flex justify-between items-center text-sm text-muted-foreground pt-2">
-        <p>Total Estimated Cost</p>
-        <p className="font-bold text-foreground">Rs. {totalEstimate}</p>
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50">
+          <Button type="submit" disabled={isPending} size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Finish Booking'}
+            {!isPending && <ArrowRight className="ml-2 h-5 w-5" />}
+          </Button>
       </div>
-
-      <Button type="submit" disabled={isPending} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold">
-        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-        {t('confirmBooking')}
-      </Button>
     </form>
   );
 }

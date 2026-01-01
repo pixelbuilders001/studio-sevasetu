@@ -1,4 +1,3 @@
-
 'use client';
 import { getServiceCategory } from '@/lib/data';
 import { notFound, useParams, useSearchParams } from 'next/navigation';
@@ -7,10 +6,14 @@ import { BookingForm } from '@/components/BookingForm';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, Suspense, useState, useEffect } from 'react';
 import type { ServiceCategory } from '@/lib/data';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 function BookingDetailsContent() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const { category: categorySlug } = params as { category: string };
   const problemIds = searchParams.get('problems');
@@ -67,21 +70,20 @@ function BookingDetailsContent() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-lg mx-auto border-0 shadow-none">
-        <CardHeader className="px-0">
-          <CardTitle className="text-2xl font-headline">{t('yourDetailsTitle')}</CardTitle>
-          <CardDescription>
-            {t('yourDetailsDescription', { categoryName: category.name })}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-0">
-          <BookingForm 
-            categoryId={category.id}
-            problemIds={problemIds}
-            totalEstimate={totalEstimate}
-          />
-        </CardContent>
-      </Card>
+       <div className="flex items-center gap-4 mb-6">
+        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <ArrowLeft />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold font-headline">Booking Details</h1>
+          <p className="text-muted-foreground uppercase text-sm">for {category.name} Repair</p>
+        </div>
+      </div>
+      <BookingForm 
+        categoryId={category.id}
+        problemIds={problemIds}
+        totalEstimate={totalEstimate}
+      />
     </div>
   );
 }
