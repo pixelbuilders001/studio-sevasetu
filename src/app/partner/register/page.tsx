@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X, Loader2 } from 'lucide-react';
-import { useForm, FormProvider, type SubmitHandler, useFormState as useReactHookFormFormState } from 'react-hook-form';
+import { useForm, FormProvider, type SubmitHandler } from 'react-hook-form';
 import { useFormStatus } from 'react-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -324,12 +324,8 @@ function DocumentsStep({ onNext, defaultValues }: { onNext: (data: DocumentsForm
 
 function ExperienceStep({
   defaultValues,
-  state,
-  formData
 }: {
   defaultValues: Partial<ExperienceForm>;
-  state: { message: string; error?: string };
-  formData: Partial<FullFormData>;
 }) {
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
   const { pending } = useFormStatus();
@@ -357,14 +353,6 @@ function ExperienceStep({
   return (
     <FormProvider {...form}>
       <>
-        {Object.entries(formData).map(([key, value]) => {
-          if (key !== 'primarySkill' && key !== 'totalExperience' && value) {
-            // Files are handled separately and already in FormData
-            if (value instanceof FileList) return null;
-            return <input key={key} type="hidden" name={key} value={value as string} />;
-          }
-          return null;
-        })}
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -426,15 +414,6 @@ function ExperienceStep({
            By submitting, you agree to our <a href="#" className="font-bold underline">Partner Terms</a> and code of conduct.
           </AlertDescription>
         </Alert>
-        
-        {state?.error && (
-            <Alert variant="destructive">
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-                {state.error}
-            </AlertDescription>
-            </Alert>
-        )}
 
         <Button type="submit" size="lg" disabled={pending} className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
             {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
@@ -460,6 +439,28 @@ export default function PartnerOnboardingPage() {
     totalExperience: '',
   });
 
+  const handleFinalSubmit = async (data: ExperienceForm) => {
+    const finalData: Partial<FullFormData> = {
+      ...localFormData,
+      ...data,
+    };
+    
+    const fd = new FormData();
+    Object.entries(finalData).forEach(([key, value]) => {
+      if (value instanceof FileList) {
+        if (value.length > 0) {
+          fd.append(key, value[0]);
+        }
+      } else if (value) {
+        fd.append(key, value as string);
+      }
+    });
+
+    // Instead of calling the action directly, we'll dispatch it
+    // through the useActionState hook.
+    await formAction(fd);
+  };
+  
   const [state, formAction] = useActionState(registerPartner, { message: "", error: undefined });
 
 
@@ -503,14 +504,26 @@ export default function PartnerOnboardingPage() {
       case 2:
         return <DocumentsStep onNext={handleNextStep2} defaultValues={localFormData} />;
       case 3:
+        const form = useForm<ExperienceForm>({
+            resolver: zodResolver(ExperienceSchema),
+            defaultValues: localFormData
+        });
         return (
-          <form action={formAction}>
-            <ExperienceStep 
-              defaultValues={localFormData}
-              state={state}
-              formData={localFormData}
-            />
-          </form>
+            <FormProvider {...form}>
+                <form action={formAction}>
+                    {Object.entries(localFormData).map(([key, value]) => {
+                        if (value && typeof value !== 'object') {
+                            return <input key={key} type="hidden" name={key} value={value} />;
+                        }
+                        if(value instanceof FileList && value.length > 0) {
+                            // This part is tricky as we can't directly put File objects in hidden inputs.
+                            // The FormData composition must happen on submit.
+                        }
+                        return null;
+                    })}
+                    <ExperienceStep defaultValues={localFormData} />
+                </form>
+            </FormProvider>
         );
       default:
         return <PersonalInfoStep onNext={handleNextStep1} defaultValues={localFormData} />;
