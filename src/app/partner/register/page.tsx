@@ -322,7 +322,7 @@ function DocumentsStep({ onNext, defaultValues }: { onNext: (data: DocumentsForm
 }
 
 
-function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }: { onFormSubmit: (data: ExperienceForm) => void, defaultValues: Partial<ExperienceForm>, isPending: boolean, serverError?: string }) {
+function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }: { onFormSubmit: (data: FormData) => void, defaultValues: Partial<ExperienceForm>, isPending: boolean, serverError?: string }) {
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
 
   useEffect(() => {
@@ -347,7 +347,7 @@ function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }:
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
+      <form action={onFormSubmit} className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -358,7 +358,7 @@ function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }:
           name="primarySkill"
           render={({ field }) => (
             <FormItem>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} name={field.name}>
                 <FormControl>
                     <div className='relative'>
                         <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -383,7 +383,7 @@ function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }:
           name="totalExperience"
           render={({ field }) => (
             <FormItem>
-               <Select onValueChange={field.onChange} defaultValue={field.value}>
+               <Select onValueChange={field.onChange} defaultValue={field.value} name={field.name}>
                 <FormControl>
                     <div className='relative'>
                         <Star className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -482,32 +482,24 @@ export default function PartnerOnboardingPage() {
     setStep(3);
   }
 
-  const handleFinalSubmit = (data: ExperienceForm) => {
-    const finalData = {...formData, ...data};
-    setFormData(finalData);
+  const handleFinalSubmit = (payload: FormData) => {
     
-    const fd = new FormData();
-    fd.append('full_name', finalData.fullName!);
-    fd.append('mobile', finalData.mobileNumber!);
-    fd.append('current_address', finalData.currentAddress!);
-    fd.append('primary_skill', finalData.primarySkill!);
-    fd.append('total_experience', finalData.totalExperience!);
-    fd.append('aadhaar_number', finalData.aadharNumber!);
+    payload.append('full_name', formData.fullName!);
+    payload.append('mobile', formData.mobileNumber!);
+    payload.append('current_address', formData.currentAddress!);
+    payload.append('aadhaar_number', formData.aadharNumber!);
     
-    if (finalData.toolsOwned) {
-      fd.append('tools_owned', finalData.toolsOwned);
+    if (formData.aadharFront && formData.aadharFront.length > 0) {
+      payload.append('aadhaar_front', formData.aadharFront[0]);
     }
-    if (finalData.aadharFront && finalData.aadharFront.length > 0) {
-      fd.append('aadhaar_front', finalData.aadharFront[0]);
+    if (formData.aadharBack && formData.aadharBack.length > 0) {
+      payload.append('aadhaar_back', formData.aadharBack[0]);
     }
-    if (finalData.aadharBack && finalData.aadharBack.length > 0) {
-      fd.append('aadhaar_back', finalData.aadharBack[0]);
-    }
-    if (finalData.selfie && finalData.selfie.length > 0) {
-      fd.append('selfie', finalData.selfie[0]);
+    if (formData.selfie && formData.selfie.length > 0) {
+      payload.append('selfie', formData.selfie[0]);
     }
     
-    formAction(fd);
+    formAction(payload);
   };
 
   const handleBack = () => {
