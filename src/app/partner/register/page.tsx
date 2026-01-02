@@ -54,7 +54,6 @@ type DocumentsForm = z.infer<typeof DocumentsSchema>;
 const ExperienceSchema = z.object({
   primarySkill: z.string().min(1, { message: 'Please select your primary skill.' }),
   totalExperience: z.string().min(1, { message: 'Please select your total experience.' }),
-  toolsOwned: z.string().optional(),
 });
 type ExperienceForm = z.infer<typeof ExperienceSchema>;
 
@@ -402,19 +401,6 @@ function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }:
             </FormItem>
           )}
         />
-
-        <FormField
-          control={form.control}
-          name="toolsOwned"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Textarea icon={Wrench} placeholder="Tools you own (Optional)" {...field} className="pl-10 min-h-[80px]" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         
         <Alert className="bg-orange-50 border-orange-200 text-orange-800">
           <Info className="h-4 w-4 !text-orange-500" />
@@ -454,7 +440,6 @@ export default function PartnerOnboardingPage() {
     aadharNumber: '',
     primarySkill: '',
     totalExperience: '',
-    toolsOwned: '',
   });
   
   const [state, formAction, isPending] = useActionState(registerPartner, { message: "", error: undefined });
@@ -554,5 +539,3 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
-
-    
