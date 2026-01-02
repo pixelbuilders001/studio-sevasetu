@@ -50,12 +50,6 @@ function BookingDetailsContent() {
     return ids.map(id => category.problems.find(p => p.id === id)).filter(Boolean);
   }, [category, problemIds]);
 
-  const totalEstimate = useMemo(() => {
-    if (!selectedProblems.length) return 0;
-    const problemsPrice = selectedProblems.reduce((sum, p) => sum + (p?.estimated_price || 0), 0);
-    return 199 + problemsPrice;
-  }, [selectedProblems]);
-
 
   if (loading) {
     return (
@@ -74,7 +68,6 @@ function BookingDetailsContent() {
       <BookingForm 
         categoryId={category.id}
         problemIds={problemIds}
-        totalEstimate={totalEstimate}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo, useEffect, useActionState, useState } from 'react';
+import { useEffect, useActionState, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,7 @@ const initialState = {
   bookingId: undefined,
 };
 
-export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; totalEstimate: number; }) {
+export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; }) {
   const { t } = useTranslation();
   const { location } = useLocation();
   const { toast } = useToast();
@@ -30,11 +30,11 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
   
-  const [selectedDay, setSelectedDay] = useState('today');
-  const [selectedTime, setSelectedTime] = useState('best');
   const [address, setAddress] = useState('');
   const [isGpsLoading, setIsGpsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedDay, setSelectedDay] = useState('today');
+  const [selectedTime, setSelectedTime] = useState('best');
 
   useEffect(() => {
     if (state?.error) {
