@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useActionState, useEffect } from 'react';
@@ -214,7 +215,9 @@ function DocumentsStep({ onNext, defaultValues }: { onNext: (data: DocumentsForm
   };
 
   const handleRemove = (fieldName: keyof typeof previews) => {
-    URL.revokeObjectURL(previews[fieldName] as string);
+    if(previews[fieldName]) {
+      URL.revokeObjectURL(previews[fieldName] as string);
+    }
     setPreviews(prev => ({...prev, [fieldName]: null}));
     form.setValue(fieldName, null as any);
     const fileInput = document.getElementById(fieldName) as HTMLInputElement | null;
@@ -444,7 +447,15 @@ export default function PartnerOnboardingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<Partial<FullFormData>>({});
+  const [formData, setFormData] = useState<Partial<FullFormData>>({
+    fullName: '',
+    mobileNumber: '',
+    currentAddress: '',
+    aadharNumber: '',
+    primarySkill: '',
+    totalExperience: '',
+    toolsOwned: '',
+  });
   
   const [state, formAction, isPending] = useActionState(registerPartner, { message: "", error: undefined });
   
@@ -551,3 +562,5 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
+
+    
