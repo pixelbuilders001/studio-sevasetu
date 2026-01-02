@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X, Loader2 } from 'lucide-react';
-import { useForm, FormProvider, Controller, useFormStatus } from 'react-hook-form';
+import { useForm, FormProvider, Controller } from 'react-hook-form';
+import { useFormStatus } from 'react-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -194,7 +195,9 @@ export default function PartnerOnboardingPage() {
     } else if (step === 2) {
       fieldsToValidate = documentsFields;
     } else {
-      fieldsToValidate = experienceFields;
+        // This is the final step, so we trigger form submission
+        await form.handleSubmit(onSubmit)();
+        return;
     }
 
     const isValid = await form.trigger(fieldsToValidate);
@@ -262,7 +265,7 @@ export default function PartnerOnboardingPage() {
       <Progress value={progressValue} className="mb-8 h-2" />
       
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form action={formAction} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className={cn("space-y-6", step !== 1 && "hidden")}>
              <div className="flex items-center gap-2 mb-4">
                 <User className="w-5 h-5 text-primary" />
@@ -359,5 +362,3 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
-
-    
