@@ -36,9 +36,9 @@ const validationSchema = z.object({
   mobile: z.string().regex(/^[6-9]\d{9}$/, { message: 'Please enter a valid 10-digit mobile number.' }),
   current_address: z.string().min(5, { message: 'Please enter a valid address.' }),
   aadhaar_number: z.string().regex(/^\d{12}$/, { message: 'Please enter a valid 12-digit Aadhar number.' }),
-  aadhaar_front: z.any().refine((files) => files?.length === 1, 'Aadhar front picture is required.'),
-  aadhaar_back: z.any().refine((files) => files?.length === 1, 'Aadhar back picture is required.'),
-  selfie: z.any().refine((files) => files?.length === 1, 'Selfie with Aadhar is required.'),
+  aadhaar_front: z.any(),
+  aadhaar_back: z.any(),
+  selfie: z.any(),
   primary_skill: z.string().min(1, { message: 'Please select your primary skill.' }),
   total_experience: z.string().min(1, { message: 'Please select your total experience.' }),
 });
@@ -172,7 +172,30 @@ export default function PartnerOnboardingPage() {
     if (step === 1) {
       fieldsToValidate = personalInfoFields;
     } else if (step === 2) {
-      fieldsToValidate = documentsFields;
+        const docFieldsToValidate: (keyof FormData)[] = ['aadhaar_number'];
+        const isValid = await form.trigger(docFieldsToValidate);
+        
+        let filesAreValid = true;
+        const formValues = form.getValues();
+        
+        if (!formValues.aadhaar_front || formValues.aadhaar_front.length === 0) {
+            form.setError('aadhaar_front', { type: 'manual', message: 'Aadhar front picture is required.' });
+            filesAreValid = false;
+        }
+        if (!formValues.aadhaar_back || formValues.aadhaar_back.length === 0) {
+            form.setError('aadhaar_back', { type: 'manual', message: 'Aadhar back picture is required.' });
+            filesAreValid = false;
+        }
+        if (!formValues.selfie || formValues.selfie.length === 0) {
+            form.setError('selfie', { type: 'manual', message: 'Selfie with Aadhar is required.' });
+            filesAreValid = false;
+        }
+        
+        if (isValid && filesAreValid && step < totalSteps) {
+            setStep(prev => prev + 1);
+        }
+        return;
+
     } else {
         return;
     }
@@ -202,7 +225,6 @@ export default function PartnerOnboardingPage() {
     formData.append('aadhaar_number', data.aadhaar_number);
     formData.append('primary_skill', data.primary_skill);
     
-    // Parse the experience string to get the first digit
     const experienceDigit = data.total_experience.match(/\d+/)?.[0] || '0';
     formData.append('total_experience', experienceDigit);
 
@@ -219,10 +241,6 @@ export default function PartnerOnboardingPage() {
     try {
         const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/create-technician', {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-            },
             body: formData,
         });
 
@@ -373,7 +391,5 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
-
-    
 
     
