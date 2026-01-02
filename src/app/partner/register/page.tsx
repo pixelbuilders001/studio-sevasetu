@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X, Loader2 } from 'lucide-react';
-import { useForm, FormProvider, type SubmitHandler, useFormStatus } from 'react-hook-form';
+import { useForm, FormProvider, type SubmitHandler } from 'react-hook-form';
+import { useFormStatus } from 'react-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -330,18 +331,11 @@ function SubmitButton() {
     )
 }
 
-function ExperienceStep({
-  defaultValues,
-  localFormData,
-}: {
-  defaultValues: Partial<ExperienceForm>;
-  localFormData: Partial<FullFormData>;
-}) {
+function ExperienceStep({ defaultValues, formAction, localFormData }: { defaultValues: Partial<ExperienceForm>, formAction: (payload: FormData) => void, localFormData: Partial<FullFormData> }) {
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
-
   const form = useForm<ExperienceForm>({
-    resolver: zodResolver(ExperienceSchema),
-    defaultValues: defaultValues,
+      resolver: zodResolver(ExperienceSchema),
+      defaultValues: defaultValues
   });
 
   useEffect(() => {
@@ -359,9 +353,28 @@ function ExperienceStep({
     '5+ Years',
   ];
   
+  const handleFormSubmit = form.handleSubmit((data) => {
+    const fd = new FormData();
+
+    Object.entries(localFormData).forEach(([key, value]) => {
+      if (value instanceof FileList) {
+        if (value.length > 0) {
+          fd.append(key, value[0]);
+        }
+      } else if (typeof value === 'string') {
+        fd.append(key, value);
+      }
+    });
+
+    fd.append('primarySkill', data.primarySkill);
+    fd.append('totalExperience', data.totalExperience);
+    
+    formAction(fd);
+  });
+  
   return (
     <FormProvider {...form}>
-      <div className="space-y-6">
+      <form onSubmit={handleFormSubmit} className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -425,7 +438,7 @@ function ExperienceStep({
         </Alert>
         
         <SubmitButton />
-      </div>
+      </form>
     </FormProvider>
   );
 }
@@ -455,7 +468,7 @@ export default function PartnerOnboardingPage() {
         description: state.error,
       });
     }
-  }, [state, toast, router]);
+  }, [state, toast]);
 
 
   const totalSteps = 3;
@@ -487,7 +500,7 @@ export default function PartnerOnboardingPage() {
       case 2:
         return <DocumentsStep onNext={handleNextStep2} defaultValues={localFormData} />;
       case 3:
-        return <ExperienceStep defaultValues={localFormData} localFormData={localFormData} />;
+        return <ExperienceStep formAction={formAction} defaultValues={localFormData} localFormData={localFormData} />;
       default:
         return <PersonalInfoStep onNext={handleNextStep1} defaultValues={localFormData} />;
     }
@@ -518,30 +531,7 @@ export default function PartnerOnboardingPage() {
       
       <Progress value={progressValue} className="mb-8 h-2" />
       
-       {step < 3 ? getStepComponent() : (
-         <form action={formAction}>
-            {Object.entries(localFormData).map(([key, value]) => {
-              if (value && typeof value === 'string') {
-                return <input key={key} type="hidden" name={key} value={value} />;
-              }
-              // Files are handled via their own inputs in the previous step,
-              // but we need to pass them along. We can't put FileList in hidden input.
-              // This is a limitation. For this fix, we will rely on the fact that
-              // we are not clearing file inputs, so they are still part of the form.
-              // A better implementation would merge forms or use a single form context.
-              return null;
-            })}
-             <input type="hidden" name="fullName" value={localFormData.fullName} />
-             <input type="hidden" name="mobileNumber" value={localFormData.mobileNumber} />
-             <input type="hidden" name="currentAddress" value={localFormData.currentAddress} />
-             <input type="hidden" name="aadharNumber" value={localFormData.aadharNumber} />
-
-            {/* Re-rendering file inputs as hidden is not straightforward.
-                Assuming they persist in the DOM, which they should in this flow. */}
-
-           <ExperienceStep defaultValues={localFormData} localFormData={localFormData} />
-         </form>
-       )}
+       {getStepComponent()}
 
     </div>
   );
