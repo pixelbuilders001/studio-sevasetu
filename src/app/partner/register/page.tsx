@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useActionState, useEffect } from 'react';
+import React, { useState, useActionState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -344,13 +344,9 @@ function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError, f
     defaultValues,
   });
 
-  const handleFormSubmit = form.handleSubmit((data) => {
-    onFormSubmit(data);
-  });
-
   return (
     <FormProvider {...form}>
-      <form action={formAction} onSubmit={handleFormSubmit} className="space-y-6">
+      <form action={formAction} className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -437,8 +433,7 @@ export default function PartnerOnboardingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-
-  const formRef = React.useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   
   const [state, formAction] = useActionState(registerPartner, { message: "", error: undefined });
 
@@ -451,7 +446,7 @@ export default function PartnerOnboardingPage() {
     totalExperience: '',
   });
 
-  const { form, formState: { isPending } } = useForm();
+  const { isPending } = state as { isPending: boolean };
 
   useEffect(() => {
     if (state.error) {
@@ -477,8 +472,7 @@ export default function PartnerOnboardingPage() {
   }
 
   const handleFinalSubmit = (data: ExperienceForm) => {
-    setLocalFormData(prev => ({...prev, ...data}));
-    // This function now just updates state. The form's `action` will handle submission.
+    // This is now handled by the form's action
   };
 
   const handleBack = () => {
@@ -499,22 +493,26 @@ export default function PartnerOnboardingPage() {
         return <DocumentsStep onNext={handleNextStep2} defaultValues={localFormData} />;
       case 3:
         const finalFormAction = (formData: FormData) => {
-            // Append all data from localFormData to the FormData object
             Object.entries(localFormData).forEach(([key, value]) => {
                 if (value instanceof FileList && value.length > 0) {
                     const fileKey = key === 'aadharFront' ? 'aadhaar_front' : (key === 'aadharBack' ? 'aadhaar_back' : key)
                     formData.append(fileKey, value[0]);
-                } else if (typeof value === 'string') {
+                } else if (typeof value === 'string' && !formData.has(key)) {
                     const snakeCaseKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
                     formData.append(snakeCaseKey, value);
                 }
             });
 
-            // Append data from the final step's form
             const primarySkill = formData.get('primarySkill');
-            if (primarySkill) formData.set('primary_skill', primarySkill);
+            if (primarySkill) {
+                formData.set('primary_skill', primarySkill);
+                formData.delete('primarySkill');
+            }
             const totalExperience = formData.get('totalExperience');
-            if (totalExperience) formData.set('total_experience', totalExperience);
+            if (totalExperience) {
+                formData.set('total_experience', totalExperience);
+                formData.delete('totalExperience');
+            }
 
             formAction(formData);
         }
@@ -554,5 +552,3 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
-
-    
