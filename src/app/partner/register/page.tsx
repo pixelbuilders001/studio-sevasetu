@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X, Loader2 } from 'lucide-react';
-import { useForm, FormProvider, Controller } from 'react-hook-form';
-import { useFormStatus } from 'react-dom';
+import { useForm, FormProvider, Controller, useFormStatus } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -51,6 +50,7 @@ const personalInfoFields: (keyof FullFormData)[] = ['full_name', 'mobile', 'curr
 const documentsFields: (keyof FullFormData)[] = ['aadhaar_number', 'aadhaar_front', 'aadhaar_back', 'selfie'];
 const experienceFields: (keyof FullFormData)[] = ['primary_skill', 'total_experience'];
 
+
 function FileUpload({
   field,
   label,
@@ -84,6 +84,7 @@ function FileUpload({
   
   return (
     <FormItem className="w-full">
+       <Label className="text-muted-foreground font-semibold ml-1 mb-2 block">{label}</Label>
       <FormControl>
         <label className={cn(
           "relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer overflow-hidden",
@@ -108,7 +109,7 @@ function FileUpload({
           ) : (
             <div className="text-center text-gray-500">
               <UploadCloud className="mx-auto mb-1 w-8 h-8" />
-              <span className="font-semibold text-sm">{label}</span>
+              <span className="font-semibold text-sm">Upload Photo</span>
             </div>
           )}
           <Input 
@@ -193,7 +194,7 @@ export default function PartnerOnboardingPage() {
     } else if (step === 2) {
       fieldsToValidate = documentsFields;
     } else {
-      fieldsToValidate = [];
+      fieldsToValidate = experienceFields;
     }
 
     const isValid = await form.trigger(fieldsToValidate);
@@ -211,6 +212,28 @@ export default function PartnerOnboardingPage() {
     }
   };
   
+  const onSubmit = (data: FullFormData) => {
+    const formData = new FormData();
+    formData.append('full_name', data.full_name);
+    formData.append('mobile', data.mobile);
+    formData.append('current_address', data.current_address);
+    formData.append('aadhaar_number', data.aadhaar_number);
+    formData.append('primary_skill', data.primary_skill);
+    formData.append('total_experience', data.total_experience);
+
+    if (data.aadhaar_front[0]) {
+      formData.append('aadhaar_front', data.aadhaar_front[0]);
+    }
+    if (data.aadhaar_back[0]) {
+      formData.append('aadhaar_back', data.aadhaar_back[0]);
+    }
+    if (data.selfie[0]) {
+      formData.append('selfie', data.selfie[0]);
+    }
+    
+    formAction(formData);
+  };
+
   const progressValue = (step / totalSteps) * 100;
 
   const getStepTitle = () => {
@@ -239,7 +262,7 @@ export default function PartnerOnboardingPage() {
       <Progress value={progressValue} className="mb-8 h-2" />
       
       <FormProvider {...form}>
-        <form action={formAction} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className={cn("space-y-6", step !== 1 && "hidden")}>
              <div className="flex items-center gap-2 mb-4">
                 <User className="w-5 h-5 text-primary" />
@@ -272,10 +295,8 @@ export default function PartnerOnboardingPage() {
               <FormField control={form.control} name="aadhaar_front" render={({ field }) => <FileUpload field={field} label="Aadhaar Front" />} />
               <FormField control={form.control} name="aadhaar_back" render={({ field }) => <FileUpload field={field} label="Aadhaar Back" />} />
             </div>
-             <div>
-                <Label className="text-muted-foreground font-semibold ml-1 mb-2 block">Selfie with Aadhaar</Label>
-                <FormField control={form.control} name="selfie" render={({ field }) => <FileUpload field={field} label="Upload Selfie" />} />
-            </div>
+             
+            <FormField control={form.control} name="selfie" render={({ field }) => <FileUpload field={field} label="Selfie with Aadhaar" />} />
           </div>
           
           <div className={cn("space-y-6", step !== 3 && "hidden")}>
@@ -288,7 +309,7 @@ export default function PartnerOnboardingPage() {
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                           <div className='relative'>
-                              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                              <Wrench className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                               <SelectTrigger className="pl-10 text-base h-12 rounded-lg"><SelectValue placeholder="Select Primary Skill" /></SelectTrigger>
                           </div>
                       </FormControl>
@@ -338,3 +359,5 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
+
+    
