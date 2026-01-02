@@ -195,8 +195,6 @@ export default function PartnerOnboardingPage() {
     } else if (step === 2) {
       fieldsToValidate = documentsFields;
     } else {
-        // This is the final step, so we trigger form submission
-        await form.handleSubmit(onSubmit)();
         return;
     }
 
@@ -215,28 +213,6 @@ export default function PartnerOnboardingPage() {
     }
   };
   
-  const onSubmit = (data: FullFormData) => {
-    const formData = new FormData();
-    formData.append('full_name', data.full_name);
-    formData.append('mobile', data.mobile);
-    formData.append('current_address', data.current_address);
-    formData.append('aadhaar_number', data.aadhaar_number);
-    formData.append('primary_skill', data.primary_skill);
-    formData.append('total_experience', data.total_experience);
-
-    if (data.aadhaar_front[0]) {
-      formData.append('aadhaar_front', data.aadhaar_front[0]);
-    }
-    if (data.aadhaar_back[0]) {
-      formData.append('aadhaar_back', data.aadhaar_back[0]);
-    }
-    if (data.selfie[0]) {
-      formData.append('selfie', data.selfie[0]);
-    }
-    
-    formAction(formData);
-  };
-
   const progressValue = (step / totalSteps) * 100;
 
   const getStepTitle = () => {
@@ -265,7 +241,7 @@ export default function PartnerOnboardingPage() {
       <Progress value={progressValue} className="mb-8 h-2" />
       
       <FormProvider {...form}>
-        <form action={formAction} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form action={formAction} className="space-y-6">
           <div className={cn("space-y-6", step !== 1 && "hidden")}>
              <div className="flex items-center gap-2 mb-4">
                 <User className="w-5 h-5 text-primary" />
@@ -362,3 +338,4 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
+
