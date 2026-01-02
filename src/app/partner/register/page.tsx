@@ -147,7 +147,8 @@ export default function PartnerOnboardingPage() {
         selfie: undefined,
         primary_skill: '',
         total_experience: '',
-    }
+    },
+    mode: "onTouched"
   });
 
   useEffect(() => {
@@ -181,23 +182,30 @@ export default function PartnerOnboardingPage() {
         if (!formValues.aadhaar_front || formValues.aadhaar_front.length === 0) {
             form.setError('aadhaar_front', { type: 'manual', message: 'Aadhar front picture is required.' });
             filesAreValid = false;
+        } else {
+            form.clearErrors('aadhaar_front');
         }
+
         if (!formValues.aadhaar_back || formValues.aadhaar_back.length === 0) {
             form.setError('aadhaar_back', { type: 'manual', message: 'Aadhar back picture is required.' });
             filesAreValid = false;
+        } else {
+            form.clearErrors('aadhaar_back');
         }
+
         if (!formValues.selfie || formValues.selfie.length === 0) {
             form.setError('selfie', { type: 'manual', message: 'Selfie with Aadhar is required.' });
             filesAreValid = false;
+        } else {
+            form.clearErrors('selfie');
         }
         
         if (isValid && filesAreValid && step < totalSteps) {
             setStep(prev => prev + 1);
         }
         return;
-
     } else {
-        return;
+        fieldsToValidate = experienceFields;
     }
 
     const isValid = await form.trigger(fieldsToValidate);
@@ -228,13 +236,13 @@ export default function PartnerOnboardingPage() {
     const experienceDigit = data.total_experience.match(/\d+/)?.[0] || '0';
     formData.append('total_experience', experienceDigit);
 
-    if (data.aadhaar_front[0]) {
+    if (data.aadhaar_front && data.aadhaar_front[0]) {
       formData.append('aadhaar_front', data.aadhaar_front[0]);
     }
-    if (data.aadhaar_back[0]) {
+    if (data.aadhaar_back && data.aadhaar_back[0]) {
       formData.append('aadhaar_back', data.aadhaar_back[0]);
     }
-    if (data.selfie[0]) {
+    if (data.selfie && data.selfie[0]) {
       formData.append('selfie', data.selfie[0]);
     }
     
@@ -392,4 +400,3 @@ export default function PartnerOnboardingPage() {
   );
 }
 
-    
