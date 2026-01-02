@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useActionState, useEffect } from 'react';
+import React, { useState, useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -102,7 +102,7 @@ function PersonalInfoStep({ onNext, defaultValues }: { onNext: (data: PersonalIn
             )}
           />
           <FormField
-            control-={form.control}
+            control={form.control}
             name="currentAddress"
             render={({ field }) => (
               <FormItem>
@@ -437,43 +437,10 @@ export default function PartnerOnboardingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<Partial<FullFormData>>({
-    fullName: '',
-    mobileNumber: '',
-    currentAddress: '',
-    aadharNumber: '',
-    primarySkill: '',
-    totalExperience: '',
-  });
 
   const formRef = React.useRef<HTMLFormElement>(null);
   
-  const [state, formAction] = useActionState(async (previousState: any, formData: FormData) => {
-    if (formRef.current) {
-      const form = new FormData(formRef.current);
-      
-      const allData = { ...Object.fromEntries(form.entries()), ...Object.fromEntries(formData.entries()) };
-      
-      const combinedFormData = new FormData();
-      for (const key in allData) {
-        combinedFormData.append(key, allData[key]);
-      }
-
-      // Append files from local state
-      if (localFormData.aadharFront && localFormData.aadharFront.length > 0) {
-        combinedFormData.append('aadhaar_front', localFormData.aadharFront[0]);
-      }
-      if (localFormData.aadharBack && localFormData.aadharBack.length > 0) {
-        combinedFormData.append('aadhaar_back', localFormData.aadharBack[0]);
-      }
-      if (localFormData.selfie && localFormData.selfie.length > 0) {
-        combinedFormData.append('selfie', localFormData.selfie[0]);
-      }
-
-      return await registerPartner(previousState, combinedFormData);
-    }
-    return { message: "Error", error: "Form reference is not available." };
-  }, { message: "", error: undefined });
+  const [state, formAction] = useActionState(registerPartner, { message: "", error: undefined });
 
   const [localFormData, setLocalFormData] = useState<Partial<FullFormData>>({
     fullName: '',
@@ -484,7 +451,7 @@ export default function PartnerOnboardingPage() {
     totalExperience: '',
   });
 
-  const isPending = (formRef.current?.formAction === formAction);
+  const { form, formState: { isPending } } = useForm();
 
   useEffect(() => {
     if (state.error) {
@@ -511,8 +478,7 @@ export default function PartnerOnboardingPage() {
 
   const handleFinalSubmit = (data: ExperienceForm) => {
     setLocalFormData(prev => ({...prev, ...data}));
-    // Now that all data is in localFormData, we can let the form's action proceed.
-    // The form action will combine data from the form element and localFormData.
+    // This function now just updates state. The form's `action` will handle submission.
   };
 
   const handleBack = () => {
@@ -532,7 +498,27 @@ export default function PartnerOnboardingPage() {
       case 2:
         return <DocumentsStep onNext={handleNextStep2} defaultValues={localFormData} />;
       case 3:
-        return <ExperienceStep onFormSubmit={handleFinalSubmit} defaultValues={localFormData} isPending={isPending} serverError={state.error} formAction={formAction} />;
+        const finalFormAction = (formData: FormData) => {
+            // Append all data from localFormData to the FormData object
+            Object.entries(localFormData).forEach(([key, value]) => {
+                if (value instanceof FileList && value.length > 0) {
+                    const fileKey = key === 'aadharFront' ? 'aadhaar_front' : (key === 'aadharBack' ? 'aadhaar_back' : key)
+                    formData.append(fileKey, value[0]);
+                } else if (typeof value === 'string') {
+                    const snakeCaseKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+                    formData.append(snakeCaseKey, value);
+                }
+            });
+
+            // Append data from the final step's form
+            const primarySkill = formData.get('primarySkill');
+            if (primarySkill) formData.set('primary_skill', primarySkill);
+            const totalExperience = formData.get('totalExperience');
+            if (totalExperience) formData.set('total_experience', totalExperience);
+
+            formAction(formData);
+        }
+        return <ExperienceStep onFormSubmit={handleFinalSubmit} defaultValues={localFormData} isPending={isPending} serverError={state.error} formAction={finalFormAction} />;
       default:
         return <PersonalInfoStep onNext={handleNextStep1} defaultValues={localFormData} />;
     }
@@ -563,43 +549,7 @@ export default function PartnerOnboardingPage() {
       
       <Progress value={progressValue} className="mb-8 h-2" />
       
-      <form
-        ref={formRef}
-        action={formAction}
-        onSubmit={(e) => {
-          if (step < totalSteps) {
-            e.preventDefault();
-          }
-        }}
-      >
-        {step === 1 && (
-          <input type="hidden" name="full_name" value={localFormData.fullName} />
-        )}
-         {step === 1 && (
-          <input type="hidden" name="mobile" value={localFormData.mobileNumber} />
-        )}
-         {step === 1 && (
-          <input type="hidden" name="current_address" value={localFormData.currentAddress} />
-        )}
-        {step === 2 && (
-          <>
-            <input type="hidden" name="full_name" value={localFormData.fullName} />
-            <input type="hidden" name="mobile" value={localFormData.mobileNumber} />
-            <input type="hidden" name="current_address" value={localFormData.currentAddress} />
-            <input type="hidden" name="aadhaar_number" value={localFormData.aadharNumber} />
-          </>
-        )}
-         {step === 3 && (
-          <>
-            <input type="hidden" name="full_name" value={localFormData.fullName} />
-            <input type="hidden" name="mobile" value={localFormData.mobileNumber} />
-            <input type="hidden" name="current_address" value={localFormData.currentAddress} />
-            <input type="hidden" name="aadhaar_number" value={localFormData.aadharNumber} />
-          </>
-        )}
-
-        {getStepComponent()}
-      </form>
+      {getStepComponent()}
 
     </div>
   );
