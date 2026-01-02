@@ -116,11 +116,10 @@ export async function registerPartner(prevState: any, formData: FormData): Promi
         body: formData,
     });
 
-    const result = await response.json();
-
     if (!response.ok) {
+        const result = await response.json().catch(() => ({ message: 'Failed to parse error response' }));
         console.error('Partner Registration API Error:', result);
-        return { message: "Error", error: result.error_message || result.message || "An unexpected error occurred." };
+        return { message: "Error", error: result.error_message || result.message || `An unexpected error occurred. Status: ${response.status}` };
     }
 
   } catch (error) {

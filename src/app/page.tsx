@@ -121,7 +121,7 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
         </div>
       </section>
 
-      <section id="services" className="py-12 md:py-16 bg-muted/20">
+      <section id="services" className="py-8 md:py-12 bg-muted/20">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -146,12 +146,12 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
       </section>
 
       <div id="how-it-works">
-        <HowItWorks />
+        <HowItWorks t={t} />
       </div>
 
       <VerifiedTechnicians />
 
-      <section id="why-choose-us" className="py-12 md:py-16">
+      <section id="why-choose-us" className="py-8 md:py-12">
         <div className="container mx-auto px-4">
           <TrustIndicators />
         </div>

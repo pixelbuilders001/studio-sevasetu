@@ -1,10 +1,8 @@
 
-'use client';
-import { useTranslation } from '@/hooks/useTranslation';
 import { Smartphone, UserCheck, Wrench, IndianRupee } from 'lucide-react';
+import type { TranslationFunc } from '@/context/LanguageContext';
 
-export default function HowItWorks() {
-  const { t } = useTranslation();
+export default function HowItWorks({t}: {t: TranslationFunc}) {
 
   const steps = [
     {
@@ -37,7 +35,7 @@ export default function HowItWorks() {
     <section className="py-8 md:py-12 bg-muted/30">
       <div className="container mx-auto px-4 max-w-2xl">
         <div className="mb-8">
-            <h2 className="text-3xl font-bold font-headline">How SevaSetu Works</h2>
+            <h2 className="text-3xl font-bold font-headline">{t('howItWorksTitle')}</h2>
             <p className="text-muted-foreground uppercase text-sm font-semibold tracking-wider">SIMPLE 4-STEP PROCESS</p>
         </div>
         
