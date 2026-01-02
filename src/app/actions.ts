@@ -94,7 +94,7 @@ export async function bookService(
     }
 
     const bookingId = result.order_id || result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
-    redirect(`/confirmation?bookingId=${bookingId}`);
+    redirect(`/confirmation?bookingId=${bookingId}`, 'push');
     
   } catch (error) {
       console.error('Booking failed:', error);
