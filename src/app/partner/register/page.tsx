@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, ComponentProps, useEffect } from 'react';
+import { useState, useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X } from 'lucide-react';
+import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X, Loader2 } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -30,29 +30,43 @@ import { getServiceCategories } from '@/lib/data';
 import type { ServiceCategory } from '@/lib/data';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
-
+import { registerPartner } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
 
 const PersonalInfoSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
   mobileNumber: z.string().regex(/^[6-9]\d{9}$/, { message: 'Please enter a valid 10-digit mobile number.' }),
   currentAddress: z.string().min(5, { message: 'Please enter a valid address.' }),
 });
-
 type PersonalInfoForm = z.infer<typeof PersonalInfoSchema>;
 
-function PersonalInfoStep({ onNext }: { onNext: () => void }) {
+
+const DocumentsSchema = z.object({
+  aadharNumber: z.string().regex(/^\d{12}$/, { message: 'Please enter a valid 12-digit Aadhar number.' }),
+  aadharFront: z.any().refine((files) => files?.length === 1, 'Aadhar front picture is required.'),
+  aadharBack: z.any().refine((files) => files?.length === 1, 'Aadhar back picture is required.'),
+  selfie: z.any().refine((files) => files?.length === 1, 'Selfie with Aadhar is required.'),
+});
+type DocumentsForm = z.infer<typeof DocumentsSchema>;
+
+
+const ExperienceSchema = z.object({
+  primarySkill: z.string().min(1, { message: 'Please select your primary skill.' }),
+  totalExperience: z.string().min(1, { message: 'Please select your total experience.' }),
+  toolsOwned: z.string().optional(),
+});
+type ExperienceForm = z.infer<typeof ExperienceSchema>;
+
+type FullFormData = PersonalInfoForm & DocumentsForm & ExperienceForm;
+
+function PersonalInfoStep({ onNext, defaultValues }: { onNext: (data: PersonalInfoForm) => void, defaultValues: Partial<PersonalInfoForm> }) {
   const form = useForm<PersonalInfoForm>({
     resolver: zodResolver(PersonalInfoSchema),
-    defaultValues: {
-      fullName: '',
-      mobileNumber: '',
-      currentAddress: '',
-    },
+    defaultValues
   });
 
   const onSubmit = (data: PersonalInfoForm) => {
-    console.log('Personal Info:', data);
-    onNext();
+    onNext(data);
   };
 
   return (
@@ -117,15 +131,6 @@ function PersonalInfoStep({ onNext }: { onNext: () => void }) {
   );
 }
 
-const DocumentsSchema = z.object({
-  aadharNumber: z.string().regex(/^\d{12}$/, { message: 'Please enter a valid 12-digit Aadhar number.' }),
-  aadharFront: z.any().refine((files) => files?.length === 1, 'Aadhar front picture is required.'),
-  aadharBack: z.any().refine((files) => files?.length === 1, 'Aadhar back picture is required.'),
-  selfie: z.any().refine((files) => files?.length === 1, 'Selfie with Aadhar is required.'),
-});
-
-type DocumentsForm = z.infer<typeof DocumentsSchema>;
-
 
 function FileUpload({ 
   field, 
@@ -167,7 +172,7 @@ function FileUpload({
               <span className="font-semibold text-sm">{label}</span>
             </div>
           )}
-          <Input type="file" className="hidden" {...field} />
+          <Input type="file" className="hidden" {...field} accept="image/*" />
         </label>
       </FormControl>
       <FormMessage />
@@ -175,15 +180,28 @@ function FileUpload({
   );
 }
 
-function DocumentsStep({ onNext }: { onNext: () => void }) {
+function DocumentsStep({ onNext, defaultValues }: { onNext: (data: DocumentsForm) => void, defaultValues: Partial<DocumentsForm> }) {
   const form = useForm<DocumentsForm>({
     resolver: zodResolver(DocumentsSchema),
+    defaultValues: {
+      aadharNumber: defaultValues.aadharNumber || '',
+      aadharFront: defaultValues.aadharFront,
+      aadharBack: defaultValues.aadharBack,
+      selfie: defaultValues.selfie,
+    }
   });
 
+  const getInitialPreview = (fileList: any) => {
+    if (fileList && fileList.length > 0 && fileList[0] instanceof File) {
+      return URL.createObjectURL(fileList[0]);
+    }
+    return null;
+  }
+
   const [previews, setPreviews] = useState({
-    aadharFront: null as string | null,
-    aadharBack: null as string | null,
-    selfie: null as string | null,
+    aadharFront: getInitialPreview(defaultValues.aadharFront),
+    aadharBack: getInitialPreview(defaultValues.aadharBack),
+    selfie: getInitialPreview(defaultValues.selfie),
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof typeof previews) => {
@@ -196,9 +214,9 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
   };
 
   const handleRemove = (fieldName: keyof typeof previews) => {
+    URL.revokeObjectURL(previews[fieldName] as string);
     setPreviews(prev => ({...prev, [fieldName]: null}));
     form.setValue(fieldName, null as any);
-    // Also reset the file input
     const fileInput = document.getElementById(fieldName) as HTMLInputElement | null;
     if (fileInput) {
       fileInput.value = "";
@@ -206,8 +224,7 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
   };
 
   const onSubmit = (data: DocumentsForm) => {
-    console.log('Documents Info:', data);
-    onNext();
+    onNext(data);
   };
 
   return (
@@ -302,15 +319,7 @@ function DocumentsStep({ onNext }: { onNext: () => void }) {
 }
 
 
-const ExperienceSchema = z.object({
-  primarySkill: z.string().min(1, { message: 'Please select your primary skill.' }),
-  totalExperience: z.string().min(1, { message: 'Please select your total experience.' }),
-  toolsOwned: z.string().optional(),
-});
-
-type ExperienceForm = z.infer<typeof ExperienceSchema>;
-
-function ExperienceStep({ onNext }: { onNext: () => void }) {
+function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }: { onFormSubmit: (data: ExperienceForm) => void, defaultValues: Partial<ExperienceForm>, isPending: boolean, serverError?: string }) {
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
 
   useEffect(() => {
@@ -330,16 +339,12 @@ function ExperienceStep({ onNext }: { onNext: () => void }) {
   
   const form = useForm<ExperienceForm>({
     resolver: zodResolver(ExperienceSchema),
+    defaultValues,
   });
-
-  const onSubmit = (data: ExperienceForm) => {
-    console.log('Experience Info:', data);
-    onNext();
-  };
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -361,7 +366,7 @@ function ExperienceStep({ onNext }: { onNext: () => void }) {
                 </FormControl>
                 <SelectContent>
                   {categories.map(cat => (
-                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -414,10 +419,20 @@ function ExperienceStep({ onNext }: { onNext: () => void }) {
            By submitting, you agree to our <a href="#" className="font-bold underline">Partner Terms</a> and code of conduct.
           </AlertDescription>
         </Alert>
+        
+        {serverError && (
+          <Alert variant="destructive">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              {serverError}
+            </AlertDescription>
+          </Alert>
+        )}
 
-        <Button type="submit" size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-          SUBMIT APPLICATION
-          <CheckCircle className="ml-2 h-5 w-5" />
+
+        <Button type="submit" size="lg" disabled={isPending} className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
+          {isPending ? 'Submitting...' : 'SUBMIT APPLICATION'}
         </Button>
       </form>
     </FormProvider>
@@ -427,16 +442,61 @@ function ExperienceStep({ onNext }: { onNext: () => void }) {
 
 export default function PartnerOnboardingPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState<Partial<FullFormData>>({});
+  
+  const [state, formAction, isPending] = useActionState(registerPartner, { message: "", error: undefined });
+  
+  useEffect(() => {
+    if (state.error) {
+      toast({
+        variant: "destructive",
+        title: "Submission Failed",
+        description: state.error,
+      });
+    }
+  }, [state, toast]);
+
 
   const totalSteps = 3;
 
-  const handleNext = () => {
-    if (step < totalSteps) {
-      setStep(step + 1);
-    } else {
-      router.push('/partner/success');
+  const handleNextStep1 = (data: PersonalInfoForm) => {
+    setFormData(prev => ({...prev, ...data}));
+    setStep(2);
+  }
+  
+  const handleNextStep2 = (data: DocumentsForm) => {
+    setFormData(prev => ({...prev, ...data}));
+    setStep(3);
+  }
+
+  const handleFinalSubmit = (data: ExperienceForm) => {
+    const finalData = {...formData, ...data};
+    setFormData(finalData);
+    
+    const fd = new FormData();
+    fd.append('full_name', finalData.fullName!);
+    fd.append('mobile', finalData.mobileNumber!);
+    fd.append('current_address', finalData.currentAddress!);
+    fd.append('primary_skill', finalData.primarySkill!);
+    fd.append('total_experience', finalData.totalExperience!);
+    fd.append('aadhaar_number', finalData.aadharNumber!);
+    
+    if (finalData.toolsOwned) {
+      fd.append('tools_owned', finalData.toolsOwned);
     }
+    if (finalData.aadharFront && finalData.aadharFront.length > 0) {
+      fd.append('aadhaar_front', finalData.aadharFront[0]);
+    }
+    if (finalData.aadharBack && finalData.aadharBack.length > 0) {
+      fd.append('aadhaar_back', finalData.aadharBack[0]);
+    }
+    if (finalData.selfie && finalData.selfie.length > 0) {
+      fd.append('selfie', finalData.selfie[0]);
+    }
+    
+    formAction(fd);
   };
 
   const handleBack = () => {
@@ -452,13 +512,13 @@ export default function PartnerOnboardingPage() {
   const getStepComponent = () => {
     switch (step) {
       case 1:
-        return <PersonalInfoStep onNext={handleNext} />;
+        return <PersonalInfoStep onNext={handleNextStep1} defaultValues={formData} />;
       case 2:
-        return <DocumentsStep onNext={handleNext} />;
+        return <DocumentsStep onNext={handleNextStep2} defaultValues={formData} />;
       case 3:
-        return <ExperienceStep onNext={handleNext} />;
+        return <ExperienceStep onFormSubmit={handleFinalSubmit} defaultValues={formData} isPending={isPending} serverError={state.error} />;
       default:
-        return <PersonalInfoStep onNext={handleNext} />;
+        return <PersonalInfoStep onNext={handleNextStep1} defaultValues={formData} />;
     }
   }
 

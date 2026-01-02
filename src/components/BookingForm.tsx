@@ -147,7 +147,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
           <label htmlFor="media" className="relative flex flex-col items-center justify-center w-32 h-32 cursor-pointer bg-card border-2 border-dashed rounded-xl hover:bg-muted/50">
               <Camera className="w-8 h-8 text-muted-foreground mb-2" />
               <span className="text-sm font-semibold text-muted-foreground">Add Photo</span>
-              <Input id="media" name="media" type="file" accept="image/jpeg,image/png,video/mp4" className="sr-only" onChange={handleImageChange} />
+              <Input id="media" name="media" type="file" accept="image/*" className="sr-only" onChange={handleImageChange} />
           </label>
           {imagePreview && (
             <div className="relative w-32 h-32 rounded-xl overflow-hidden border">
