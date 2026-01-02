@@ -19,6 +19,7 @@ const initialState = {
   message: "",
   error: "",
   bookingId: undefined,
+  my_referral_code: undefined,
 };
 
 export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; totalEstimate: number; }) {
@@ -45,7 +46,12 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       });
     }
     if (state?.bookingId) {
-      router.push(`/confirmation?bookingId=${state.bookingId}`);
+        const params = new URLSearchParams();
+        params.set('bookingId', state.bookingId);
+        if (state.my_referral_code) {
+            params.set('referralCode', state.my_referral_code);
+        }
+      router.push(`/confirmation?${params.toString()}`);
     }
   }, [state, t, toast, router]);
   

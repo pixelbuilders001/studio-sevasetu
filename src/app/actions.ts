@@ -64,7 +64,7 @@ export async function bookService(
   pincode: string | undefined,
   prevState: any, 
   formData: FormData
-): Promise<{ message: string, error?: string, bookingId?: string }> {
+): Promise<{ message: string, error?: string, bookingId?: string, my_referral_code?: string }> {
   
   // Append additional data to formData
   formData.append('category_id', categoryId);
@@ -94,9 +94,10 @@ export async function bookService(
     }
 
     const bookingId = result.order_id || result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
+    const referralCode = result.my_referral_code;
     
-    // Instead of redirecting here, we return the bookingId
-    return { message: "Success", bookingId };
+    // Instead of redirecting here, we return the bookingId and referral code
+    return { message: "Success", bookingId, my_referral_code: referralCode };
     
   } catch (error) {
       console.error('Booking failed:', error);
@@ -104,5 +105,4 @@ export async function bookService(
       return { message: "Error", error: errorMessage };
   }
 }
-
     
