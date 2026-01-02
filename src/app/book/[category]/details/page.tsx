@@ -18,7 +18,6 @@ function BookingDetailsContent() {
 
   const { category: categorySlug } = params as { category: string };
   const problemIds = searchParams.get('problems');
-  const referralCode = searchParams.get('referral_code') || undefined;
 
   const { t, getTranslatedCategory } = useTranslation();
   const [category, setCategory] = useState<ServiceCategory | null>(null);
@@ -76,7 +75,6 @@ function BookingDetailsContent() {
         categoryId={category.id}
         problemIds={problemIds}
         totalEstimate={totalEstimate}
-        referralCode={referralCode}
       />
     </div>
   );

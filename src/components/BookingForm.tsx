@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, Gift } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
@@ -19,16 +19,15 @@ const initialState = {
   message: "",
   error: "",
   bookingId: undefined,
-  my_referral_code: undefined,
 };
 
-export function BookingForm({ categoryId, problemIds, referralCode }: { categoryId: string; problemIds: string; totalEstimate: number; referralCode?: string; }) {
+export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; totalEstimate: number; }) {
   const { t } = useTranslation();
   const { location } = useLocation();
   const { toast } = useToast();
   const router = useRouter();
 
-  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralCode);
+  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
   
   const [selectedDay, setSelectedDay] = useState('today');
@@ -44,14 +43,6 @@ export function BookingForm({ categoryId, problemIds, referralCode }: { category
           title: t('errorTitle'),
           description: state.error,
       });
-    }
-    if (state?.bookingId) {
-        const params = new URLSearchParams();
-        params.set('bookingId', state.bookingId);
-        if (state.my_referral_code) {
-            params.set('referralCode', state.my_referral_code);
-        }
-      router.push(`/confirmation?${params.toString()}`);
     }
   }, [state, t, toast, router]);
   

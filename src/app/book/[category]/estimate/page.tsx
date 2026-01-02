@@ -5,14 +5,13 @@ import { notFound, useParams, useSearchParams, useRouter } from 'next/navigation
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { AlertCircle, Wrench, Hammer, ArrowLeft, CheckCircle, ShieldCheck, Wallet, Package, Gift } from 'lucide-react';
+import { AlertCircle, Wrench, Hammer, ArrowLeft, CheckCircle, ShieldCheck, Wallet, Package } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState, useEffect, useMemo } from 'react';
 import type { ServiceCategory, Problem } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
-import { Input } from '@/components/ui/input';
 
 function PriceEstimationSkeleton() {
   return (
@@ -79,7 +78,6 @@ export default function PriceEstimationPage() {
   
   const [category, setCategory] = useState<ServiceCategory | null>(null);
   const [loading, setLoading] = useState(true);
-  const [referralCode, setReferralCode] = useState('');
 
   useEffect(() => {
     const fetchCategoryAndProblem = async () => {
@@ -126,7 +124,7 @@ export default function PriceEstimationPage() {
 
   const problemNames = selectedProblems.map(p => p.name).join(', ');
   
-  const detailsLink = `/book/${categorySlug}/details?problems=${problemIds}${referralCode ? `&referral_code=${referralCode}` : ''}`;
+  const detailsLink = `/book/${categorySlug}/details?problems=${problemIds}`;
 
 
   return (
@@ -202,21 +200,6 @@ export default function PriceEstimationPage() {
           </div>
         </CardContent>
       </Card>
-
-      <div className="mt-8">
-        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Have a Referral Code?</h2>
-         <div className="bg-card rounded-xl border p-2">
-            <Input 
-                icon={Gift} 
-                id="referral_code" 
-                name="referral_code" 
-                placeholder="Enter Referral Code" 
-                className="border-0 bg-transparent text-base"
-                value={referralCode}
-                onChange={(e) => setReferralCode(e.target.value)}
-            />
-        </div>
-      </div>
       
       <Card className="mt-8 p-4 flex items-center gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800">
         <ShieldCheck className="w-8 h-8 text-green-600 dark:text-green-400" />
