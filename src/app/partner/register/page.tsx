@@ -335,7 +335,7 @@ function ExperienceStep({ defaultValues, formAction, localFormData }: { defaultV
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
   const form = useForm<ExperienceForm>({
       resolver: zodResolver(ExperienceSchema),
-      defaultValues: defaultValues
+      defaultValues
   });
 
   useEffect(() => {
@@ -353,28 +353,22 @@ function ExperienceStep({ defaultValues, formAction, localFormData }: { defaultV
     '5+ Years',
   ];
   
-  const handleFormSubmit = form.handleSubmit((data) => {
-    const fd = new FormData();
-
-    Object.entries(localFormData).forEach(([key, value]) => {
-      if (value instanceof FileList) {
-        if (value.length > 0) {
-          fd.append(key, value[0]);
-        }
-      } else if (typeof value === 'string') {
-        fd.append(key, value);
-      }
-    });
-
-    fd.append('primarySkill', data.primarySkill);
-    fd.append('totalExperience', data.totalExperience);
-    
-    formAction(fd);
-  });
-  
   return (
     <FormProvider {...form}>
-      <form onSubmit={handleFormSubmit} className="space-y-6">
+      <form action={formAction} className="space-y-6">
+        {Object.entries(localFormData).map(([key, value]) => {
+           if (value instanceof FileList) {
+             // FileList can be empty if user removes a file, so check length
+             if(value.length > 0) {
+              return <input key={key} type="hidden" name={key} value={value[0].name} />
+             }
+             return null;
+           }
+           if (typeof value === 'string') {
+             return <input key={key} type="hidden" name={key} value={value} />
+           }
+           return null;
+        })}
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -500,7 +494,19 @@ export default function PartnerOnboardingPage() {
       case 2:
         return <DocumentsStep onNext={handleNextStep2} defaultValues={localFormData} />;
       case 3:
-        return <ExperienceStep formAction={formAction} defaultValues={localFormData} localFormData={localFormData} />;
+        const finalFormAction = (payload: FormData) => {
+            Object.entries(localFormData).forEach(([key, value]) => {
+                if (value instanceof FileList) {
+                    if (value.length > 0) {
+                        payload.append(key, value[0]);
+                    }
+                } else if (typeof value === 'string') {
+                    payload.append(key, value);
+                }
+            });
+            formAction(payload);
+        };
+        return <ExperienceStep formAction={finalFormAction} defaultValues={localFormData} localFormData={localFormData} />;
       default:
         return <PersonalInfoStep onNext={handleNextStep1} defaultValues={localFormData} />;
     }
