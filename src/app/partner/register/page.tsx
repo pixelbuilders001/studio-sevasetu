@@ -321,7 +321,17 @@ function DocumentsStep({ onNext, defaultValues }: { onNext: (data: DocumentsForm
 }
 
 
-function ExperienceStep({ onFormSubmit, defaultValues }: { onFormSubmit: (data: ExperienceForm) => void, defaultValues: Partial<ExperienceForm> }) {
+function ExperienceStep({
+  onFormSubmit,
+  defaultValues,
+  isPending,
+  state,
+}: {
+  onFormSubmit: (data: ExperienceForm) => void;
+  defaultValues: Partial<ExperienceForm>;
+  isPending: boolean;
+  state: { message: string; error?: string };
+}) {
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
 
   useEffect(() => {
@@ -408,10 +418,19 @@ function ExperienceStep({ onFormSubmit, defaultValues }: { onFormSubmit: (data: 
            By submitting, you agree to our <a href="#" className="font-bold underline">Partner Terms</a> and code of conduct.
           </AlertDescription>
         </Alert>
+        
+        {state?.error && (
+            <Alert variant="destructive">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+                {state.error}
+            </AlertDescription>
+            </Alert>
+        )}
 
-        <Button type="submit" size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-          <CheckCircle className="mr-2 h-5 w-5" />
-          SUBMIT APPLICATION
+        <Button type="submit" size="lg" disabled={isPending} className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
+            {isPending ? 'Submitting...' : 'SUBMIT APPLICATION'}
         </Button>
       </form>
     </FormProvider>
@@ -423,10 +442,7 @@ export default function PartnerOnboardingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const formRef = useRef<HTMLFormElement>(null);
-  
   const [state, formAction] = useActionState(registerPartner, { message: "", error: undefined });
-
   const [localFormData, setLocalFormData] = useState<Partial<FullFormData>>({
     fullName: '',
     mobileNumber: '',
@@ -435,8 +451,6 @@ export default function PartnerOnboardingPage() {
     primarySkill: '',
     totalExperience: '',
   });
-
-  const { isPending } = state as { isPending: boolean };
 
   useEffect(() => {
     if (state.error) {
@@ -496,22 +510,14 @@ export default function PartnerOnboardingPage() {
       case 2:
         return <DocumentsStep onNext={handleNextStep2} defaultValues={localFormData} />;
       case 3:
+        const { isPending } = state as { isPending: boolean };
         return (
-          <form action={formAction} ref={formRef} className="space-y-6">
-            <ExperienceStep onFormSubmit={handleFinalSubmit} defaultValues={localFormData} />
-            {state?.error && (
-              <Alert variant="destructive">
-                <Info className="h-4 w-4" />
-                <AlertDescription>
-                  {state.error}
-                </AlertDescription>
-              </Alert>
-            )}
-            <Button type="submit" size="lg" disabled={isPending} className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-              {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
-              {isPending ? 'Submitting...' : 'SUBMIT APPLICATION'}
-            </Button>
-          </form>
+          <ExperienceStep 
+            onFormSubmit={handleFinalSubmit} 
+            defaultValues={localFormData}
+            isPending={isPending}
+            state={state}
+          />
         );
       default:
         return <PersonalInfoStep onNext={handleNextStep1} defaultValues={localFormData} />;

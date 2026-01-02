@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import type { TranslationFunc } from '@/context/LanguageContext';
+import type { TranslationFunc } from '@/lib/get-translation';
 
 export default function Testimonials({ t }: { t: TranslationFunc }) {
   const testimonials = [

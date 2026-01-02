@@ -1,11 +1,8 @@
-
-
-'use client';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Star } from 'lucide-react';
-import type { TranslationFunc } from '@/context/LanguageContext';
+import type { TranslationFunc } from '@/lib/get-translation';
 
 const technicians = [
   {

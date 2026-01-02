@@ -1,7 +1,5 @@
-
-
 import { Card, CardContent } from '@/components/ui/card';
-import type { TranslationFunc } from '@/context/LanguageContext';
+import type { TranslationFunc } from '@/lib/get-translation';
 import { Gem, Award, ReceiptText, ShieldAlert } from 'lucide-react';
 
 export default function TrustIndicators({t}: {t: TranslationFunc}) {

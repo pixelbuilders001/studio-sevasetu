@@ -1,6 +1,5 @@
-
 import { Smartphone, UserCheck, Wrench, IndianRupee } from 'lucide-react';
-import type { TranslationFunc } from '@/context/LanguageContext';
+import type { TranslationFunc } from '@/lib/get-translation';
 
 export default function HowItWorks({t}: {t: TranslationFunc}) {
 
