@@ -1,14 +1,14 @@
 
 'use client';
 
-import React, { useState, useActionState, useEffect, useRef } from 'react';
+import React, { useState, useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X, Loader2 } from 'lucide-react';
-import { useForm, FormProvider, type SubmitHandler } from 'react-hook-form';
+import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { useFormStatus } from 'react-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,7 +16,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import {
@@ -35,23 +34,22 @@ import { registerPartner } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
 const validationSchema = z.object({
-  fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
-  mobileNumber: z.string().regex(/^[6-9]\d{9}$/, { message: 'Please enter a valid 10-digit mobile number.' }),
-  currentAddress: z.string().min(5, { message: 'Please enter a valid address.' }),
-  aadharNumber: z.string().regex(/^\d{12}$/, { message: 'Please enter a valid 12-digit Aadhar number.' }),
-  aadharFront: z.any().refine((files) => files?.length === 1, 'Aadhar front picture is required.'),
-  aadharBack: z.any().refine((files) => files?.length === 1, 'Aadhar back picture is required.'),
+  full_name: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
+  mobile: z.string().regex(/^[6-9]\d{9}$/, { message: 'Please enter a valid 10-digit mobile number.' }),
+  current_address: z.string().min(5, { message: 'Please enter a valid address.' }),
+  aadhaar_number: z.string().regex(/^\d{12}$/, { message: 'Please enter a valid 12-digit Aadhar number.' }),
+  aadhaar_front: z.any().refine((files) => files?.length === 1, 'Aadhar front picture is required.'),
+  aadhaar_back: z.any().refine((files) => files?.length === 1, 'Aadhar back picture is required.'),
   selfie: z.any().refine((files) => files?.length === 1, 'Selfie with Aadhar is required.'),
-  primarySkill: z.string().min(1, { message: 'Please select your primary skill.' }),
-  totalExperience: z.string().min(1, { message: 'Please select your total experience.' }),
+  primary_skill: z.string().min(1, { message: 'Please select your primary skill.' }),
+  total_experience: z.string().min(1, { message: 'Please select your total experience.' }),
 });
 
 type FullFormData = z.infer<typeof validationSchema>;
 
-const personalInfoFields: (keyof FullFormData)[] = ['fullName', 'mobileNumber', 'currentAddress'];
-const documentsFields: (keyof FullFormData)[] = ['aadharNumber', 'aadharFront', 'aadharBack', 'selfie'];
-const experienceFields: (keyof FullFormData)[] = ['primarySkill', 'totalExperience'];
-
+const personalInfoFields: (keyof FullFormData)[] = ['full_name', 'mobile', 'current_address'];
+const documentsFields: (keyof FullFormData)[] = ['aadhaar_number', 'aadhaar_front', 'aadhaar_back', 'selfie'];
+const experienceFields: (keyof FullFormData)[] = ['primary_skill', 'total_experience'];
 
 function FileUpload({
   field,
@@ -129,7 +127,6 @@ function FileUpload({
   );
 }
 
-
 function SubmitButton() {
     const { pending } = useFormStatus();
     return (
@@ -145,23 +142,23 @@ export default function PartnerOnboardingPage() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [state, formAction] = useActionState(registerPartner, { message: "", error: undefined });
+  const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
 
   const form = useForm<FullFormData>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
-        fullName: '',
-        mobileNumber: '',
-        currentAddress: '',
-        aadharNumber: '',
-        aadharFront: undefined,
-        aadharBack: undefined,
+        full_name: '',
+        mobile: '',
+        current_address: '',
+        aadhaar_number: '',
+        aadhaar_front: undefined,
+        aadhaar_back: undefined,
         selfie: undefined,
-        primarySkill: '',
-        totalExperience: '',
+        primary_skill: '',
+        total_experience: '',
     }
   });
-  
-  const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
+
   useEffect(() => {
     async function fetchSkills() {
       const skills = await getServiceCategories();
@@ -190,12 +187,18 @@ export default function PartnerOnboardingPage() {
   const totalSteps = 3;
 
   const handleNext = async () => {
-    let fieldsToValidate: (keyof FullFormData)[] = [];
-    if (step === 1) fieldsToValidate = personalInfoFields;
-    if (step === 2) fieldsToValidate = documentsFields;
-    
+    let fieldsToValidate: (keyof FullFormData)[];
+    if (step === 1) {
+      fieldsToValidate = personalInfoFields;
+    } else if (step === 2) {
+      fieldsToValidate = documentsFields;
+    } else {
+      fieldsToValidate = [];
+    }
+
     const isValid = await form.trigger(fieldsToValidate);
-    if (isValid) {
+
+    if (isValid && step < totalSteps) {
       setStep(prev => prev + 1);
     }
   };
@@ -242,13 +245,13 @@ export default function PartnerOnboardingPage() {
                 <User className="w-5 h-5 text-primary" />
                 <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Basic Details</h2>
              </div>
-             <FormField control={form.control} name="fullName" render={({ field }) => (
+             <FormField control={form.control} name="full_name" render={({ field }) => (
                 <FormItem><FormControl><Input icon={User} placeholder="Full Name (As per Aadhar)" {...field} /></FormControl><FormMessage /></FormItem>
               )} />
-             <FormField control={form.control} name="mobileNumber" render={({ field }) => (
+             <FormField control={form.control} name="mobile" render={({ field }) => (
                 <FormItem><FormControl><Input icon={Phone} type="tel" placeholder="Mobile Number" {...field} /></FormControl><FormMessage /></FormItem>
               )} />
-             <FormField control={form.control} name="currentAddress" render={({ field }) => (
+             <FormField control={form.control} name="current_address" render={({ field }) => (
                 <FormItem><FormControl><Input icon={MapPin} placeholder="Current Address" {...field} /></FormControl><FormMessage /></FormItem>
               )} />
              <Alert className="bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300">
@@ -262,12 +265,12 @@ export default function PartnerOnboardingPage() {
                 <CreditCard className="w-5 h-5 text-primary" />
                 <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Identity Documents</h2>
             </div>
-            <FormField control={form.control} name="aadharNumber" render={({ field }) => (
+            <FormField control={form.control} name="aadhaar_number" render={({ field }) => (
               <FormItem><FormControl><Input icon={CreditCard} placeholder="Aadhar Card Number" {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="aadharFront" render={({ field }) => <FileUpload field={field} label="Aadhaar Front" />} />
-              <FormField control={form.control} name="aadharBack" render={({ field }) => <FileUpload field={field} label="Aadhaar Back" />} />
+              <FormField control={form.control} name="aadhaar_front" render={({ field }) => <FileUpload field={field} label="Aadhaar Front" />} />
+              <FormField control={form.control} name="aadhaar_back" render={({ field }) => <FileUpload field={field} label="Aadhaar Back" />} />
             </div>
              <div>
                 <Label className="text-muted-foreground font-semibold ml-1 mb-2 block">Selfie with Aadhaar</Label>
@@ -280,10 +283,9 @@ export default function PartnerOnboardingPage() {
                 <Briefcase className="w-5 h-5 text-primary" />
                 <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
               </div>
-
-              <FormField control={form.control} name="primarySkill" render={({ field }) => (
+              <FormField control={form.control} name="primary_skill" render={({ field }) => (
                   <FormItem>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} name={field.name}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                           <div className='relative'>
                               <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -297,10 +299,9 @@ export default function PartnerOnboardingPage() {
                     <FormMessage />
                   </FormItem>
               )}/>
-              
-              <FormField control={form.control} name="totalExperience" render={({ field }) => (
+              <FormField control={form.control} name="total_experience" render={({ field }) => (
                   <FormItem>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} name={field.name}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                           <div className='relative'>
                               <Star className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -337,4 +338,3 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
-
