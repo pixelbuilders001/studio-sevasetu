@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X, Loader2 } from 'lucide-react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -321,7 +321,7 @@ function DocumentsStep({ onNext, defaultValues }: { onNext: (data: DocumentsForm
 }
 
 
-function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }: { onFormSubmit: (data: FormData) => void, defaultValues: Partial<ExperienceForm>, isPending: boolean, serverError?: string }) {
+function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }: { onFormSubmit: SubmitHandler<ExperienceForm>, defaultValues: Partial<ExperienceForm>, isPending: boolean, serverError?: string }) {
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
 
   useEffect(() => {
@@ -346,7 +346,7 @@ function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }:
 
   return (
     <FormProvider {...form}>
-      <form action={onFormSubmit} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -467,24 +467,28 @@ export default function PartnerOnboardingPage() {
     setStep(3);
   }
 
-  const handleFinalSubmit = (payload: FormData) => {
+  const handleFinalSubmit: SubmitHandler<ExperienceForm> = (data) => {
+    const finalData = { ...formData, ...data };
     
-    payload.append('full_name', formData.fullName!);
-    payload.append('mobile', formData.mobileNumber!);
-    payload.append('current_address', formData.currentAddress!);
-    payload.append('aadhaar_number', formData.aadharNumber!);
+    const fd = new FormData();
+    fd.append('full_name', finalData.fullName!);
+    fd.append('mobile', finalData.mobileNumber!);
+    fd.append('current_address', finalData.currentAddress!);
+    fd.append('aadhaar_number', finalData.aadharNumber!);
+    fd.append('primary_skill', finalData.primarySkill!);
+    fd.append('total_experience', finalData.totalExperience!);
     
-    if (formData.aadharFront && formData.aadharFront.length > 0) {
-      payload.append('aadhaar_front', formData.aadharFront[0]);
+    if (finalData.aadharFront && finalData.aadharFront.length > 0) {
+      fd.append('aadhaar_front', finalData.aadharFront[0]);
     }
-    if (formData.aadharBack && formData.aadharBack.length > 0) {
-      payload.append('aadhaar_back', formData.aadharBack[0]);
+    if (finalData.aadharBack && finalData.aadharBack.length > 0) {
+      fd.append('aadhaar_back', finalData.aadharBack[0]);
     }
-    if (formData.selfie && formData.selfie.length > 0) {
-      payload.append('selfie', formData.selfie[0]);
+    if (finalData.selfie && finalData.selfie.length > 0) {
+      fd.append('selfie', finalData.selfie[0]);
     }
     
-    formAction(payload);
+    formAction(fd);
   };
 
   const handleBack = () => {
