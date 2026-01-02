@@ -1,14 +1,14 @@
 
 'use client';
 
-import React, { useState, useActionState, useEffect, useRef } from 'react';
+import React, { useState, useActionState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, User, Phone, MapPin, ArrowRight, Info, CreditCard, UploadCloud, CheckCircle, Briefcase, Star, Wrench, X, Loader2 } from 'lucide-react';
-import { useForm, FormProvider, type SubmitHandler } from 'react-hook-form';
+import { useForm, FormProvider, type SubmitHandler, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -322,17 +322,16 @@ function DocumentsStep({ onNext, defaultValues }: { onNext: (data: DocumentsForm
 
 
 function ExperienceStep({
-  onFormSubmit,
+  formAction,
   defaultValues,
-  isPending,
   state,
 }: {
-  onFormSubmit: (data: ExperienceForm) => void;
+  formAction: (payload: FormData) => void;
   defaultValues: Partial<ExperienceForm>;
-  isPending: boolean;
   state: { message: string; error?: string };
 }) {
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
+  const { pending } = useFormState({ control: new AbortController().signal as any, name: 'experienceForm' });
 
   useEffect(() => {
     async function fetchSkills() {
@@ -356,7 +355,7 @@ function ExperienceStep({
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
+      <form action={formAction} className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -428,9 +427,9 @@ function ExperienceStep({
             </Alert>
         )}
 
-        <Button type="submit" size="lg" disabled={isPending} className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
-            {isPending ? 'Submitting...' : 'SUBMIT APPLICATION'}
+        <Button type="submit" size="lg" disabled={pending} className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+            {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
+            {pending ? 'Submitting...' : 'SUBMIT APPLICATION'}
         </Button>
       </form>
     </FormProvider>
@@ -442,7 +441,7 @@ export default function PartnerOnboardingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const [state, formAction] = useActionState(registerPartner, { message: "", error: undefined });
+
   const [localFormData, setLocalFormData] = useState<Partial<FullFormData>>({
     fullName: '',
     mobileNumber: '',
@@ -451,6 +450,21 @@ export default function PartnerOnboardingPage() {
     primarySkill: '',
     totalExperience: '',
   });
+
+  const [state, formAction] = useActionState(async (previousState: any, formData: FormData) => {
+    // Append the data from previous steps
+    Object.entries(localFormData).forEach(([key, value]) => {
+      if (value && !formData.has(key)) {
+        if (value instanceof FileList) {
+          if (value.length > 0) formData.append(key, value[0]);
+        } else {
+          formData.append(key, value as string);
+        }
+      }
+    });
+    return registerPartner(previousState, formData);
+  }, { message: "", error: undefined });
+
 
   useEffect(() => {
     if (state.error) {
@@ -475,24 +489,6 @@ export default function PartnerOnboardingPage() {
     setStep(3);
   }
 
-  const handleFinalSubmit = (experienceData: ExperienceForm) => {
-    const finalData = { ...localFormData, ...experienceData };
-    
-    const fd = new FormData();
-    Object.entries(finalData).forEach(([key, value]) => {
-      const fileKey = key === 'aadharFront' ? 'aadhaar_front' : (key === 'aadharBack' ? 'aadhaar_back' : key);
-      const snakeCaseKey = fileKey.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-      
-      if (value instanceof FileList && value.length > 0) {
-        fd.append(snakeCaseKey, value[0]);
-      } else if (typeof value === 'string') {
-        fd.append(snakeCaseKey, value);
-      }
-    });
-    
-    formAction(fd);
-  };
-
   const handleBack = () => {
     if (step > 1) {
       setStep(step - 1);
@@ -510,12 +506,10 @@ export default function PartnerOnboardingPage() {
       case 2:
         return <DocumentsStep onNext={handleNextStep2} defaultValues={localFormData} />;
       case 3:
-        const { isPending } = state as { isPending: boolean };
         return (
           <ExperienceStep 
-            onFormSubmit={handleFinalSubmit} 
+            formAction={formAction} 
             defaultValues={localFormData}
-            isPending={isPending}
             state={state}
           />
         );
@@ -554,3 +548,5 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
+
+    
