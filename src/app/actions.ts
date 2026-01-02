@@ -130,5 +130,3 @@ export async function registerPartner(prevState: any, formData: FormData): Promi
   
   redirect('/partner/success');
 }
-
-    

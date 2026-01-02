@@ -1,10 +1,11 @@
 
+
 'use client';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
-import { useTranslation } from '@/hooks/useTranslation';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Star } from 'lucide-react';
+import type { TranslationFunc } from '@/context/LanguageContext';
 
 const technicians = [
   {
@@ -81,8 +82,7 @@ function TechnicianCard({ technician }: { technician: typeof technicians[0] }) {
   );
 }
 
-export default function VerifiedTechnicians() {
-    const { t } = useTranslation();
+export default function VerifiedTechnicians({ t }: { t: TranslationFunc }) {
     return (
         <section className="py-12 md:py-16 bg-muted/20">
             <div className="container mx-auto px-4">

@@ -1,11 +1,10 @@
 
-'use client';
+
 import { Card, CardContent } from '@/components/ui/card';
-import { useTranslation } from '@/hooks/useTranslation';
+import type { TranslationFunc } from '@/context/LanguageContext';
 import { Gem, Award, ReceiptText, ShieldAlert } from 'lucide-react';
 
-export default function TrustIndicators() {
-  const { t } = useTranslation();
+export default function TrustIndicators({t}: {t: TranslationFunc}) {
   
   const indicators = [
     {

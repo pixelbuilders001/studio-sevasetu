@@ -321,7 +321,7 @@ function DocumentsStep({ onNext, defaultValues }: { onNext: (data: DocumentsForm
 }
 
 
-function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError, formAction }: { onFormSubmit: (data: ExperienceForm) => void, defaultValues: Partial<ExperienceForm>, isPending: boolean, serverError?: string, formAction: (payload: FormData) => void }) {
+function ExperienceStep({ onFormSubmit, defaultValues }: { onFormSubmit: (data: ExperienceForm) => void, defaultValues: Partial<ExperienceForm> }) {
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
 
   useEffect(() => {
@@ -346,7 +346,7 @@ function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError, f
 
   return (
     <FormProvider {...form}>
-      <form action={formAction} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -408,20 +408,10 @@ function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError, f
            By submitting, you agree to our <a href="#" className="font-bold underline">Partner Terms</a> and code of conduct.
           </AlertDescription>
         </Alert>
-        
-        {serverError && (
-          <Alert variant="destructive">
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              {serverError}
-            </AlertDescription>
-          </Alert>
-        )}
 
-
-        <Button type="submit" size="lg" disabled={isPending} className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
-          {isPending ? 'Submitting...' : 'SUBMIT APPLICATION'}
+        <Button type="submit" size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+          <CheckCircle className="mr-2 h-5 w-5" />
+          SUBMIT APPLICATION
         </Button>
       </form>
     </FormProvider>
@@ -471,8 +461,22 @@ export default function PartnerOnboardingPage() {
     setStep(3);
   }
 
-  const handleFinalSubmit = (data: ExperienceForm) => {
-    // This is now handled by the form's action
+  const handleFinalSubmit = (experienceData: ExperienceForm) => {
+    const finalData = { ...localFormData, ...experienceData };
+    
+    const fd = new FormData();
+    Object.entries(finalData).forEach(([key, value]) => {
+      const fileKey = key === 'aadharFront' ? 'aadhaar_front' : (key === 'aadharBack' ? 'aadhaar_back' : key);
+      const snakeCaseKey = fileKey.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+      
+      if (value instanceof FileList && value.length > 0) {
+        fd.append(snakeCaseKey, value[0]);
+      } else if (typeof value === 'string') {
+        fd.append(snakeCaseKey, value);
+      }
+    });
+    
+    formAction(fd);
   };
 
   const handleBack = () => {
@@ -492,31 +496,23 @@ export default function PartnerOnboardingPage() {
       case 2:
         return <DocumentsStep onNext={handleNextStep2} defaultValues={localFormData} />;
       case 3:
-        const finalFormAction = (formData: FormData) => {
-            Object.entries(localFormData).forEach(([key, value]) => {
-                if (value instanceof FileList && value.length > 0) {
-                    const fileKey = key === 'aadharFront' ? 'aadhaar_front' : (key === 'aadharBack' ? 'aadhaar_back' : key)
-                    formData.append(fileKey, value[0]);
-                } else if (typeof value === 'string' && !formData.has(key)) {
-                    const snakeCaseKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-                    formData.append(snakeCaseKey, value);
-                }
-            });
-
-            const primarySkill = formData.get('primarySkill');
-            if (primarySkill) {
-                formData.set('primary_skill', primarySkill);
-                formData.delete('primarySkill');
-            }
-            const totalExperience = formData.get('totalExperience');
-            if (totalExperience) {
-                formData.set('total_experience', totalExperience);
-                formData.delete('totalExperience');
-            }
-
-            formAction(formData);
-        }
-        return <ExperienceStep onFormSubmit={handleFinalSubmit} defaultValues={localFormData} isPending={isPending} serverError={state.error} formAction={finalFormAction} />;
+        return (
+          <form action={formAction} ref={formRef} className="space-y-6">
+            <ExperienceStep onFormSubmit={handleFinalSubmit} defaultValues={localFormData} />
+            {state?.error && (
+              <Alert variant="destructive">
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  {state.error}
+                </AlertDescription>
+              </Alert>
+            )}
+            <Button type="submit" size="lg" disabled={isPending} className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+              {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-5 w-5" />}
+              {isPending ? 'Submitting...' : 'SUBMIT APPLICATION'}
+            </Button>
+          </form>
+        );
       default:
         return <PersonalInfoStep onNext={handleNextStep1} defaultValues={localFormData} />;
     }

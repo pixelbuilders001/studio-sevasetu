@@ -1,13 +1,9 @@
-
-'use client';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useTranslation } from '@/hooks/useTranslation';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import type { TranslationFunc } from '@/context/LanguageContext';
 
-export default function Testimonials() {
-  const { t } = useTranslation();
-
+export default function Testimonials({ t }: { t: TranslationFunc }) {
   const testimonials = [
     {
       name: 'Priya S.',
