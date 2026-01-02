@@ -105,28 +105,4 @@ export async function bookService(
   }
 }
 
-export async function registerPartner(prevState: any, formData: FormData): Promise<{ message: string, error?: string }> {
-  try {
-    const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/create-technician', {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-        },
-        body: formData,
-    });
-
-    if (!response.ok) {
-        const result = await response.json().catch(() => ({ message: 'Failed to parse error response' }));
-        console.error('Partner Registration API Error:', result);
-        return { message: "Error", error: result.error_message || result.message || `An unexpected error occurred. Status: ${response.status}` };
-    }
-
-  } catch (error) {
-      console.error('Partner Registration failed:', error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
-      return { message: "Error", error: errorMessage };
-  }
-  
-  redirect('/partner/success');
-}
+    
