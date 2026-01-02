@@ -102,7 +102,7 @@ function PersonalInfoStep({ onNext, defaultValues }: { onNext: (data: PersonalIn
             )}
           />
           <FormField
-            control={form.control}
+            control-={form.control}
             name="currentAddress"
             render={({ field }) => (
               <FormItem>
@@ -321,7 +321,7 @@ function DocumentsStep({ onNext, defaultValues }: { onNext: (data: DocumentsForm
 }
 
 
-function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }: { onFormSubmit: SubmitHandler<ExperienceForm>, defaultValues: Partial<ExperienceForm>, isPending: boolean, serverError?: string }) {
+function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError, formAction }: { onFormSubmit: (data: ExperienceForm) => void, defaultValues: Partial<ExperienceForm>, isPending: boolean, serverError?: string, formAction: (payload: FormData) => void }) {
   const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
 
   useEffect(() => {
@@ -344,9 +344,13 @@ function ExperienceStep({ onFormSubmit, defaultValues, isPending, serverError }:
     defaultValues,
   });
 
+  const handleFormSubmit = form.handleSubmit((data) => {
+    onFormSubmit(data);
+  });
+
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
+      <form action={formAction} onSubmit={handleFormSubmit} className="space-y-6">
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="w-5 h-5 text-primary" />
           <h2 className="font-bold text-lg uppercase tracking-wider text-muted-foreground">Skills &amp; Experience</h2>
@@ -441,9 +445,47 @@ export default function PartnerOnboardingPage() {
     primarySkill: '',
     totalExperience: '',
   });
+
+  const formRef = React.useRef<HTMLFormElement>(null);
   
-  const [state, formAction, isPending] = useActionState(registerPartner, { message: "", error: undefined });
-  
+  const [state, formAction] = useActionState(async (previousState: any, formData: FormData) => {
+    if (formRef.current) {
+      const form = new FormData(formRef.current);
+      
+      const allData = { ...Object.fromEntries(form.entries()), ...Object.fromEntries(formData.entries()) };
+      
+      const combinedFormData = new FormData();
+      for (const key in allData) {
+        combinedFormData.append(key, allData[key]);
+      }
+
+      // Append files from local state
+      if (localFormData.aadharFront && localFormData.aadharFront.length > 0) {
+        combinedFormData.append('aadhaar_front', localFormData.aadharFront[0]);
+      }
+      if (localFormData.aadharBack && localFormData.aadharBack.length > 0) {
+        combinedFormData.append('aadhaar_back', localFormData.aadharBack[0]);
+      }
+      if (localFormData.selfie && localFormData.selfie.length > 0) {
+        combinedFormData.append('selfie', localFormData.selfie[0]);
+      }
+
+      return await registerPartner(previousState, combinedFormData);
+    }
+    return { message: "Error", error: "Form reference is not available." };
+  }, { message: "", error: undefined });
+
+  const [localFormData, setLocalFormData] = useState<Partial<FullFormData>>({
+    fullName: '',
+    mobileNumber: '',
+    currentAddress: '',
+    aadharNumber: '',
+    primarySkill: '',
+    totalExperience: '',
+  });
+
+  const isPending = (formRef.current?.formAction === formAction);
+
   useEffect(() => {
     if (state.error) {
       toast({
@@ -458,37 +500,19 @@ export default function PartnerOnboardingPage() {
   const totalSteps = 3;
 
   const handleNextStep1 = (data: PersonalInfoForm) => {
-    setFormData(prev => ({...prev, ...data}));
+    setLocalFormData(prev => ({...prev, ...data}));
     setStep(2);
   }
   
   const handleNextStep2 = (data: DocumentsForm) => {
-    setFormData(prev => ({...prev, ...data}));
+    setLocalFormData(prev => ({...prev, ...data}));
     setStep(3);
   }
 
-  const handleFinalSubmit: SubmitHandler<ExperienceForm> = (data) => {
-    const finalData = { ...formData, ...data };
-    
-    const fd = new FormData();
-    fd.append('full_name', finalData.fullName!);
-    fd.append('mobile', finalData.mobileNumber!);
-    fd.append('current_address', finalData.currentAddress!);
-    fd.append('aadhaar_number', finalData.aadharNumber!);
-    fd.append('primary_skill', finalData.primarySkill!);
-    fd.append('total_experience', finalData.totalExperience!);
-    
-    if (finalData.aadharFront && finalData.aadharFront.length > 0) {
-      fd.append('aadhaar_front', finalData.aadharFront[0]);
-    }
-    if (finalData.aadharBack && finalData.aadharBack.length > 0) {
-      fd.append('aadhaar_back', finalData.aadharBack[0]);
-    }
-    if (finalData.selfie && finalData.selfie.length > 0) {
-      fd.append('selfie', finalData.selfie[0]);
-    }
-    
-    formAction(fd);
+  const handleFinalSubmit = (data: ExperienceForm) => {
+    setLocalFormData(prev => ({...prev, ...data}));
+    // Now that all data is in localFormData, we can let the form's action proceed.
+    // The form action will combine data from the form element and localFormData.
   };
 
   const handleBack = () => {
@@ -504,13 +528,13 @@ export default function PartnerOnboardingPage() {
   const getStepComponent = () => {
     switch (step) {
       case 1:
-        return <PersonalInfoStep onNext={handleNextStep1} defaultValues={formData} />;
+        return <PersonalInfoStep onNext={handleNextStep1} defaultValues={localFormData} />;
       case 2:
-        return <DocumentsStep onNext={handleNextStep2} defaultValues={formData} />;
+        return <DocumentsStep onNext={handleNextStep2} defaultValues={localFormData} />;
       case 3:
-        return <ExperienceStep onFormSubmit={handleFinalSubmit} defaultValues={formData} isPending={isPending} serverError={state.error} />;
+        return <ExperienceStep onFormSubmit={handleFinalSubmit} defaultValues={localFormData} isPending={isPending} serverError={state.error} formAction={formAction} />;
       default:
-        return <PersonalInfoStep onNext={handleNextStep1} defaultValues={formData} />;
+        return <PersonalInfoStep onNext={handleNextStep1} defaultValues={localFormData} />;
     }
   }
 
@@ -538,8 +562,47 @@ export default function PartnerOnboardingPage() {
       </div>
       
       <Progress value={progressValue} className="mb-8 h-2" />
+      
+      <form
+        ref={formRef}
+        action={formAction}
+        onSubmit={(e) => {
+          if (step < totalSteps) {
+            e.preventDefault();
+          }
+        }}
+      >
+        {step === 1 && (
+          <input type="hidden" name="full_name" value={localFormData.fullName} />
+        )}
+         {step === 1 && (
+          <input type="hidden" name="mobile" value={localFormData.mobileNumber} />
+        )}
+         {step === 1 && (
+          <input type="hidden" name="current_address" value={localFormData.currentAddress} />
+        )}
+        {step === 2 && (
+          <>
+            <input type="hidden" name="full_name" value={localFormData.fullName} />
+            <input type="hidden" name="mobile" value={localFormData.mobileNumber} />
+            <input type="hidden" name="current_address" value={localFormData.currentAddress} />
+            <input type="hidden" name="aadhaar_number" value={localFormData.aadharNumber} />
+          </>
+        )}
+         {step === 3 && (
+          <>
+            <input type="hidden" name="full_name" value={localFormData.fullName} />
+            <input type="hidden" name="mobile" value={localFormData.mobileNumber} />
+            <input type="hidden" name="current_address" value={localFormData.currentAddress} />
+            <input type="hidden" name="aadhaar_number" value={localFormData.aadharNumber} />
+          </>
+        )}
 
-      {getStepComponent()}
+        {getStepComponent()}
+      </form>
+
     </div>
   );
 }
+
+    
