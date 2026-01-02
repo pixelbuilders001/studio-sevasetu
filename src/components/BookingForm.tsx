@@ -22,13 +22,13 @@ const initialState = {
   my_referral_code: undefined,
 };
 
-export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; totalEstimate: number; }) {
+export function BookingForm({ categoryId, problemIds, referralCode }: { categoryId: string; problemIds: string; totalEstimate: number; referralCode?: string; }) {
   const { t } = useTranslation();
   const { location } = useLocation();
   const { toast } = useToast();
   const router = useRouter();
 
-  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode);
+  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralCode);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
   
   const [selectedDay, setSelectedDay] = useState('today');
@@ -147,13 +147,6 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
         </div>
       </div>
 
-       <div>
-        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Have a Referral Code?</h2>
-         <div className="bg-card rounded-xl border p-2">
-            <Input icon={Gift} id="referral_code" name="referral_code" placeholder="Enter Referral Code" className="border-0 bg-transparent text-base" />
-        </div>
-      </div>
-      
        <div>
         <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Add Problem Photos (Optional)</h2>
         <div className="flex items-center gap-4">
