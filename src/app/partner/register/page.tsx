@@ -201,7 +201,10 @@ export default function PartnerOnboardingPage() {
     formData.append('current_address', data.current_address);
     formData.append('aadhaar_number', data.aadhaar_number);
     formData.append('primary_skill', data.primary_skill);
-    formData.append('total_experience', data.total_experience);
+    
+    // Parse the experience string to get the first digit
+    const experienceDigit = data.total_experience.match(/\d+/)?.[0] || '0';
+    formData.append('total_experience', experienceDigit);
 
     if (data.aadhaar_front[0]) {
       formData.append('aadhaar_front', data.aadhaar_front[0]);
@@ -370,5 +373,7 @@ export default function PartnerOnboardingPage() {
     </div>
   );
 }
+
+    
 
     
