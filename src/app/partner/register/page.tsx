@@ -236,13 +236,13 @@ export default function PartnerOnboardingPage() {
     const experienceDigit = data.total_experience.match(/\d+/)?.[0] || '0';
     formData.append('total_experience', experienceDigit);
 
-    if (data.aadhaar_front && data.aadhaar_front[0]) {
+    if (data.aadhaar_front && data.aadhaar_front.length > 0) {
       formData.append('aadhaar_front', data.aadhaar_front[0]);
     }
-    if (data.aadhaar_back && data.aadhaar_back[0]) {
+    if (data.aadhaar_back && data.aadhaar_back.length > 0) {
       formData.append('aadhaar_back', data.aadhaar_back[0]);
     }
-    if (data.selfie && data.selfie[0]) {
+    if (data.selfie && data.selfie.length > 0) {
       formData.append('selfie', data.selfie[0]);
     }
     
@@ -400,3 +400,4 @@ export default function PartnerOnboardingPage() {
   );
 }
 
+    
