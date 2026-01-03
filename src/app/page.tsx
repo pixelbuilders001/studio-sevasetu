@@ -103,6 +103,24 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
             </div>
         </div>
       </section>
+      
+      <section className="py-8 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-3 gap-2 md:gap-4">
+            {featureCards.map((card, index) => (
+              <Card key={index} className="bg-card border-none shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-3 flex flex-col items-center justify-center text-center">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary mb-2">
+                        <card.icon className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-bold text-xs md:text-base">{card.title}</h3>
+                    <p className="text-xs text-muted-foreground">{card.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="py-6 bg-muted/30 border-y">
         <div className="container mx-auto px-4">
@@ -127,24 +145,6 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
                  </div>
               </div>
             </BookingTrackerModal>
-        </div>
-      </section>
-
-      <section className="py-8 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-3 gap-2 md:gap-4">
-            {featureCards.map((card, index) => (
-              <Card key={index} className="bg-card border-none shadow-md hover:shadow-lg transition-shadow">
-                <CardContent className="p-3 flex flex-col items-center justify-center text-center">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary mb-2">
-                        <card.icon className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-bold text-xs md:text-base">{card.title}</h3>
-                    <p className="text-xs text-muted-foreground">{card.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
       </section>
 
