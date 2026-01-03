@@ -108,9 +108,8 @@ export async function bookService(
   
     const bookingId = result.order_id || result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
     const myReferralCode = result.my_referral_code;
+    return { message: "Success", bookingId, referralCode: myReferralCode };
 
-    const redirectUrl = `/confirmation?bookingId=${bookingId}${myReferralCode ? `&referralCode=${myReferralCode}` : ''}`;
-    redirect(redirectUrl, 'push');
     
   } catch (error) {
       console.error('Booking failed:', error);

@@ -19,6 +19,7 @@ const initialState = {
   message: "",
   error: "",
   bookingId: undefined,
+  referralCode: undefined,
 };
 
 export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; }) {
@@ -50,6 +51,9 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
           title: t('errorTitle'),
           description: state.error,
       });
+    }
+    if (state?.bookingId) {
+      router.push(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode}`);
     }
   }, [state, t, toast, router]);
   
@@ -198,36 +202,35 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       </div>
 
       <div className="mb-8">
-        <Card className="p-4 bg-white/90 dark:bg-gray-800/80 rounded-2xl shadow-sm border">
-          <div className="flex items-center justify-between gap-2">
-            <Tag className="w-5 h-5 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="HAVE A REFERRAL CODE?"
-              name="referral_code_input"
-              value={referral}
-              onChange={e => {
-                setReferral(e.target.value.toUpperCase());
-                setReferralStatus('idle');
-                setReferralMessage('');
-                setDiscount(0);
-              }}
-              className="flex-grow border-0 bg-transparent text-base font-semibold placeholder:text-muted-foreground placeholder:font-semibold focus-visible:ring-0"
-              style={{ boxShadow: 'none' }}
-              autoComplete="off"
-              disabled={referralStatus === 'success'}
-            />
-            <Button
-              type="button"
-              variant={referralStatus === 'success' ? 'ghost' : 'default'}
-              className="rounded-full h-9 px-6 font-semibold shadow-none text-sm"
-              disabled={referralStatus === 'verifying' || !referral.trim()}
-              onClick={verifyReferralCode}
-            >
-              {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : (referralStatus === 'success' ? 'APPLIED' : 'APPLY')}
-            </Button>
-          </div>
-        </Card>
+        <div className="relative flex items-center bg-card rounded-xl border p-2 h-14">
+          <Tag className="w-5 h-5 text-muted-foreground mx-3" />
+          <Input
+            type="text"
+            placeholder="HAVE A REFERRAL CODE?"
+            name="referral_code_input"
+            value={referral}
+            onChange={e => {
+              setReferral(e.target.value.toUpperCase());
+              setReferralStatus('idle');
+              setReferralMessage('');
+              setDiscount(0);
+            }}
+            className="flex-grow border-0 bg-transparent text-base font-semibold placeholder:text-muted-foreground placeholder:font-semibold focus-visible:ring-0 p-0 h-auto"
+            style={{ boxShadow: 'none' }}
+            autoComplete="off"
+            disabled={referralStatus === 'success'}
+          />
+          <Button
+            type="button"
+            variant={referralStatus === 'success' ? 'ghost' : 'default'}
+            className="rounded-full h-10 px-6 font-semibold shadow-none text-sm mr-1"
+            disabled={referralStatus === 'verifying' || !referral.trim()}
+            onClick={verifyReferralCode}
+          >
+            {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : (referralStatus === 'success' ? 'APPLIED' : 'APPLY')}
+          </Button>
+        </div>
+
         {referralStatus === 'success' && (
           <div className="flex items-center gap-2 mt-2 text-green-600 font-medium px-2">
             <CheckCircle className="w-5 h-5" />
