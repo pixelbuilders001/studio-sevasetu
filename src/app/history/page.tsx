@@ -143,7 +143,7 @@ export default function BookingHistoryPage() {
     <div className="bg-muted/30 min-h-screen">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold font-headline">Booking History</h1>
+          <h1 className="text-2xl font-bold font-headline">Booking History</h1>
           <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             YOUR PAST SERVICE RECORDS
           </p>
