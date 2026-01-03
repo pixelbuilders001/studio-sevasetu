@@ -1,7 +1,7 @@
 
 'use client';
 import Link from 'next/link';
-import { Home, LayoutGrid, MessageSquare, Briefcase } from 'lucide-react';
+import { Home, LayoutGrid, Wallet, Briefcase } from 'lucide-react';
 import BookingTrackerModal from './BookingTrackerModal';
 import { useTranslation } from '@/hooks/useTranslation';
 import AllServicesSheet from './AllServicesSheet';
@@ -53,12 +53,12 @@ export default function BottomNavBar() {
       )
     },
     {
-      href: 'https://wa.me/910000000000',
-      label: 'Help',
-      icon: MessageSquare,
-      isActive: false,
+      href: '/wallet',
+      label: 'Wallet',
+      icon: Wallet,
+      isActive: pathname === '/wallet',
       component: null,
-      isExternal: true,
+      isExternal: false,
     },
   ]
 
