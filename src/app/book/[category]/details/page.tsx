@@ -55,6 +55,8 @@ function BookingDetailsContent() {
     return 199 + problemsPrice;
   }, [selectedProblems]);
 
+  // Get referral code from search params
+  const referralCode = searchParams.get('referral_code') || '';
 
   if (loading) {
     return (
@@ -74,6 +76,7 @@ function BookingDetailsContent() {
         categoryId={category.id}
         problemIds={problemIds}
         totalEstimate={totalEstimate}
+        referralCode={referralCode}
       />
     </div>
   );

@@ -1,4 +1,3 @@
-
 'use server';
 
 import { z } from 'zod';
@@ -76,6 +75,12 @@ export async function bookService(
       formData.append('pincode', pincode);
   }
 
+  // Add referral_code if present
+  const referralCode = formData.get('referral_code');
+  if (referralCode) {
+    formData.set('referral_code', referralCode.toString());
+  }
+
   try {
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
         method: 'POST',
@@ -105,4 +110,4 @@ export async function bookService(
   }
 }
 
-    
+
