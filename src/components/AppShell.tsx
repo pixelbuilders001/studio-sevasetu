@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -10,7 +11,7 @@ import { LanguageProvider } from '@/context/LanguageContext';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isHomePage = pathname === '/';
+  const showBottomNav = ['/', '/wallet'].includes(pathname);
 
   return (
     <LanguageProvider>
@@ -18,7 +19,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <Header />
         <main className="flex-grow pb-16 md:pb-0">{children}</main>
         <Footer />
-        {isHomePage && <BottomNavBar />}
+        {showBottomNav && <BottomNavBar />}
       </LocationProvider>
     </LanguageProvider>
   );
