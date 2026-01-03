@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
@@ -53,7 +53,11 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       });
     }
     if (state?.bookingId) {
-      router.push(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode}`);
+        if(state.referralCode) {
+            router.push(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode}`);
+        } else {
+            router.push(`/confirmation?bookingId=${state.bookingId}`);
+        }
     }
   }, [state, t, toast, router]);
   
@@ -256,6 +260,18 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
             <span>{referralMessage}</span>
           </div>
         )}
+
+        <Card className="mt-4 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 p-4">
+            <div className="flex items-center gap-3">
+                <Gift className="w-8 h-8 text-blue-500 flex-shrink-0" />
+                <div>
+                <h4 className="font-bold text-blue-800 dark:text-blue-200">Have a Referral Code?</h4>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Apply a friend's code to get <span className="font-bold">₹50 OFF</span> instantly on your visiting fee!
+                </p>
+                </div>
+            </div>
+        </Card>
       </div>
 
 
