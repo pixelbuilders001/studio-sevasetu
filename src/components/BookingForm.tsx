@@ -53,7 +53,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       });
     }
     if (state?.bookingId) {
-        redirect(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode || ''}`);
+        router.push(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode || ''}`);
     }
   }, [state, t, toast, router]);
   
@@ -126,7 +126,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     try {
       const headers: Record<string, string> = {
         'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc`,
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc`,
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
         'Content-Type': 'application/json',
       };
       const res = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
@@ -341,5 +341,3 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     </form>
   );
 }
-
-    
