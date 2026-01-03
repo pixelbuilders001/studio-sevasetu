@@ -49,8 +49,8 @@ const HeroHouse = () => (
   </svg>
 )
 
-export default async function Home({ searchParams }: { searchParams?: { lang?: string } }) {
-  const lang = searchParams?.lang || 'en';
+export default async function Home({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  const lang = (searchParams?.lang as string) || 'en';
   const t = getTranslations(lang);
   
   const categories: ServiceCategory[] = await getServiceCategories();
