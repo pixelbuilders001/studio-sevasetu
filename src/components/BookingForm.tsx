@@ -19,7 +19,6 @@ const initialState = {
   message: "",
   error: "",
   bookingId: undefined,
-  referralCode: undefined
 };
 
 export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; }) {
@@ -28,12 +27,14 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   const { toast } = useToast();
   const router = useRouter();
 
-  const [referralCodeInput, setReferralCodeInput] = useState('');
+  const [referral, setReferral] = useState('');
+  const [mobile, setMobile] = useState('');
+  const mobileInputRef = useRef<HTMLInputElement>(null);
   const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [referralMessage, setReferralMessage] = useState('');
   const [discount, setDiscount] = useState(0);
 
-  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referralCodeInput : undefined);
+  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
    
   const [selectedDay, setSelectedDay] = useState('today');
@@ -107,36 +108,42 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       setImagePreview(null);
     }
   };
-
+  
   const verifyReferralCode = async () => {
     setReferralStatus('verifying');
     setReferralMessage('');
-    setDiscount(0);
-
+    const code = referral.trim();
+    const mobile_number = mobile.trim() || (mobileInputRef.current?.value || '');
+    if (!code || !mobile_number) {
+      setReferralStatus('error');
+      setReferralMessage('Enter referral code and mobile number');
+      return;
+    }
     try {
-      const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc`,
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
+        'Content-Type': 'application/json',
+      };
+      const res = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
         method: 'POST',
-        headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ referral_code: referralCodeInput.trim() }),
+        headers,
+        body: JSON.stringify({ referral_code: code, mobile_number }),
       });
-
-      const result = await response.json();
-
-      if (response.ok && result.valid) {
+      const data = await res.json();
+      if (res.ok && data.valid) {
         setReferralStatus('success');
-        setReferralMessage(result.message || 'Referral applied successfully!');
-        setDiscount(result.discount || 0);
+        setReferralMessage('Referral code applied!');
+        setDiscount(data.discount || 0);
       } else {
         setReferralStatus('error');
-        setReferralMessage(result.message || 'Invalid referral code.');
+        setReferralMessage(data.message || 'Invalid referral code.');
+        setDiscount(0);
       }
-    } catch (error) {
+    } catch (e) {
       setReferralStatus('error');
-      setReferralMessage('Could not verify the code. Please try again.');
+      setReferralMessage('Could not verify referral code.');
+      setDiscount(0);
     }
   };
 
@@ -157,7 +164,10 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
               name="mobile_number" 
               type="tel" 
               placeholder="Mobile Number" 
-              required 
+              required
+              ref={mobileInputRef}
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
               className="border-0 bg-transparent text-base" 
             />
         </div>
@@ -195,9 +205,9 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
               type="text"
               placeholder="HAVE A REFERRAL CODE?"
               name="referral_code_input"
-              value={referralCodeInput}
+              value={referral}
               onChange={e => {
-                setReferralCodeInput(e.target.value.toUpperCase());
+                setReferral(e.target.value.toUpperCase());
                 setReferralStatus('idle');
                 setReferralMessage('');
                 setDiscount(0);
@@ -211,7 +221,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
               type="button"
               variant={referralStatus === 'success' ? 'ghost' : 'default'}
               className="rounded-full h-9 px-6 font-semibold shadow-none text-sm"
-              disabled={referralStatus === 'verifying' || !referralCodeInput.trim()}
+              disabled={referralStatus === 'verifying' || !referral.trim()}
               onClick={verifyReferralCode}
             >
               {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : (referralStatus === 'success' ? 'APPLIED' : 'APPLY')}
@@ -257,7 +267,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
         <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-best`} />
       </div>
 
-       {state?.error && !state.bookingId && (
+       {state?.error && (
         <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>{t('errorTitle')}</AlertTitle>
