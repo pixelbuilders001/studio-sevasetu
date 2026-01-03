@@ -1,7 +1,7 @@
 
 'use client';
 import Link from 'next/link';
-import { Home, LayoutGrid, Wallet, Briefcase } from 'lucide-react';
+import { Home, LayoutGrid, Wallet, Briefcase, History } from 'lucide-react';
 import BookingTrackerModal from './BookingTrackerModal';
 import { useTranslation } from '@/hooks/useTranslation';
 import AllServicesSheet from './AllServicesSheet';
@@ -39,18 +39,11 @@ export default function BottomNavBar() {
       )
     },
     {
-      href: '#',
-      label: 'Booking',
-      icon: Briefcase,
-      isActive: false,
-      component: (
-        <BookingTrackerModal isMobile={true} asChild={true}>
-          <button className={cn("flex flex-col items-center justify-center text-center transition-colors w-full h-full", 'text-muted-foreground')}>
-            <Briefcase className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">Booking</span>
-          </button>
-        </BookingTrackerModal>
-      )
+      href: '/history',
+      label: 'Bookings',
+      icon: History,
+      isActive: pathname === '/history',
+      component: null
     },
     {
       href: '/wallet',

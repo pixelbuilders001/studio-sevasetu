@@ -11,7 +11,7 @@ import { LanguageProvider } from '@/context/LanguageContext';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const showBottomNav = ['/', '/wallet'].includes(pathname);
+  const showBottomNav = ['/', '/wallet', '/history'].includes(pathname);
 
   return (
     <LanguageProvider>
