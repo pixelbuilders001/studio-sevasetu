@@ -1,15 +1,24 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { History, Wallet, Sparkles, ArrowUpRight, Gift, Copy, Share2, IndianRupee, Phone, ArrowRight, Loader2 } from 'lucide-react';
+import { History, Wallet, Sparkles, ArrowUpRight, ArrowDownLeft, Gift, Copy, Share2, IndianRupee, Phone, ArrowRight, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import TransactionHistorySheet from '@/components/TransactionHistorySheet';
 import { Input } from '@/components/ui/input';
+import { format } from 'date-fns';
+
+type Transaction = {
+    type: 'credit' | 'debit';
+    source: string;
+    note: string;
+    created_at: string;
+    amount: number;
+}
 
 const WalletPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,6 +26,7 @@ const WalletPage = () => {
   const [error, setError] = useState('');
   const [balance, setBalance] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [recentTransaction, setRecentTransaction] = useState<Transaction | null>(null);
 
 
   const handleCopy = (text: string) => {
@@ -34,27 +44,42 @@ const WalletPage = () => {
     setError('');
 
     try {
-      const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallets?mobile_number=eq.${mobileNumber}&select=mobile_number,balance`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-          'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const headers = {
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      };
 
-      if (!response.ok) {
+      const walletResponse = fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallets?mobile_number=eq.${mobileNumber}&select=mobile_number,balance`, { headers });
+      const historyResponse = fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallet_transactions?mobile_number=eq.${mobileNumber}&select=type,source,note,created_at,amount&order=created_at.desc&limit=1`, { headers });
+
+      const [walletRes, historyRes] = await Promise.all([walletResponse, historyResponse]);
+
+      if (!walletRes.ok) {
         throw new Error('Failed to fetch wallet details.');
       }
+       if (!historyRes.ok) {
+        // Don't throw, just log. History isn't critical.
+        console.error('Failed to fetch recent transaction.');
+      }
 
-      const data = await response.json();
+      const walletData = await walletRes.json();
+      const historyData = await historyRes.json();
 
-      if (data && data.length > 0) {
-        setBalance(data[0].balance);
+      if (walletData && walletData.length > 0) {
+        setBalance(walletData[0].balance);
         setIsAuthenticated(true);
       } else {
         setError('No wallet found for this mobile number.');
+        return; // Exit if no wallet
       }
+
+      if (historyData && historyData.length > 0) {
+        setRecentTransaction(historyData[0]);
+      } else {
+        setRecentTransaction(null);
+      }
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
     } finally {
@@ -131,21 +156,34 @@ const WalletPage = () => {
             </Sheet>
           </div>
           <Card className="rounded-2xl shadow-sm">
-             <CardContent className="p-4">
-               <div className="flex items-center">
-                 <div className="p-3 bg-green-100 rounded-xl mr-4">
-                    <ArrowUpRight className="w-6 h-6 text-green-600" />
-                 </div>
-                 <div className="flex-grow">
-                    <p className="font-bold">Welcome Bonus</p>
-                    <p className="text-sm text-muted-foreground">Today</p>
-                 </div>
-                 <div className="text-right">
-                    <p className="font-bold text-green-600 flex items-center justify-end"><span className="text-lg">+</span><IndianRupee className="w-4 h-4" />250</p>
-                    <p className="text-xs font-semibold text-green-500/80 uppercase">Success</p>
-                 </div>
-               </div>
-             </CardContent>
+             {recentTransaction ? (
+                <CardContent className="p-4">
+                    <div className="flex items-center">
+                        <div className={`p-3 rounded-xl mr-4 ${recentTransaction.type === 'credit' ? 'bg-green-100' : 'bg-red-100'}`}>
+                            {recentTransaction.type === 'credit' ? (
+                                <ArrowUpRight className="w-6 h-6 text-green-600" />
+                            ) : (
+                                <ArrowDownLeft className="w-6 h-6 text-red-600" />
+                            )}
+                        </div>
+                        <div className="flex-grow">
+                            <p className="font-bold capitalize">{recentTransaction.source}</p>
+                            <p className="text-sm text-muted-foreground">{format(new Date(recentTransaction.created_at), 'MMM d, yyyy')}</p>
+                        </div>
+                        <div className="text-right">
+                            <p className={`font-bold flex items-center justify-end ${recentTransaction.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                                <span className="text-lg">{recentTransaction.type === 'credit' ? '+' : '-'}</span>
+                                <IndianRupee className="w-4 h-4" />{recentTransaction.amount || 0}
+                            </p>
+                            <p className="text-xs font-semibold text-green-500/80 uppercase">Success</p>
+                        </div>
+                    </div>
+                </CardContent>
+             ) : (
+                <CardContent className="p-4 text-center text-muted-foreground">
+                    No recent history.
+                </CardContent>
+             )}
           </Card>
         </section>
 
@@ -189,3 +227,5 @@ const WalletPage = () => {
 };
 
 export default WalletPage;
+
+    
