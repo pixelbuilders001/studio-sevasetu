@@ -101,7 +101,7 @@ const WalletPage = () => {
 
   if (!isAuthenticated) {
     return (
-       <div className="bg-muted/30 min-h-screen flex items-center justify-center">
+       <div className="bg-muted/30 h-screen flex items-center justify-center">
         <div className="container mx-auto px-4 max-w-sm">
           <Card className="rounded-2xl shadow-lg border-0">
             <CardHeader className="text-center">
