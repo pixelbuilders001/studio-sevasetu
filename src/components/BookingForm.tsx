@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
@@ -53,11 +53,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       });
     }
     if (state?.bookingId) {
-        if(state.referralCode) {
-            router.push(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode}`);
-        } else {
-            router.push(`/confirmation?bookingId=${state.bookingId}`);
-        }
+        redirect(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode || ''}`);
     }
   }, [state, t, toast, router]);
   
@@ -130,7 +126,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     try {
       const headers: Record<string, string> = {
         'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc`,
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc`,
         'Content-Type': 'application/json',
       };
       const res = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
@@ -153,6 +149,13 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       setReferralMessage('Could not verify referral code.');
       setDiscount(0);
     }
+  };
+
+  const removeReferralCode = () => {
+    setReferral('');
+    setReferralStatus('idle');
+    setReferralMessage('');
+    setDiscount(0);
   };
 
   const finalPayable = Math.max(199 - discount, 0);
@@ -250,7 +253,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
             autoComplete="off"
             disabled={referralStatus === 'success'}
           />
-          {referralStatus !== 'success' && (
+          {referralStatus !== 'success' ? (
               <Button
                 type="button"
                 variant="default"
@@ -260,15 +263,15 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
               >
                 {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'APPLY'}
               </Button>
-          )}
-          {referralStatus === 'success' && (
+          ) : (
             <Button
               type="button"
-              variant="default"
-              className="rounded-full h-10 px-6 font-semibold shadow-none text-sm mr-1 bg-green-500 hover:bg-green-600"
-              disabled
+              variant="destructive"
+              className="rounded-full h-10 px-6 font-semibold shadow-none text-sm mr-1 flex items-center gap-1.5"
+              onClick={removeReferralCode}
             >
-              APPLIED
+              <X className="w-4 h-4" />
+              REMOVE
             </Button>
           )}
         </div>
@@ -286,17 +289,19 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
           </div>
         )}
 
-        <Card className="mt-4 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 p-4">
-            <div className="flex items-center gap-3">
-                <Gift className="w-8 h-8 text-blue-500 flex-shrink-0" />
-                <div>
-                <h4 className="font-bold text-blue-800 dark:text-blue-200">Have a Referral Code?</h4>
-                <p className="text-sm text-blue-700 dark:text-blue-300">
-                    Apply a friend's code to get <span className="font-bold">₹50 OFF</span> instantly on your visiting fee!
-                </p>
-                </div>
-            </div>
-        </Card>
+        {referralStatus !== 'success' && (
+          <Card className="mt-4 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 p-4">
+              <div className="flex items-center gap-3">
+                  <Gift className="w-8 h-8 text-blue-500 flex-shrink-0" />
+                  <div>
+                  <h4 className="font-bold text-blue-800 dark:text-blue-200">Have a Referral Code?</h4>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                      Apply a friend's code to get <span className="font-bold">₹50 OFF</span> instantly on your visiting fee!
+                  </p>
+                  </div>
+              </div>
+          </Card>
+        )}
       </div>
 
        {state?.error && (
@@ -336,3 +341,5 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     </form>
   );
 }
+
+    
