@@ -44,9 +44,6 @@ function BookingDetailsContent() {
     fetchCategory();
   }, [categorySlug, getTranslatedCategory]);
   
-  const referralCode = searchParams.get('referral_code') || '';
-  const discount = Number(searchParams.get('discount')) || 0;
-
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
@@ -64,8 +61,6 @@ function BookingDetailsContent() {
       <BookingForm 
         categoryId={category.id}
         problemIds={problemIds}
-        referralCode={referralCode}
-        discount={discount}
       />
     </div>
   );

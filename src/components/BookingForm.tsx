@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useActionState, useState, useRef } from 'react';
@@ -6,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
 import { bookService } from '@/app/actions';
 import Image from 'next/image';
+import { Card } from './ui/card';
 
 const initialState = {
   message: "",
@@ -20,13 +22,18 @@ const initialState = {
   referralCode: undefined
 };
 
-export function BookingForm({ categoryId, problemIds, referralCode = '', discount = 0 }: { categoryId: string; problemIds: string; referralCode?: string; discount?: number; }) {
+export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; }) {
   const { t } = useTranslation();
   const { location } = useLocation();
   const { toast } = useToast();
   const router = useRouter();
 
-  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode);
+  const [referralCodeInput, setReferralCodeInput] = useState('');
+  const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
+  const [referralMessage, setReferralMessage] = useState('');
+  const [discount, setDiscount] = useState(0);
+
+  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralCodeInput);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
    
   const [selectedDay, setSelectedDay] = useState('today');
@@ -105,10 +112,28 @@ export function BookingForm({ categoryId, problemIds, referralCode = '', discoun
     }
   };
 
+  const verifyReferralCode = async () => {
+    setReferralStatus('verifying');
+    setReferralMessage('');
+    setDiscount(0);
+    
+    await new Promise(res => setTimeout(res, 1000));
+    
+    if (referralCodeInput.trim().toLowerCase() === 'SEVA50'.toLowerCase()) {
+      setReferralStatus('success');
+      setReferralMessage('Referral Applied! You saved ₹50');
+      setDiscount(50);
+    } else {
+      setReferralStatus('error');
+      setReferralMessage('Invalid referral code.');
+    }
+  };
+
+
   const finalPayable = Math.max(199 - discount, 0);
 
   return (
-    <form action={formAction} className="space-y-8">
+    <form action={formAction} className="space-y-8 pb-28">
       
       <div>
         <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Contact Information</h2>
@@ -151,6 +176,51 @@ export function BookingForm({ categoryId, problemIds, referralCode = '', discoun
         </div>
       </div>
 
+      <div className="mb-8">
+        <Card className="p-4 bg-white/90 dark:bg-gray-800/80 rounded-2xl shadow-sm border">
+          <div className="flex items-center justify-between gap-2">
+            <Tag className="w-5 h-5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="HAVE A REFERRAL CODE?"
+              name="referral_code"
+              value={referralCodeInput}
+              onChange={e => {
+                setReferralCodeInput(e.target.value.toUpperCase());
+                setReferralStatus('idle');
+                setReferralMessage('');
+                setDiscount(0);
+              }}
+              className="flex-grow border-0 bg-transparent text-base font-semibold placeholder:text-muted-foreground placeholder:font-semibold focus-visible:ring-0"
+              style={{ boxShadow: 'none' }}
+              autoComplete="off"
+              disabled={referralStatus === 'success'}
+            />
+            <Button
+              type="button"
+              variant={referralStatus === 'success' ? 'ghost' : 'default'}
+              className="rounded-full h-9 px-6 font-semibold shadow-none text-sm"
+              disabled={referralStatus === 'verifying' || !referralCodeInput.trim()}
+              onClick={verifyReferralCode}
+            >
+              {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : (referralStatus === 'success' ? 'APPLIED' : 'APPLY')}
+            </Button>
+          </div>
+        </Card>
+        {referralStatus === 'success' && (
+          <div className="flex items-center gap-2 mt-2 text-green-600 font-medium px-2">
+            <CheckCircle className="w-5 h-5" />
+            <span>{referralMessage}</span>
+          </div>
+        )}
+        {referralStatus === 'error' && (
+          <div className="flex items-center gap-2 mt-2 text-red-600 font-medium px-2">
+            <AlertCircle className="w-5 h-5" />
+            <span>{referralMessage}</span>
+          </div>
+        )}
+      </div>
+
        <div>
         <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Add Problem Photos (Optional)</h2>
         <div className="flex items-center gap-4">
@@ -175,8 +245,6 @@ export function BookingForm({ categoryId, problemIds, referralCode = '', discoun
         </div>
         <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-${selectedTime}`} />
       </div>
-
-      {referralCode && <input type="hidden" name="referral_code" value={referralCode} />}
 
        {state?.error && !state.bookingId && (
         <Alert variant="destructive">

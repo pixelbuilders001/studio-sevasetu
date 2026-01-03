@@ -1,11 +1,11 @@
+
 'use client';
 import { getServiceCategory } from '@/lib/data';
 import { notFound, useParams, useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { AlertCircle, Wrench, Hammer, ArrowLeft, CheckCircle, ShieldCheck, Wallet, Package, Tag, Loader2, IndianRupee } from 'lucide-react';
+import { Wrench, Hammer, ArrowLeft, CheckCircle, ShieldCheck, Wallet, Package, IndianRupee } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState, useEffect, useMemo } from 'react';
 import type { ServiceCategory, Problem } from '@/lib/data';
@@ -78,27 +78,6 @@ export default function PriceEstimationPage() {
   
   const [category, setCategory] = useState<ServiceCategory | null>(null);
   const [loading, setLoading] = useState(true);
-  const [referralCode, setReferralCode] = useState('');
-  const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
-  const [referralMessage, setReferralMessage] = useState('');
-  const [discount, setDiscount] = useState(0);
-
-  const verifyReferralCode = async () => {
-    setReferralStatus('verifying');
-    setReferralMessage('');
-    setDiscount(0);
-    
-    await new Promise(res => setTimeout(res, 1000));
-    
-    if (referralCode.trim().toLowerCase() === 'SEVA50'.toLowerCase()) {
-      setReferralStatus('success');
-      setReferralMessage('Referral Applied! You saved ₹50');
-      setDiscount(50);
-    } else {
-      setReferralStatus('error');
-      setReferralMessage('Invalid referral code.');
-    }
-  };
 
   useEffect(() => {
     const fetchCategoryAndProblem = async () => {
@@ -128,15 +107,6 @@ export default function PriceEstimationPage() {
     return category.problems.filter((p) => ids.includes(p.id));
   }, [category, problemIds]);
 
-  const totalEstimate = useMemo(() => {
-    if (selectedProblems.length === 0) return 199;
-    const problemsTotal = selectedProblems.reduce((acc, problem) => acc + (problem.estimated_price || 0), 0);
-    return 199 + problemsTotal;
-  }, [selectedProblems]);
-
-  const netPayable = Math.max(199 - discount, 0);
-
-
   if (loading) {
     return <PriceEstimationSkeleton />;
   }
@@ -145,8 +115,7 @@ export default function PriceEstimationPage() {
     notFound();
   }
   
-  const detailsLink = `/book/${categorySlug}/details?problems=${problemIds}&referral_code=${encodeURIComponent(referralCode)}&discount=${discount}`;
-
+  const detailsLink = `/book/${categorySlug}/details?problems=${problemIds}`;
 
   return (
     <div className="container mx-auto px-4 py-8 pb-28">
@@ -185,50 +154,6 @@ export default function PriceEstimationPage() {
         ))}
       </div>
 
-       <div className="mb-8">
-        <Card className="p-4 bg-white/90 dark:bg-gray-800/80 rounded-2xl shadow-sm border">
-          <div className="flex items-center justify-between gap-2">
-            <Tag className="w-5 h-5 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="HAVE A REFERRAL CODE?"
-              value={referralCode}
-              onChange={e => {
-                setReferralCode(e.target.value.toUpperCase());
-                setReferralStatus('idle');
-                setReferralMessage('');
-                setDiscount(0);
-              }}
-              className="flex-grow border-0 bg-transparent text-base font-semibold placeholder:text-muted-foreground placeholder:font-semibold focus-visible:ring-0"
-              style={{ boxShadow: 'none' }}
-              autoComplete="off"
-              disabled={referralStatus === 'success'}
-            />
-            <Button
-              type="button"
-              variant={referralStatus === 'success' ? 'ghost' : 'default'}
-              className="rounded-full h-9 px-6 font-semibold shadow-none text-sm"
-              disabled={referralStatus === 'verifying' || !referralCode.trim()}
-              onClick={verifyReferralCode}
-            >
-              {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : (referralStatus === 'success' ? 'APPLIED' : 'APPLY')}
-            </Button>
-          </div>
-        </Card>
-        {referralStatus === 'success' && (
-          <div className="flex items-center gap-2 mt-2 text-green-600 font-medium px-2">
-            <CheckCircle className="w-5 h-5" />
-            <span>{referralMessage}</span>
-          </div>
-        )}
-        {referralStatus === 'error' && (
-          <div className="flex items-center gap-2 mt-2 text-red-600 font-medium px-2">
-            <AlertCircle className="w-5 h-5" />
-            <span>{referralMessage}</span>
-          </div>
-        )}
-      </div>
-
       <Card className="bg-gray-800 text-white dark:bg-gray-900 rounded-2xl">
         <CardContent className="p-4">
           <div className="flex justify-between items-center mb-4">
@@ -236,25 +161,11 @@ export default function PriceEstimationPage() {
              <span className="text-xs font-semibold uppercase px-2 py-1 rounded-full bg-blue-600/80 text-white">Pay after service</span>
           </div>
           <div className="bg-white/95 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 p-4 rounded-lg space-y-3">
-             <div className="flex justify-between items-center text-base">
-              <span className="font-medium text-gray-600 dark:text-gray-400">Visiting Fee</span>
-              <span className="font-semibold text-gray-900 dark:text-gray-100">₹199</span>
+             <div className="flex justify-between items-center text-lg">
+              <span className="font-bold text-gray-800 dark:text-gray-200">Visiting Fee</span>
+              <span className="font-extrabold text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-5 h-5" />199</span>
             </div>
-
-            {discount > 0 && (
-                 <div className="flex justify-between items-center text-base text-green-600 dark:text-green-400">
-                    <span className="font-medium">Referral Discount</span>
-                    <span className="font-semibold">-₹{discount}</span>
-                </div>
-            )}
             
-            <Separator className="bg-gray-200 dark:bg-gray-700"/>
-
-            <div className="flex justify-between items-center text-lg">
-              <span className="font-bold text-gray-800 dark:text-gray-200">Net Payable Visit Fee</span>
-              <span className="font-extrabold text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-5 h-5" />{netPayable}</span>
-            </div>
-
             <p className="text-xs text-center text-gray-500 dark:text-gray-400 pt-2">
               *Parts cost will be quoted separately by technician after physical inspection.
             </p>

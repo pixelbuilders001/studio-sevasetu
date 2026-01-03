@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -62,6 +63,7 @@ export async function bookService(
   categoryId: string, 
   problemIds: string,
   pincode: string | undefined,
+  referralCode: string | undefined,
   prevState: any, 
   formData: FormData
 ): Promise<{ message: string, error?: string, bookingId?: string, referralCode?: string }> {
@@ -74,6 +76,13 @@ export async function bookService(
   if (pincode) {
       formData.append('pincode', pincode);
   }
+
+  // The referral_code is already on formData from the input field
+  // But we make sure it's the verified one passed from the function binding if available
+  if (referralCode) {
+    formData.set('referral_code', referralCode);
+  }
+
 
   try {
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
