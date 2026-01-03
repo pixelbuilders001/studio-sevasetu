@@ -27,6 +27,7 @@ const WalletPage = () => {
   const [balance, setBalance] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [recentTransaction, setRecentTransaction] = useState<Transaction | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
 
 
   const handleCopy = (text: string) => {
@@ -52,8 +53,9 @@ const WalletPage = () => {
 
       const walletResponse = fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallets?mobile_number=eq.${mobileNumber}&select=mobile_number,balance`, { headers });
       const historyResponse = fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallet_transactions?mobile_number=eq.${mobileNumber}&select=type,source,note,created_at,amount&order=created_at.desc&limit=1`, { headers });
+      const referralResponse = fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/referral_codes?mobile_number=eq.${mobileNumber}&select=referral_code`, { headers });
 
-      const [walletRes, historyRes] = await Promise.all([walletResponse, historyResponse]);
+      const [walletRes, historyRes, referralRes] = await Promise.all([walletResponse, historyResponse, referralResponse]);
 
       if (!walletRes.ok) {
         throw new Error('Failed to fetch wallet details.');
@@ -62,9 +64,13 @@ const WalletPage = () => {
         // Don't throw, just log. History isn't critical.
         console.error('Failed to fetch recent transaction.');
       }
+      if (!referralRes.ok) {
+        console.error('Failed to fetch referral code.');
+      }
 
       const walletData = await walletRes.json();
       const historyData = await historyRes.json();
+      const referralData = await referralRes.json();
 
       if (walletData && walletData.length > 0) {
         setBalance(walletData[0].balance);
@@ -78,6 +84,12 @@ const WalletPage = () => {
         setRecentTransaction(historyData[0]);
       } else {
         setRecentTransaction(null);
+      }
+
+      if (referralData && referralData.length > 0) {
+        setReferralCode(referralData[0].referral_code);
+      } else {
+        setReferralCode(null);
       }
 
     } catch (err) {
@@ -187,39 +199,41 @@ const WalletPage = () => {
           </Card>
         </section>
 
-        <Card className="bg-indigo-600 text-white border-0 rounded-3xl shadow-lg">
-            <CardContent className="p-6">
-                <div className="flex items-center gap-4 mb-4">
-                    <div className="p-3 bg-white/20 rounded-xl">
-                        <Gift className="w-6 h-6" />
+        {referralCode && (
+            <Card className="bg-indigo-600 text-white border-0 rounded-3xl shadow-lg">
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="p-3 bg-white/20 rounded-xl">
+                            <Gift className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-bold">Refer & Earn <IndianRupee className="inline w-5 h-5" />100</h3>
+                            <p className="text-sm opacity-80">For every friend who books their first repair</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 className="text-xl font-bold">Refer & Earn <IndianRupee className="inline w-5 h-5" />100</h3>
-                        <p className="text-sm opacity-80">For every friend who books their first repair</p>
+                    <div className="bg-white/10 p-2 rounded-xl flex items-center justify-between gap-2">
+                        <span className="font-mono font-bold text-lg ml-2 tracking-widest">{referralCode}</span>
+                        <div className="flex items-center gap-1">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="bg-white/90 text-indigo-600 hover:bg-white rounded-lg h-9 w-9"
+                                onClick={() => handleCopy(referralCode)}
+                            >
+                                <Copy className="w-5 h-5" />
+                            </Button>
+                             <Button
+                                variant="ghost"
+                                size="icon"
+                                className="bg-white/20 text-white hover:bg-white/30 rounded-lg h-9 w-9"
+                            >
+                                <Share2 className="w-5 h-5" />
+                            </Button>
+                        </div>
                     </div>
-                </div>
-                <div className="bg-white/10 p-2 rounded-xl flex items-center justify-between gap-2">
-                    <span className="font-mono font-bold text-lg ml-2 tracking-widest">SEVA100</span>
-                    <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="bg-white/90 text-indigo-600 hover:bg-white rounded-lg h-9 w-9"
-                            onClick={() => handleCopy('SEVA100')}
-                        >
-                            <Copy className="w-5 h-5" />
-                        </Button>
-                         <Button
-                            variant="ghost"
-                            size="icon"
-                            className="bg-white/20 text-white hover:bg-white/30 rounded-lg h-9 w-9"
-                        >
-                            <Share2 className="w-5 h-5" />
-                        </Button>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        )}
 
       </div>
     </div>
@@ -228,6 +242,5 @@ const WalletPage = () => {
 
 export default WalletPage;
 
-    
 
     
