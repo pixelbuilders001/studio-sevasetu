@@ -5,14 +5,12 @@ import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
-  CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AirVent, Laptop, Calendar, Clock, User, Download, IndianRupee, XCircle, CheckCircle, Tag, Phone, ArrowRight, Loader2 } from 'lucide-react';
+import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 
@@ -181,22 +179,21 @@ export default function BookingHistoryPage() {
                         </div>
                     </div>
 
-                    <Separator className="my-4" />
-
-                    <div className="flex items-start gap-3">
-                        <Tag className="w-4 h-4 text-muted-foreground mt-1" />
+                    <div className="flex items-start gap-3 mb-5">
+                        <Tag className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
                         <div>
                             <p className="text-xs text-muted-foreground">ISSUE</p>
                             <p className="font-semibold">{booking.issues.title}</p>
                         </div>
                     </div>
-                  </CardContent>
-                  <CardFooter className="p-4 bg-muted/30">
-                    <Button variant="outline" size="sm">
+                    
+                    <Separator className="my-4" />
+
+                    <Button variant="outline" size="sm" className="w-full">
                       <Download className="mr-2 h-4 w-4" />
                       Download Invoice
                     </Button>
-                  </CardFooter>
+                  </CardContent>
                 </Card>
               )
             })}
@@ -212,3 +209,5 @@ export default function BookingHistoryPage() {
     </div>
   );
 }
+
+    
