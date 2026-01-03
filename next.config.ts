@@ -82,6 +82,12 @@ const nextConfig: NextConfig = {
         hostname: 'quickinsure.s3.ap-south-1.amazonaws.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upoafhtidiwsihwijwex.supabase.co',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
