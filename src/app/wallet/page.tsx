@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { History, Wallet, Sparkles, ArrowUpRight, Gift, Copy, Share2, IndianRupee, Phone, ArrowRight } from 'lucide-react';
+import { History, Wallet, Sparkles, ArrowUpRight, Gift, Copy, Share2, IndianRupee, Phone, ArrowRight, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import TransactionHistorySheet from '@/components/TransactionHistorySheet';
@@ -15,18 +15,50 @@ const WalletPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [mobileNumber, setMobileNumber] = useState('');
   const [error, setError] = useState('');
+  const [balance, setBalance] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     // You might want to show a toast notification here
   };
 
-  const handleContinue = () => {
-    if (mobileNumber.match(/^[6-9]\d{9}$/)) {
-      setIsAuthenticated(true);
-      setError('');
-    } else {
+  const handleContinue = async () => {
+    if (!mobileNumber.match(/^[6-9]\d{9}$/)) {
       setError('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallets?mobile_number=eq.${mobileNumber}&select=mobile_number,balance`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch wallet details.');
+      }
+
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setBalance(data[0].balance);
+        setIsAuthenticated(true);
+      } else {
+        setError('No wallet found for this mobile number.');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -53,9 +85,9 @@ const WalletPage = () => {
                   className="h-14 text-lg text-center tracking-widest"
                 />
                 {error && <p className="text-sm text-center text-destructive">{error}</p>}
-                <Button onClick={handleContinue} size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-                  Continue
-                  <ArrowRight className="ml-2" />
+                <Button onClick={handleContinue} size="lg" disabled={isLoading} className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Continue'}
+                  {!isLoading && <ArrowRight className="ml-2" />}
                 </Button>
               </div>
             </CardContent>
@@ -80,7 +112,7 @@ const WalletPage = () => {
               <span>TOTAL BALANCE</span>
             </div>
             <div className="flex items-baseline mb-6">
-              <span className="text-5xl font-bold flex items-center"><IndianRupee className="w-9 h-9" />250</span>
+              <span className="text-5xl font-bold flex items-center"><IndianRupee className="w-9 h-9" />{balance ?? 0}</span>
               <span className="text-lg font-semibold text-gray-400 ml-2">POINTS</span>
             </div>
           </CardContent>
