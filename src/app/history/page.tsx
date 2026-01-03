@@ -180,33 +180,26 @@ export default function BookingHistoryPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-start gap-3 mb-4">
-                        <Tag className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
-                        <div>
-                            <p className="text-xs text-muted-foreground">ISSUE</p>
-                            <p className="font-semibold">{booking.issues.title}</p>
-                        </div>
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <div className="flex items-start gap-3">
+                          <Tag className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                          <div>
+                              <p className="text-xs text-muted-foreground">ISSUE</p>
+                              <p className="font-semibold">{booking.issues.title}</p>
+                          </div>
+                      </div>
+                       {booking.media_url && (
+                          <div className="flex-shrink-0">
+                            <Image
+                                src={booking.media_url}
+                                alt="Issue photo"
+                                width={64}
+                                height={64}
+                                className="rounded-lg object-cover border"
+                            />
+                          </div>
+                      )}
                     </div>
-                    
-                    {booking.media_url && (
-                        <div className="mb-5">
-                            <div className="flex items-start gap-3">
-                                <ImageIcon className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
-                                 <div>
-                                    <p className="text-xs text-muted-foreground">ISSUE PHOTO</p>
-                                    <div className="mt-1">
-                                        <Image
-                                            src={booking.media_url}
-                                            alt="Issue photo"
-                                            width={80}
-                                            height={80}
-                                            className="rounded-lg object-cover border"
-                                        />
-                                    </div>
-                                 </div>
-                            </div>
-                        </div>
-                    )}
                     
                     <Separator className="my-4" />
 
