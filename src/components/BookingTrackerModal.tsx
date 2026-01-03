@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState, useState, useEffect, useRef } from 'react';
@@ -79,7 +80,7 @@ export default function BookingTrackerModal({ asChild = false, children }: { asC
       <DialogTrigger asChild={asChild}>
         {Trigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md rounded-lg">
         <DialogHeader>
           <DialogTitle>{t('trackYourBookingTitle')}</DialogTitle>
           <DialogDescription>{t('trackYourBookingDescription')}</DialogDescription>
