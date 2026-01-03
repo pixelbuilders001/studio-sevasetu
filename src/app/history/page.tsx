@@ -203,7 +203,7 @@ export default function BookingHistoryPage() {
                     
                     <Separator className="my-4" />
 
-                    <Button variant="outline" size="sm" className="w-full">
+                    <Button variant="ghost" size="sm" className="w-full font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200">
                       <Download className="mr-2 h-4 w-4" />
                       Download Invoice
                     </Button>
