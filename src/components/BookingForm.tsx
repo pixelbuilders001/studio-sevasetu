@@ -112,47 +112,31 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     setReferralStatus('verifying');
     setReferralMessage('');
     setDiscount(0);
-    
-    // This simulates an API call. Replace with your actual API endpoint.
+
     try {
-        // Mocking Supabase Edge Function call
-        const response = await new Promise<{ ok: boolean, json: () => Promise<any> }>((resolve) => {
-            setTimeout(() => {
-                if (referralCodeInput.trim().toLowerCase() === 'SEVA50'.toLowerCase()) {
-                    resolve({
-                        ok: true,
-                        json: async () => ({
-                            valid: true,
-                            discount: 50,
-                            message: 'Referral Applied! You saved ₹50'
-                        })
-                    });
-                } else {
-                    resolve({
-                        ok: false,
-                        json: async () => ({
-                            valid: false,
-                            message: 'Invalid referral code.'
-                        })
-                    });
-                }
-            }, 1000);
-        });
+      const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ referral_code: referralCodeInput.trim() }),
+      });
 
-        const result = await response.json();
+      const result = await response.json();
 
-        if (response.ok && result.valid) {
-            setReferralStatus('success');
-            setReferralMessage(result.message);
-            setDiscount(result.discount);
-        } else {
-            setReferralStatus('error');
-            setReferralMessage(result.message || 'Invalid referral code.');
-        }
-
-    } catch (error) {
+      if (response.ok && result.valid) {
+        setReferralStatus('success');
+        setReferralMessage(result.message || 'Referral applied successfully!');
+        setDiscount(result.discount || 0);
+      } else {
         setReferralStatus('error');
-        setReferralMessage('Could not verify the code. Please try again.');
+        setReferralMessage(result.message || 'Invalid referral code.');
+      }
+    } catch (error) {
+      setReferralStatus('error');
+      setReferralMessage('Could not verify the code. Please try again.');
     }
   };
 
