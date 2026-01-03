@@ -10,12 +10,13 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { getTranslations } from '@/lib/get-translation';
 import VerifiedTechnicians from '@/components/VerifiedTechnicians';
-import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap } from 'lucide-react';
+import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import BecomePartner from '@/components/BecomePartner';
 import HeroCTA from '@/components/HeroCTA';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import AllServicesSheet from '@/components/AllServicesSheet';
+import BookingTrackerModal from '@/components/BookingTrackerModal';
 
 
 function ServiceCard({ category }: { category: ServiceCategory }) {
@@ -100,6 +101,23 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
                     <HeroCTA />
                 </div>
             </div>
+        </div>
+      </section>
+
+      <section className="py-6 bg-muted/30 border-y">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <div className='flex-grow'>
+              <h3 className="font-bold text-lg">Track Your Service</h3>
+              <p className="text-sm text-muted-foreground">Enter your booking ID to check the status.</p>
+            </div>
+             <BookingTrackerModal asChild={true}>
+                <Button className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full h-12 px-6 font-bold">
+                    <Briefcase className="mr-2" />
+                    {t('trackBooking')}
+                </Button>
+            </BookingTrackerModal>
+          </div>
         </div>
       </section>
 
