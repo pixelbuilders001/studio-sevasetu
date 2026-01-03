@@ -1,4 +1,3 @@
-
 'use server';
 
 import { z } from 'zod';
@@ -6,6 +5,7 @@ import { redirect } from 'next/navigation';
 import type { FormState } from '@/lib/types';
 import { getTranslations } from '@/lib/get-translation';
 import { subDays, format } from 'date-fns';
+import { CloudCog } from 'lucide-react';
 
 
 export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string; } > {
@@ -64,7 +64,7 @@ export async function bookService(
   pincode: string | undefined,
   prevState: any, 
   formData: FormData
-): Promise<{ message: string, error?: string, bookingId?: string }> {
+): Promise<{ message: string, error?: string, bookingId?: string, referralCode?: string }> {
   
   // Append additional data to formData
   formData.append('category_id', categoryId);
@@ -74,6 +74,12 @@ export async function bookService(
   }
   if (pincode) {
       formData.append('pincode', pincode);
+  }
+
+  // Add referral_code if present
+  const referralCode = formData.get('referral_code');
+  if (referralCode) {
+    formData.set('referral_code', referralCode.toString());
   }
 
   try {
@@ -87,14 +93,15 @@ export async function bookService(
     });
 
     const result = await response.json();
-
+    console.log(result)
     if (!response.ok) {
         console.error('API Error:', result);
         return { message: "Error", error: result.error_message || result.message || "An unexpected error occurred." };
     }
-
+  
     const bookingId = result.order_id || result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
-    redirect(`/confirmation?bookingId=${bookingId}`, 'push');
+    return { message: "Success", bookingId, referralCode: result.my_referral_code };
+    // redirect(`/confirmation?bookingId=${bookingId}`, 'push');
     
   } catch (error) {
       console.error('Booking failed:', error);
@@ -102,4 +109,5 @@ export async function bookService(
       return { message: "Error", error: errorMessage };
   }
 }
-    
+
+

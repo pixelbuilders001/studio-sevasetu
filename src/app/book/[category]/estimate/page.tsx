@@ -1,9 +1,9 @@
-
 'use client';
 import { getServiceCategory } from '@/lib/data';
 import { notFound, useParams, useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { AlertCircle, Wrench, Hammer, ArrowLeft, CheckCircle, ShieldCheck, Wallet, Package } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -78,6 +78,24 @@ export default function PriceEstimationPage() {
   
   const [category, setCategory] = useState<ServiceCategory | null>(null);
   const [loading, setLoading] = useState(true);
+  const [referralCode, setReferralCode] = useState('');
+  const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
+  const [referralMessage, setReferralMessage] = useState('');
+
+  // Mock verification function
+  const verifyReferralCode = async () => {
+    setReferralStatus('verifying');
+    setReferralMessage('');
+    // Simulate API call
+    await new Promise(res => setTimeout(res, 1000));
+    if (referralCode.trim().toLowerCase() === 'SEVA100'.toLowerCase()) {
+      setReferralStatus('success');
+      setReferralMessage('Referral code applied!');
+    } else {
+      setReferralStatus('error');
+      setReferralMessage('Invalid referral code.');
+    }
+  };
 
   useEffect(() => {
     const fetchCategoryAndProblem = async () => {
@@ -209,13 +227,60 @@ export default function PriceEstimationPage() {
         </div>
       </Card>
 
+      {/* Referral code input - Modern UI */}
+      <Card className="mt-8 p-4 bg-white/90 dark:bg-gray-800/80 rounded-2xl shadow-md border flex flex-col gap-2 max-w-md mx-auto">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900">
+            <Wallet className="w-4 h-4 text-blue-500" />
+          </span>
+          <span className="font-semibold text-gray-700 dark:text-gray-200 text-base">Have a referral code?</span>
+        </div>
+        <div className="flex items-center gap-2 w-full">
+          <Input
+            type="text"
+            placeholder="Enter referral code"
+            value={referralCode}
+            onChange={e => {
+              setReferralCode(e.target.value);
+              setReferralStatus('idle');
+              setReferralMessage('');
+            }}
+            className="rounded-l-full rounded-r-none border-r-0 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all h-12 text-base bg-white dark:bg-gray-900"
+            style={{ boxShadow: 'none' }}
+            autoComplete="off"
+          />
+          <Button
+            type="button"
+            variant="default"
+            className="rounded-r-full rounded-l-none h-12 px-6 font-semibold text-base shadow-none"
+            disabled={referralStatus === 'verifying' || !referralCode.trim()}
+            onClick={verifyReferralCode}
+          >
+            {referralStatus === 'verifying' ? (
+              <span className="flex items-center gap-1"><span className="animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full"></span>Verifying...</span>
+            ) : 'Verify'}
+          </Button>
+        </div>
+        {referralStatus === 'success' && (
+          <div className="flex items-center gap-2 mt-1 text-green-600 font-medium">
+            <CheckCircle className="w-5 h-5" />
+            <span>{referralMessage}</span>
+          </div>
+        )}
+        {referralStatus === 'error' && (
+          <div className="flex items-center gap-2 mt-1 text-red-600 font-medium">
+            <AlertCircle className="w-5 h-5" />
+            <span>{referralMessage}</span>
+          </div>
+        )}
+      </Card>
+
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50">
         <Button asChild size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-            <Link href={detailsLink}>Confirm Visit</Link>
+            <Link href={`/book/${categorySlug}/details?problems=${problemIds}&referral_code=${encodeURIComponent(referralCode)}`}>Confirm Visit</Link>
         </Button>
       </div>
     </div>
   );
 }
 
-    
