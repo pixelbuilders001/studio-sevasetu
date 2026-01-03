@@ -19,7 +19,7 @@ const WalletPage = () => {
       <div className="container mx-auto px-4 py-8 max-w-md">
         <header className="mb-6">
           <h1 className="text-3xl font-bold font-headline">Your Wallet</h1>
-          <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Safe & Secure Payments</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Your earnings on referrals</p>
         </header>
 
         <Card className="bg-gray-900 dark:bg-gray-800 text-white border-0 rounded-3xl shadow-2xl mb-8 overflow-hidden">
