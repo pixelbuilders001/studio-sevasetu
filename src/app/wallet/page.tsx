@@ -1,20 +1,69 @@
 
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { History, Wallet, Sparkles, ArrowUpRight, Gift, Copy, Share2, IndianRupee } from 'lucide-react';
+import { History, Wallet, Sparkles, ArrowUpRight, Gift, Copy, Share2, IndianRupee, Phone, ArrowRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import TransactionHistorySheet from '@/components/TransactionHistorySheet';
+import { Input } from '@/components/ui/input';
 
 const WalletPage = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [error, setError] = useState('');
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     // You might want to show a toast notification here
   };
+
+  const handleContinue = () => {
+    if (mobileNumber.match(/^[6-9]\d{9}$/)) {
+      setIsAuthenticated(true);
+      setError('');
+    } else {
+      setError('Please enter a valid 10-digit mobile number.');
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+       <div className="bg-muted/30 min-h-screen flex items-center justify-center">
+        <div className="container mx-auto px-4 max-w-sm">
+          <Card className="rounded-2xl shadow-lg border-0">
+            <CardHeader className="text-center">
+              <div className="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Wallet className="w-8 h-8 text-primary" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Access Your Wallet</CardTitle>
+              <CardDescription>Please enter your mobile number to continue</CardDescription>
+            </CardHeader>
+            <CardContent className="px-6 pb-6">
+              <div className="space-y-4">
+                <Input
+                  icon={Phone}
+                  type="tel"
+                  placeholder="10-digit mobile number"
+                  value={mobileNumber}
+                  onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  className="h-14 text-lg text-center tracking-widest"
+                />
+                {error && <p className="text-sm text-center text-destructive">{error}</p>}
+                <Button onClick={handleContinue} size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+                  Continue
+                  <ArrowRight className="ml-2" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-muted/30 min-h-screen">
