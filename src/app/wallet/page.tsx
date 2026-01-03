@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { History, Wallet, Sparkles, ArrowUpRight, Gift, Copy, Share2, IndianRupee } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
+import TransactionHistorySheet from '@/components/TransactionHistorySheet';
 
 const WalletPage = () => {
 
@@ -36,9 +38,16 @@ const WalletPage = () => {
         </Card>
 
         <section className="mb-8">
-          <div className="flex justify-between items-center mb-4">
+           <div className="flex justify-between items-center mb-4">
             <h2 className="font-bold text-sm uppercase flex items-center gap-2 text-muted-foreground tracking-wider"><History className="w-5 h-5"/>Recent History</h2>
-            <Button variant="link" className="text-primary font-bold h-auto p-0">VIEW ALL</Button>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="link" className="text-primary font-bold h-auto p-0">VIEW ALL</Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-2xl">
+                 <TransactionHistorySheet />
+              </SheetContent>
+            </Sheet>
           </div>
           <Card className="rounded-2xl shadow-sm">
              <CardContent className="p-4">
