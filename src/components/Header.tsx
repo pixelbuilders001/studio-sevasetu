@@ -38,7 +38,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-20">
           <Logo />
           <div className="hidden md:flex items-center gap-2">
-              <BookingTrackerModal />
+              
               <LocationSelector />
               <LanguageSwitcher />
           </div>
