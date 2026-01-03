@@ -174,7 +174,7 @@ export default function BookingHistoryPage() {
                             <Calendar className="w-4 h-4" />
                             <span>{format(new Date(booking.created_at), 'dd MMM yyyy')}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-end gap-2">
                             <Clock className="w-4 h-4" />
                             <span>{format(new Date(booking.created_at), 'hh:mm a')}</span>
                         </div>
