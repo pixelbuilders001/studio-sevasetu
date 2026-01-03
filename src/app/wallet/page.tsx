@@ -32,23 +32,6 @@ const WalletPage = () => {
               <span className="text-5xl font-bold flex items-center"><IndianRupee className="w-9 h-9" />250</span>
               <span className="text-lg font-semibold text-gray-400 ml-2">POINTS</span>
             </div>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <Avatar className="h-8 w-8 border-2 border-gray-900">
-                  <AvatarFallback className="bg-blue-500 text-white font-bold text-xs">SV</AvatarFallback>
-                </Avatar>
-                <Avatar className="-ml-3 h-8 w-8 border-2 border-gray-900">
-                  <AvatarFallback className="bg-purple-500 text-white font-bold text-xs">P</AvatarFallback>
-                </Avatar>
-                 <Avatar className="-ml-3 h-8 w-8 border-2 border-gray-900">
-                  <AvatarFallback className="bg-gray-600 text-white font-bold text-lg">+</AvatarFallback>
-                </Avatar>
-              </div>
-              <div className="inline-flex items-center gap-2 bg-white/10 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                <Sparkles className="w-4 h-4 text-yellow-300" />
-                <span>Trusted by 10k+</span>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
