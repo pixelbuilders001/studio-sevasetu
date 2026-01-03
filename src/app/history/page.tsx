@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
+  CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -189,8 +190,13 @@ export default function BookingHistoryPage() {
                             <p className="font-semibold">{booking.issues.title}</p>
                         </div>
                     </div>
-
                   </CardContent>
+                  <CardFooter className="p-4 bg-muted/30">
+                    <Button variant="outline" size="sm">
+                      <Download className="mr-2 h-4 w-4" />
+                      Download Invoice
+                    </Button>
+                  </CardFooter>
                 </Card>
               )
             })}
