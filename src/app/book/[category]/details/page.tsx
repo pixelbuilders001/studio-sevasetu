@@ -44,20 +44,8 @@ function BookingDetailsContent() {
     fetchCategory();
   }, [categorySlug, getTranslatedCategory]);
   
-  const selectedProblems = useMemo(() => {
-    if (!category || !problemIds) return [];
-    const ids = problemIds.split(',');
-    return ids.map(id => category.problems.find(p => p.id === id)).filter(Boolean);
-  }, [category, problemIds]);
-
-  const totalEstimate = useMemo(() => {
-    if (!selectedProblems.length) return 0;
-    const problemsPrice = selectedProblems.reduce((sum, p) => sum + (p?.estimated_price || 0), 0);
-    return 199 + problemsPrice;
-  }, [selectedProblems]);
-
-  // Get referral code from search params
   const referralCode = searchParams.get('referral_code') || '';
+  const discount = Number(searchParams.get('discount')) || 0;
 
   if (loading) {
     return (
@@ -76,8 +64,8 @@ function BookingDetailsContent() {
       <BookingForm 
         categoryId={category.id}
         problemIds={problemIds}
-        totalEstimate={totalEstimate}
         referralCode={referralCode}
+        discount={discount}
       />
     </div>
   );

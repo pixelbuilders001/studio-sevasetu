@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { AlertCircle, Wrench, Hammer, ArrowLeft, CheckCircle, ShieldCheck, Wallet, Package } from 'lucide-react';
+import { AlertCircle, Wrench, Hammer, ArrowLeft, CheckCircle, ShieldCheck, Wallet, Package, Tag, Loader2, IndianRupee } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState, useEffect, useMemo } from 'react';
 import type { ServiceCategory, Problem } from '@/lib/data';
@@ -81,16 +81,19 @@ export default function PriceEstimationPage() {
   const [referralCode, setReferralCode] = useState('');
   const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [referralMessage, setReferralMessage] = useState('');
+  const [discount, setDiscount] = useState(0);
 
-  // Mock verification function
   const verifyReferralCode = async () => {
     setReferralStatus('verifying');
     setReferralMessage('');
-    // Simulate API call
+    setDiscount(0);
+    
     await new Promise(res => setTimeout(res, 1000));
-    if (referralCode.trim().toLowerCase() === 'SEVA100'.toLowerCase()) {
+    
+    if (referralCode.trim().toLowerCase() === 'SEVA50'.toLowerCase()) {
       setReferralStatus('success');
-      setReferralMessage('Referral code applied!');
+      setReferralMessage('Referral Applied! You saved ₹50');
+      setDiscount(50);
     } else {
       setReferralStatus('error');
       setReferralMessage('Invalid referral code.');
@@ -131,6 +134,8 @@ export default function PriceEstimationPage() {
     return 199 + problemsTotal;
   }, [selectedProblems]);
 
+  const netPayable = Math.max(199 - discount, 0);
+
 
   if (loading) {
     return <PriceEstimationSkeleton />;
@@ -139,10 +144,8 @@ export default function PriceEstimationPage() {
   if (!category || !problemIds || selectedProblems.length === 0) {
     notFound();
   }
-
-  const problemNames = selectedProblems.map(p => p.name).join(', ');
   
-  const detailsLink = `/book/${categorySlug}/details?problems=${problemIds}`;
+  const detailsLink = `/book/${categorySlug}/details?problems=${problemIds}&referral_code=${encodeURIComponent(referralCode)}&discount=${discount}`;
 
 
   return (
@@ -182,38 +185,78 @@ export default function PriceEstimationPage() {
         ))}
       </div>
 
+       <div className="mb-8">
+        <Card className="p-4 bg-white/90 dark:bg-gray-800/80 rounded-2xl shadow-sm border">
+          <div className="flex items-center justify-between gap-2">
+            <Tag className="w-5 h-5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="HAVE A REFERRAL CODE?"
+              value={referralCode}
+              onChange={e => {
+                setReferralCode(e.target.value.toUpperCase());
+                setReferralStatus('idle');
+                setReferralMessage('');
+                setDiscount(0);
+              }}
+              className="flex-grow border-0 bg-transparent text-base font-semibold placeholder:text-muted-foreground placeholder:font-semibold focus-visible:ring-0"
+              style={{ boxShadow: 'none' }}
+              autoComplete="off"
+              disabled={referralStatus === 'success'}
+            />
+            <Button
+              type="button"
+              variant={referralStatus === 'success' ? 'ghost' : 'default'}
+              className="rounded-full h-9 px-6 font-semibold shadow-none text-sm"
+              disabled={referralStatus === 'verifying' || !referralCode.trim()}
+              onClick={verifyReferralCode}
+            >
+              {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : (referralStatus === 'success' ? 'APPLIED' : 'APPLY')}
+            </Button>
+          </div>
+        </Card>
+        {referralStatus === 'success' && (
+          <div className="flex items-center gap-2 mt-2 text-green-600 font-medium px-2">
+            <CheckCircle className="w-5 h-5" />
+            <span>{referralMessage}</span>
+          </div>
+        )}
+        {referralStatus === 'error' && (
+          <div className="flex items-center gap-2 mt-2 text-red-600 font-medium px-2">
+            <AlertCircle className="w-5 h-5" />
+            <span>{referralMessage}</span>
+          </div>
+        )}
+      </div>
+
       <Card className="bg-gray-800 text-white dark:bg-gray-900 rounded-2xl">
         <CardContent className="p-4">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-bold uppercase tracking-wider">Estimate Receipt</h2>
-            <Package className="w-6 h-6 text-gray-400" />
+            <h2 className="font-bold uppercase tracking-wider">Payment Breakdown</h2>
+             <span className="text-xs font-semibold uppercase px-2 py-1 rounded-full bg-blue-600/80 text-white">Pay after service</span>
           </div>
-          <div className="bg-white/95 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 p-4 rounded-lg space-y-4">
+          <div className="bg-white/95 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 p-4 rounded-lg space-y-3">
              <div className="flex justify-between items-center text-base">
-              <span className="font-medium text-gray-600 dark:text-gray-400">Service Visit Fee</span>
-              <span className="font-bold text-gray-900 dark:text-gray-100">₹199</span>
+              <span className="font-medium text-gray-600 dark:text-gray-400">Visiting Fee</span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100">₹199</span>
             </div>
-            <div className="flex justify-between items-center">
-                <div>
-                    <p className="font-medium text-gray-600 dark:text-gray-400">Estimated Spare Parts</p>
-                    <p className="text-xs text-blue-500 font-bold uppercase">Based on {selectedProblems.length} issues</p>
+
+            {discount > 0 && (
+                 <div className="flex justify-between items-center text-base text-green-600 dark:text-green-400">
+                    <span className="font-medium">Referral Discount</span>
+                    <span className="font-semibold">-₹{discount}</span>
                 </div>
-                <div className="text-right">
-                    <p className="font-bold text-gray-900 dark:text-gray-100">Market Price</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Quote after visit</p>
-                </div>
-            </div>
+            )}
             
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-between text-sm">
-                <div>
-                    <p className="font-semibold uppercase text-blue-600 dark:text-blue-300">Payment Method</p>
-                    <p className="font-bold text-blue-800 dark:text-blue-200">Pay After Satisfaction</p>
-                </div>
-                <Wallet className="w-6 h-6 text-blue-500" />
+            <Separator className="bg-gray-200 dark:bg-gray-700"/>
+
+            <div className="flex justify-between items-center text-lg">
+              <span className="font-bold text-gray-800 dark:text-gray-200">Net Payable Visit Fee</span>
+              <span className="font-extrabold text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-5 h-5" />{netPayable}</span>
             </div>
 
             <p className="text-xs text-center text-gray-500 dark:text-gray-400 pt-2">
-              *You only pay the visit fee (₹199) if you decide not to proceed with the repair after technician's quote.
+              *Parts cost will be quoted separately by technician after physical inspection.
             </p>
           </div>
         </CardContent>
@@ -227,60 +270,11 @@ export default function PriceEstimationPage() {
         </div>
       </Card>
 
-      {/* Referral code input - Modern UI */}
-      <Card className="mt-8 p-4 bg-white/90 dark:bg-gray-800/80 rounded-2xl shadow-md border flex flex-col gap-2 max-w-md mx-auto">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900">
-            <Wallet className="w-4 h-4 text-blue-500" />
-          </span>
-          <span className="font-semibold text-gray-700 dark:text-gray-200 text-base">Have a referral code?</span>
-        </div>
-        <div className="flex items-center gap-2 w-full">
-          <Input
-            type="text"
-            placeholder="Enter referral code"
-            value={referralCode}
-            onChange={e => {
-              setReferralCode(e.target.value);
-              setReferralStatus('idle');
-              setReferralMessage('');
-            }}
-            className="rounded-l-full rounded-r-none border-r-0 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all h-12 text-base bg-white dark:bg-gray-900"
-            style={{ boxShadow: 'none' }}
-            autoComplete="off"
-          />
-          <Button
-            type="button"
-            variant="default"
-            className="rounded-r-full rounded-l-none h-12 px-6 font-semibold text-base shadow-none"
-            disabled={referralStatus === 'verifying' || !referralCode.trim()}
-            onClick={verifyReferralCode}
-          >
-            {referralStatus === 'verifying' ? (
-              <span className="flex items-center gap-1"><span className="animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full"></span>Verifying...</span>
-            ) : 'Verify'}
-          </Button>
-        </div>
-        {referralStatus === 'success' && (
-          <div className="flex items-center gap-2 mt-1 text-green-600 font-medium">
-            <CheckCircle className="w-5 h-5" />
-            <span>{referralMessage}</span>
-          </div>
-        )}
-        {referralStatus === 'error' && (
-          <div className="flex items-center gap-2 mt-1 text-red-600 font-medium">
-            <AlertCircle className="w-5 h-5" />
-            <span>{referralMessage}</span>
-          </div>
-        )}
-      </Card>
-
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50">
         <Button asChild size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-            <Link href={`/book/${categorySlug}/details?problems=${problemIds}&referral_code=${encodeURIComponent(referralCode)}`}>Confirm Visit</Link>
+            <Link href={detailsLink}>Confirm Visit</Link>
         </Button>
       </div>
     </div>
   );
 }
-

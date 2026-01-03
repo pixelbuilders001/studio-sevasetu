@@ -66,7 +66,6 @@ export async function bookService(
   formData: FormData
 ): Promise<{ message: string, error?: string, bookingId?: string, referralCode?: string }> {
   
-  // Append additional data to formData
   formData.append('category_id', categoryId);
   const issueIds = problemIds.split(',');
   if (issueIds.length > 0) {
@@ -74,12 +73,6 @@ export async function bookService(
   }
   if (pincode) {
       formData.append('pincode', pincode);
-  }
-
-  // Add referral_code if present
-  const referralCode = formData.get('referral_code');
-  if (referralCode) {
-    formData.set('referral_code', referralCode.toString());
   }
 
   try {
@@ -93,15 +86,17 @@ export async function bookService(
     });
 
     const result = await response.json();
-    console.log(result)
+    
     if (!response.ok) {
         console.error('API Error:', result);
         return { message: "Error", error: result.error_message || result.message || "An unexpected error occurred." };
     }
   
     const bookingId = result.order_id || result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
-    return { message: "Success", bookingId, referralCode: result.my_referral_code };
-    // redirect(`/confirmation?bookingId=${bookingId}`, 'push');
+    const myReferralCode = result.my_referral_code;
+
+    const redirectUrl = `/confirmation?bookingId=${bookingId}${myReferralCode ? `&referralCode=${myReferralCode}` : ''}`;
+    redirect(redirectUrl, 'push');
     
   } catch (error) {
       console.error('Booking failed:', error);
@@ -109,5 +104,3 @@ export async function bookService(
       return { message: "Error", error: errorMessage };
   }
 }
-
-
