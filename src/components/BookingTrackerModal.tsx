@@ -20,7 +20,7 @@ import React from 'react';
 type View = 'form' | 'history' | 'error';
 type TrackResult = { history?: { status: string; date: string, note?: string }[]; error?: string; } | null;
 
-export default function BookingTrackerModal({ isMobile = false, asChild = false, children }: { isMobile?: boolean, asChild?: boolean, children?: React.ReactNode }) {
+export default function BookingTrackerModal({ asChild = false, children }: { asChild?: boolean, children?: React.ReactNode }) {
   const { t, language } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<View>('form');
@@ -68,22 +68,15 @@ export default function BookingTrackerModal({ isMobile = false, asChild = false,
   }, [trackResult]);
 
   const Trigger = asChild ? children : (
-    isMobile ? (
-      <button className="text-lg font-medium text-foreground transition-colors hover:text-primary w-full text-left flex items-center gap-2">
-        <Briefcase />
-        {t('trackBooking')}
-      </button>
-    ) : (
       <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
         <Briefcase className="mr-2" />
         {t('trackBooking')}
       </Button>
-    )
   );
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild={asChild || isMobile}>
+      <DialogTrigger asChild={asChild}>
         {Trigger}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px]">

@@ -10,7 +10,7 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { getTranslations } from '@/lib/get-translation';
 import VerifiedTechnicians from '@/components/VerifiedTechnicians';
-import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase } from 'lucide-react';
+import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase, ChevronRight, Search } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import BecomePartner from '@/components/BecomePartner';
 import HeroCTA from '@/components/HeroCTA';
@@ -106,18 +106,27 @@ export default async function Home({ searchParams }: { searchParams?: { lang?: s
 
       <section className="py-6 bg-muted/30 border-y">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <div className='flex-grow'>
-              <h3 className="font-bold text-lg">Track Your Service</h3>
-              <p className="text-sm text-muted-foreground">Enter your booking ID to check the status.</p>
-            </div>
-             <BookingTrackerModal asChild={true}>
-                <Button className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full h-12 px-6 font-bold">
-                    <Briefcase className="mr-2" />
-                    {t('trackBooking')}
-                </Button>
+            <BookingTrackerModal asChild={true}>
+              <div className="bg-background rounded-2xl p-4 flex items-center gap-4 cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-900/50 rounded-full">
+                  <Search className="w-6 h-6 text-blue-500" />
+                </div>
+                <div className="flex-grow">
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold uppercase text-blue-500">Live Status</p>
+                    <div className="relative flex h-2 w-2">
+                        <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></div>
+                        <div className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></div>
+                    </div>
+                  </div>
+                  <h3 className="font-bold text-base">Track Ongoing Repair</h3>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Enter ID to check progress</p>
+                </div>
+                 <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-full text-muted-foreground">
+                   <ChevronRight className="w-5 h-5" />
+                 </div>
+              </div>
             </BookingTrackerModal>
-          </div>
         </div>
       </section>
 
