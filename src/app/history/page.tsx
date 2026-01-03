@@ -9,10 +9,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle } from 'lucide-react';
+import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 
 const iconMap: { [key: string]: React.ElementType } = {
   'MOBILE PHONES': Laptop, // Assuming smartphone, but Laptop icon is there
@@ -179,13 +180,33 @@ export default function BookingHistoryPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-start gap-3 mb-5">
+                    <div className="flex items-start gap-3 mb-4">
                         <Tag className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
                         <div>
                             <p className="text-xs text-muted-foreground">ISSUE</p>
                             <p className="font-semibold">{booking.issues.title}</p>
                         </div>
                     </div>
+                    
+                    {booking.media_url && (
+                        <div className="mb-5">
+                            <div className="flex items-start gap-3">
+                                <ImageIcon className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                                 <div>
+                                    <p className="text-xs text-muted-foreground">ISSUE PHOTO</p>
+                                    <div className="mt-1">
+                                        <Image
+                                            src={booking.media_url}
+                                            alt="Issue photo"
+                                            width={80}
+                                            height={80}
+                                            className="rounded-lg object-cover border"
+                                        />
+                                    </div>
+                                 </div>
+                            </div>
+                        </div>
+                    )}
                     
                     <Separator className="my-4" />
 
@@ -209,5 +230,3 @@ export default function BookingHistoryPage() {
     </div>
   );
 }
-
-    
