@@ -137,7 +137,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       const data = await res.json();
       if (res.ok && data.valid) {
         setReferralStatus('success');
-        setReferralMessage('Referral code applied!');
+        setReferralMessage(data.message || `REFERRAL APPLIED! YOU SAVED ₹${data.discount || 0}`);
         setDiscount(data.discount || 0);
       } else {
         setReferralStatus('error');
@@ -150,7 +150,6 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       setDiscount(0);
     }
   };
-
 
   const finalPayable = Math.max(199 - discount, 0);
 
@@ -201,7 +200,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
         </div>
       </div>
 
-      <div className="mb-8">
+       <div className="mb-8">
         <div className="relative flex items-center bg-card rounded-xl border p-2 h-14">
           <Tag className="w-5 h-5 text-muted-foreground mx-3" />
           <Input
@@ -211,24 +210,38 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
             value={referral}
             onChange={e => {
               setReferral(e.target.value.toUpperCase());
-              setReferralStatus('idle');
-              setReferralMessage('');
-              setDiscount(0);
+              if(referralStatus !== 'idle') {
+                  setReferralStatus('idle');
+                  setReferralMessage('');
+                  setDiscount(0);
+              }
             }}
             className="flex-grow border-0 bg-transparent text-base font-semibold placeholder:text-muted-foreground placeholder:font-semibold focus-visible:ring-0 p-0 h-auto"
             style={{ boxShadow: 'none' }}
             autoComplete="off"
             disabled={referralStatus === 'success'}
           />
-          <Button
-            type="button"
-            variant={referralStatus === 'success' ? 'ghost' : 'default'}
-            className="rounded-full h-10 px-6 font-semibold shadow-none text-sm mr-1"
-            disabled={referralStatus === 'verifying' || !referral.trim()}
-            onClick={verifyReferralCode}
-          >
-            {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : (referralStatus === 'success' ? 'APPLIED' : 'APPLY')}
-          </Button>
+          {referralStatus !== 'success' && (
+              <Button
+                type="button"
+                variant="default"
+                className="rounded-full h-10 px-6 font-semibold shadow-none text-sm mr-1"
+                disabled={referralStatus === 'verifying' || !referral.trim()}
+                onClick={verifyReferralCode}
+              >
+                {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'APPLY'}
+              </Button>
+          )}
+          {referralStatus === 'success' && (
+            <Button
+              type="button"
+              variant="default"
+              className="rounded-full h-10 px-6 font-semibold shadow-none text-sm mr-1 bg-green-500 hover:bg-green-600"
+              disabled
+            >
+              APPLIED
+            </Button>
+          )}
         </div>
 
         {referralStatus === 'success' && (
@@ -244,6 +257,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
           </div>
         )}
       </div>
+
 
        <div>
         <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Add Problem Photos (Optional)</h2>
@@ -279,14 +293,30 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
       )}
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50">
-          <div className="max-w-md mx-auto flex justify-between items-center mb-3">
+          <div className="max-w-md mx-auto">
+            {discount > 0 && (
+              <div className="flex justify-between items-center text-sm mb-2 px-1">
+                <span className="font-semibold text-muted-foreground">Visiting Fee</span>
+                <span className="font-semibold text-muted-foreground flex items-center"><IndianRupee className="w-4 h-4" />199</span>
+              </div>
+            )}
+             {discount > 0 && (
+              <div className="flex justify-between items-center text-sm mb-3 px-1">
+                <span className="font-semibold text-green-600">Referral Discount</span>
+                <span className="font-semibold text-green-600 flex items-center">-<IndianRupee className="w-4 h-4" />{discount}</span>
+              </div>
+            )}
+             <div className="flex justify-between items-center mb-3">
               <span className="text-sm font-semibold text-muted-foreground">NET PAYABLE (VISIT FEE)</span>
                <span className="font-extrabold text-2xl text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-6 h-6" />{finalPayable}</span>
+            </div>
           </div>
-          <Button type="submit" disabled={isPending} size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Finish Booking'}
-            {!isPending && <ArrowRight className="ml-2 h-5 w-5" />}
-          </Button>
+          <div className="max-w-md mx-auto">
+              <Button type="submit" disabled={isPending} size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Finish Booking'}
+                {!isPending && <ArrowRight className="ml-2 h-5 w-5" />}
+              </Button>
+          </div>
       </div>
     </form>
   );
