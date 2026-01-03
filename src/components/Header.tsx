@@ -5,17 +5,6 @@ import Link from 'next/link';
 import LocationSelector from './LocationSelector';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetClose,
-  SheetHeader,
-  SheetTitle
-} from '@/components/ui/sheet';
-import BookingTrackerModal from './BookingTrackerModal';
 
 const Logo = () => (
   <Link href="/" className="flex items-center gap-2 flex-shrink-0">
@@ -37,32 +26,10 @@ export default function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <Logo />
-          <div className="hidden md:flex items-center gap-2">
-              
+          <div className="flex items-center gap-2">
               <LocationSelector />
               <LanguageSwitcher />
           </div>
-           <div className="md:hidden">
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                        <Menu />
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="right">
-                    <SheetHeader>
-                        <SheetTitle>Menu</SheetTitle>
-                    </SheetHeader>
-                    <div className="py-4">
-                        <nav className="flex flex-col gap-4">
-                            <BookingTrackerModal isMobile={true} asChild={true}>
-                                <SheetClose />
-                            </BookingTrackerModal>
-                        </nav>
-                    </div>
-                </SheetContent>
-            </Sheet>
-        </div>
         </div>
       </div>
     </header>
