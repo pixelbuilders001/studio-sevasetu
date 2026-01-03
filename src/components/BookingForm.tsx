@@ -204,6 +204,31 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
         </div>
       </div>
 
+       <div>
+        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Add Problem Photos (Optional)</h2>
+        <div className="flex items-center gap-4">
+          <label htmlFor="media" className="relative flex flex-col items-center justify-center w-32 h-32 cursor-pointer bg-card border-2 border-dashed rounded-xl hover:bg-muted/50">
+              <Camera className="w-8 h-8 text-muted-foreground mb-2" />
+              <span className="text-sm font-semibold text-muted-foreground">Add Photo</span>
+              <Input id="media" name="media" type="file" accept="image/*" className="sr-only" onChange={handleImageChange} />
+          </label>
+          {imagePreview && (
+            <div className="relative w-32 h-32 rounded-xl overflow-hidden border">
+              <Image src={imagePreview} alt="Image preview" layout="fill" objectFit="cover" />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Pick a Time</h2>
+        <div className="grid grid-cols-2 gap-2 mb-3">
+            <Button type="button" variant={selectedDay === 'today' ? 'default' : 'outline'} onClick={() => setSelectedDay('today')}>Today</Button>
+            <Button type="button" variant={selectedDay === 'tomorrow' ? 'default' : 'outline'} onClick={() => setSelectedDay('tomorrow')}>Tomorrow</Button>
+        </div>
+        <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-best`} />
+      </div>
+
        <div className="mb-8">
         <div className="relative flex items-center bg-card rounded-xl border p-2 h-14">
           <Tag className="w-5 h-5 text-muted-foreground mx-3" />
@@ -272,32 +297,6 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
                 </div>
             </div>
         </Card>
-      </div>
-
-
-       <div>
-        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Add Problem Photos (Optional)</h2>
-        <div className="flex items-center gap-4">
-          <label htmlFor="media" className="relative flex flex-col items-center justify-center w-32 h-32 cursor-pointer bg-card border-2 border-dashed rounded-xl hover:bg-muted/50">
-              <Camera className="w-8 h-8 text-muted-foreground mb-2" />
-              <span className="text-sm font-semibold text-muted-foreground">Add Photo</span>
-              <Input id="media" name="media" type="file" accept="image/*" className="sr-only" onChange={handleImageChange} />
-          </label>
-          {imagePreview && (
-            <div className="relative w-32 h-32 rounded-xl overflow-hidden border">
-              <Image src={imagePreview} alt="Image preview" layout="fill" objectFit="cover" />
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Pick a Time</h2>
-        <div className="grid grid-cols-2 gap-2 mb-3">
-            <Button type="button" variant={selectedDay === 'today' ? 'default' : 'outline'} onClick={() => setSelectedDay('today')}>Today</Button>
-            <Button type="button" variant={selectedDay === 'tomorrow' ? 'default' : 'outline'} onClick={() => setSelectedDay('tomorrow')}>Tomorrow</Button>
-        </div>
-        <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-best`} />
       </div>
 
        {state?.error && (
