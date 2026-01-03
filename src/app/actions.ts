@@ -81,6 +81,11 @@ export async function bookService(
   // But we make sure it's the verified one passed from the function binding if available
   if (referralCode) {
     formData.set('referral_code', referralCode);
+  } else {
+    // Ensure we don't send an empty referral code if the user cleared the input
+    if (formData.has('referral_code')) {
+      formData.delete('referral_code');
+    }
   }
 
 

@@ -33,7 +33,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   const [referralMessage, setReferralMessage] = useState('');
   const [discount, setDiscount] = useState(0);
 
-  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralCodeInput);
+  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referralCodeInput : undefined);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
    
   const [selectedDay, setSelectedDay] = useState('today');
@@ -49,10 +49,6 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
           title: t('errorTitle'),
           description: state.error,
       });
-    }
-    if (state?.bookingId) {
-      const confirmationUrl = `/confirmation?bookingId=${state.bookingId}${state.referralCode ? `&referralCode=${state.referralCode}` : ''}`;
-      router.push(confirmationUrl);
     }
   }, [state, t, toast, router]);
   
@@ -117,15 +113,46 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     setReferralMessage('');
     setDiscount(0);
     
-    await new Promise(res => setTimeout(res, 1000));
-    
-    if (referralCodeInput.trim().toLowerCase() === 'SEVA50'.toLowerCase()) {
-      setReferralStatus('success');
-      setReferralMessage('Referral Applied! You saved ₹50');
-      setDiscount(50);
-    } else {
-      setReferralStatus('error');
-      setReferralMessage('Invalid referral code.');
+    // This simulates an API call. Replace with your actual API endpoint.
+    try {
+        // Mocking Supabase Edge Function call
+        const response = await new Promise<{ ok: boolean, json: () => Promise<any> }>((resolve) => {
+            setTimeout(() => {
+                if (referralCodeInput.trim().toLowerCase() === 'SEVA50'.toLowerCase()) {
+                    resolve({
+                        ok: true,
+                        json: async () => ({
+                            valid: true,
+                            discount: 50,
+                            message: 'Referral Applied! You saved ₹50'
+                        })
+                    });
+                } else {
+                    resolve({
+                        ok: false,
+                        json: async () => ({
+                            valid: false,
+                            message: 'Invalid referral code.'
+                        })
+                    });
+                }
+            }, 1000);
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.valid) {
+            setReferralStatus('success');
+            setReferralMessage(result.message);
+            setDiscount(result.discount);
+        } else {
+            setReferralStatus('error');
+            setReferralMessage(result.message || 'Invalid referral code.');
+        }
+
+    } catch (error) {
+        setReferralStatus('error');
+        setReferralMessage('Could not verify the code. Please try again.');
     }
   };
 
@@ -183,7 +210,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
             <Input
               type="text"
               placeholder="HAVE A REFERRAL CODE?"
-              name="referral_code"
+              name="referral_code_input"
               value={referralCodeInput}
               onChange={e => {
                 setReferralCodeInput(e.target.value.toUpperCase());
@@ -243,7 +270,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
             <Button type="button" variant={selectedDay === 'today' ? 'default' : 'outline'} onClick={() => setSelectedDay('today')}>Today</Button>
             <Button type="button" variant={selectedDay === 'tomorrow' ? 'default' : 'outline'} onClick={() => setSelectedDay('tomorrow')}>Tomorrow</Button>
         </div>
-        <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-${selectedTime}`} />
+        <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-best`} />
       </div>
 
        {state?.error && !state.bookingId && (
