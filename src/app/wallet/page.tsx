@@ -126,7 +126,7 @@ const WalletPage = () => {
                 <Button variant="link" className="text-primary font-bold h-auto p-0">VIEW ALL</Button>
               </SheetTrigger>
               <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-2xl">
-                 <TransactionHistorySheet />
+                 <TransactionHistorySheet mobileNumber={mobileNumber} />
               </SheetContent>
             </Sheet>
           </div>
