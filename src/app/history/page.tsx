@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle, Image as ImageIcon, Eye } from 'lucide-react';
+import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
@@ -19,13 +19,6 @@ import {
   DialogContent,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import InvoicePreviewSheet from '@/components/InvoicePreviewSheet';
-
 
 const iconMap: { [key: string]: React.ElementType } = {
   'MOBILE PHONES': Laptop, // Assuming smartphone, but Laptop icon is there
@@ -35,17 +28,12 @@ const iconMap: { [key: string]: React.ElementType } = {
 };
 
 
-export type Booking = {
+type Booking = {
   id: string;
   order_id: string;
   status: string;
   created_at: string;
   media_url: string | null;
-  user_name: string;
-  full_address: string;
-  net_inspection_fee: number;
-  total_estimated_price: number;
-  final_amount_paid: number;
   categories: {
     id: string;
     name: string;
@@ -54,9 +42,6 @@ export type Booking = {
     id: string;
     title: string;
   };
-  technicians: {
-    full_name: string;
-  } | null;
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
@@ -104,7 +89,7 @@ export default function BookingHistoryPage() {
     setError('');
 
     try {
-        const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,user_name,full_address,net_inspection_fee,total_estimated_price,final_amount_paid,categories(id,name),issues(id,title),technicians(full_name)&order=created_at.desc`, {
+        const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,categories(id,name),issues(id,title)&order=created_at.desc`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
@@ -209,7 +194,7 @@ export default function BookingHistoryPage() {
                               <p className="font-semibold">{booking.issues.title}</p>
                           </div>
                       </div>
-                       {booking.media_url && (
+                      {booking.media_url && (
                           <Dialog>
                             <DialogTrigger asChild>
                                <div className="flex-shrink-0 w-16 h-16 cursor-pointer">
@@ -236,17 +221,11 @@ export default function BookingHistoryPage() {
                     </div>
                     
                     <Separator className="my-4" />
-                    <Sheet>
-                      <SheetTrigger asChild>
-                         <Button variant="ghost" size="sm" className="w-full font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200">
-                           <Eye className="mr-2 h-4 w-4" />
-                           View Invoice
-                         </Button>
-                      </SheetTrigger>
-                      <SheetContent side="bottom" className="h-full max-h-[90vh] flex flex-col rounded-t-2xl">
-                         <InvoicePreviewSheet booking={booking} />
-                      </SheetContent>
-                    </Sheet>
+
+                    <Button variant="ghost" size="sm" className="w-full font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200">
+                      <Download className="mr-2 h-4 w-4" />
+                      Download Invoice
+                    </Button>
                   </CardContent>
                 </Card>
               )
@@ -263,5 +242,3 @@ export default function BookingHistoryPage() {
     </div>
   );
 }
-
-    

@@ -1,5 +1,4 @@
 
-
 'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -22,6 +21,7 @@ import { useLocation } from '@/context/LocationContext';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
+import AnimatedHeroText from '@/components/AnimatedHeroText';
 
 
 function ServiceCard({ category }: { category: ServiceCategory }) {
@@ -126,8 +126,8 @@ export default function Home({ searchParams }: { searchParams: { [key: string]: 
                         INDIA'S TRUSTED REPAIR APP
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight">
-                        Quick Repairs<br />
-                        <span className="text-primary">At Your Doorstep</span>
+                        <AnimatedHeroText />
+                        <span className="text-white">At Your Doorstep</span>
                     </h1>
                     <p className="text-base text-white/80 max-w-sm mb-8">
                        Verified experts for Mobile, Laptop & AC. Fixed in 60 minutes.
