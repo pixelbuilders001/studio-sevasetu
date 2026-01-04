@@ -14,6 +14,12 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+
 
 const iconMap: { [key: string]: React.ElementType } = {
   'MOBILE PHONES': Laptop, // Assuming smartphone, but Laptop icon is there
@@ -72,6 +78,7 @@ export default function BookingHistoryPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const handleContinue = async () => {
     if (!mobileNumber.match(/^[6-9]\d{9}$/)) {
@@ -189,15 +196,28 @@ export default function BookingHistoryPage() {
                           </div>
                       </div>
                        {booking.media_url && (
-                          <div className="flex-shrink-0">
-                            <Image
-                                src={booking.media_url}
-                                alt="Issue photo"
-                                width={64}
-                                height={64}
-                                className="rounded-lg object-cover border"
-                            />
-                          </div>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                               <div className="flex-shrink-0 w-16 h-16 cursor-pointer">
+                                  <Image
+                                      src={booking.media_url}
+                                      alt="Issue photo"
+                                      width={64}
+                                      height={64}
+                                      className="rounded-lg object-cover w-full h-full border"
+                                  />
+                                </div>
+                            </DialogTrigger>
+                             <DialogContent className="p-0 border-0 max-w-lg">
+                                <Image
+                                    src={booking.media_url}
+                                    alt="Issue photo"
+                                    width={800}
+                                    height={800}
+                                    className="rounded-lg object-contain w-full h-full"
+                                />
+                            </DialogContent>
+                          </Dialog>
                       )}
                     </div>
                     
@@ -223,3 +243,5 @@ export default function BookingHistoryPage() {
     </div>
   );
 }
+
+    
