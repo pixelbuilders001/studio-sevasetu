@@ -12,7 +12,7 @@ export default function HeroCTA() {
   const isMobile = useIsMobile();
 
   const CtaButton = () => (
-    <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg px-8 h-14 rounded-full">
+    <Button size="lg" className="bg-white hover:bg-primary/90 hover:text-white text-black font-bold text-lg px-8 h-14 rounded-full">
       BOOK REPAIR NOW <ArrowRight className="w-5 h-5 ml-2" />
     </Button>
   );
