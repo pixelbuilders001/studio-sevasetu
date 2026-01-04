@@ -73,6 +73,8 @@ export async function bookService(
   problemIds: string,
   pincode: string | undefined,
   referralCode: string | undefined,
+  total_estimated_price: number,
+  net_inspection_fee: number,
   prevState: any, 
   formData: FormData
 ): Promise<{ message: string, error?: string, bookingId?: string, referralCode?: string }> {
@@ -96,6 +98,11 @@ export async function bookService(
       formData.delete('referral_code');
     }
   }
+
+  // Add new pricing fields
+  formData.append('total_estimated_price', total_estimated_price.toString());
+  formData.append('net_inspection_fee', net_inspection_fee.toString());
+  formData.append('final_amount_paid', ''); // Sent as null/empty string
 
 
   try {

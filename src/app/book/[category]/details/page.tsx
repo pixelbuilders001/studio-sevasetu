@@ -6,11 +6,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { BookingForm } from '@/components/BookingForm';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMemo, Suspense, useState, useEffect } from 'react';
-import type { ServiceCategory } from '@/lib/data';
+import type { ServiceCategory, Problem } from '@/lib/data';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useLocation } from '@/context/LocationContext';
+
+type BookingDetailsData = {
+  category: ServiceCategory;
+  selectedProblems: Problem[];
+  totalRepairCost: number;
+  inspectionFee: number;
+  totalEstimatedPrice: number;
+}
+
 
 function BookingDetailsContent() {
   const params = useParams();
@@ -22,29 +31,52 @@ function BookingDetailsContent() {
 
   const { t, getTranslatedCategory } = useTranslation();
   const { location } = useLocation();
-  const [category, setCategory] = useState<ServiceCategory | null>(null);
+  
+  const [details, setDetails] = useState<BookingDetailsData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategory = async () => {
-      if (!categorySlug) return;
+    const fetchDetails = async () => {
+      if (!categorySlug || !problemIds) {
+        notFound();
+        return;
+      }
       try {
         const originalCategory = await getServiceCategory(categorySlug as string);
         if (!originalCategory) {
           notFound();
           return;
         }
+
         const translatedCategory = getTranslatedCategory(originalCategory);
-        setCategory(translatedCategory);
+        
+        const ids = problemIds.split(',');
+        const selectedProblems = translatedCategory.problems.filter((p) => ids.includes(p.id));
+
+        const inspectionFee = translatedCategory.base_inspection_fee * location.inspection_multiplier;
+        const totalRepairCost = selectedProblems.reduce((acc, problem) => {
+            return acc + (problem.base_min_fee * location.repair_multiplier);
+        }, 0);
+        
+        const totalEstimatedPrice = totalRepairCost + inspectionFee;
+        
+        setDetails({
+          category: translatedCategory,
+          selectedProblems,
+          totalRepairCost,
+          inspectionFee,
+          totalEstimatedPrice
+        });
+
       } catch (error) {
-        console.error("Failed to fetch category:", error);
+        console.error("Failed to fetch booking details:", error);
         notFound();
       } finally {
         setLoading(false);
       }
     };
-    fetchCategory();
-  }, [categorySlug, getTranslatedCategory]);
+    fetchDetails();
+  }, [categorySlug, problemIds, getTranslatedCategory, location]);
   
   if (loading) {
     return (
@@ -54,15 +86,17 @@ function BookingDetailsContent() {
     );
   }
   
-  if (!category || !problemIds) {
+  if (!details) {
     return notFound();
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <BookingForm 
-        categoryId={category.id}
-        problemIds={problemIds}
+        categoryId={details.category.id}
+        problemIds={problemIds!}
+        inspectionFee={details.inspectionFee}
+        totalEstimatedPrice={details.totalEstimatedPrice}
       />
     </div>
   );

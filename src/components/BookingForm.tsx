@@ -14,7 +14,6 @@ import { useLocation } from '@/context/LocationContext';
 import { bookService } from '@/app/actions';
 import Image from 'next/image';
 import { Card } from './ui/card';
-import { getServiceCategory } from '@/lib/data';
 
 const initialState = {
   message: "",
@@ -23,7 +22,7 @@ const initialState = {
   referralCode: undefined,
 };
 
-export function BookingForm({ categoryId, problemIds }: { categoryId: string; problemIds: string; }) {
+export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstimatedPrice }: { categoryId: string; problemIds: string; inspectionFee: number; totalEstimatedPrice: number; }) {
   const { t } = useTranslation();
   const { location } = useLocation();
   const { toast } = useToast();
@@ -35,9 +34,10 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [referralMessage, setReferralMessage] = useState('');
   const [discount, setDiscount] = useState(0);
-  const [inspectionFee, setInspectionFee] = useState<number | null>(null);
+  
+  const finalPayable = Math.max(inspectionFee - discount, 0);
 
-  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined);
+  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined, totalEstimatedPrice, finalPayable);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
    
   const [selectedDay, setSelectedDay] = useState('today');
@@ -45,18 +45,6 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   const [address, setAddress] = useState('');
   const [isGpsLoading, setIsGpsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchCategoryDetails = async () => {
-        const category = await getServiceCategory(categoryId);
-        if (category) {
-            setInspectionFee(category.base_inspection_fee * location.inspection_multiplier);
-        } else {
-            setInspectionFee(199 * location.inspection_multiplier); // Fallback
-        }
-    }
-    fetchCategoryDetails();
-  }, [categoryId, location.inspection_multiplier]);
 
   useEffect(() => {
     if (state?.error) {
@@ -172,8 +160,6 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     setReferralMessage('');
     setDiscount(0);
   };
-
-  const finalPayable = inspectionFee !== null ? Math.max(inspectionFee - discount, 0) : null;
 
   return (
     <form action={formAction} className="space-y-8 pb-28">
