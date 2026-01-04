@@ -55,7 +55,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
         }
     }
     fetchCategoryDetails();
-  }, [categoryId, location.inspection_multiplier])
+  }, [categoryId, location.inspection_multiplier]);
 
   useEffect(() => {
     if (state?.error) {
@@ -355,5 +355,3 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     </form>
   );
 }
-
-    
