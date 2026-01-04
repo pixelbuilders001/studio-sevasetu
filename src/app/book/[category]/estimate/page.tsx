@@ -5,7 +5,7 @@ import { notFound, useParams, useSearchParams, useRouter } from 'next/navigation
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Wrench, Hammer, ArrowLeft, CheckCircle, ShieldCheck, Wallet, Package, IndianRupee } from 'lucide-react';
+import { Wrench, Hammer, ArrowLeft, CheckCircle, ShieldCheck, Wallet, Package, IndianRupee, Info } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState, useEffect, useMemo } from 'react';
 import type { ServiceCategory, Problem } from '@/lib/data';
@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import { useLocation } from '@/context/LocationContext';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 function PriceEstimationSkeleton() {
   return (
@@ -119,6 +120,12 @@ export default function PriceEstimationPage() {
 
   const inspectionFee = category.base_inspection_fee * location.inspection_multiplier;
   
+  const totalRepairCost = selectedProblems.reduce((acc, problem) => {
+    return acc + (problem.base_min_fee * location.repair_multiplier);
+  }, 0);
+
+  const totalEstimatedPrice = totalRepairCost + inspectionFee;
+
   const detailsLink = `/book/${categorySlug}/details?problems=${problemIds}`;
 
   return (
@@ -136,7 +143,6 @@ export default function PriceEstimationPage() {
       <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Problems Selected</h2>
       <div className="space-y-3 mb-8">
         {selectedProblems.map(problem => {
-          const dynamicPrice = problem.base_min_fee * location.repair_multiplier;
           return (
             <Card key={problem.id} className="p-4 flex items-center gap-4 bg-card">
               <div className="relative w-12 h-12 bg-muted/40 rounded-lg flex items-center justify-center p-1">
@@ -151,9 +157,6 @@ export default function PriceEstimationPage() {
               </div>
               <div className="flex-grow">
                 <h3 className="font-semibold">{problem.name}</h3>
-                {problem.base_min_fee > 0 && (
-                  <p className="text-sm text-primary font-semibold">RANGE: ₹{dynamicPrice - 300} - ₹{dynamicPrice + 300}</p>
-                )}
               </div>
               <CheckCircle className="w-6 h-6 text-green-500" />
             </Card>
@@ -164,23 +167,31 @@ export default function PriceEstimationPage() {
       <Card className="bg-gray-800 text-white dark:bg-gray-900 rounded-2xl">
         <CardContent className="p-4">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-bold uppercase tracking-wider">Payment Breakdown</h2>
+            <h2 className="font-bold uppercase tracking-wider">Price Estimate</h2>
              <span className="text-xs font-semibold uppercase px-2 py-1 rounded-full bg-blue-600/80 text-white">Pay after service</span>
           </div>
           <div className="bg-white/95 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 p-4 rounded-lg space-y-3">
              <div className="flex justify-between items-center text-lg">
-              <span className="font-bold text-gray-800 dark:text-gray-200">Visiting Fee</span>
-              <span className="font-extrabold text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-5 h-5" />{inspectionFee}</span>
+              <span className="font-bold text-gray-800 dark:text-gray-200">Total Estimated Price</span>
+              <span className="font-extrabold text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-5 h-5" />{totalEstimatedPrice}</span>
             </div>
             
             <p className="text-xs text-center text-gray-500 dark:text-gray-400 pt-2">
-              *Parts cost will be quoted separately by technician after physical inspection.
+              (Includes Visiting Fee: ₹{inspectionFee})
             </p>
           </div>
         </CardContent>
       </Card>
       
-      <Card className="mt-8 p-4 flex items-center gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800">
+      <Alert className="mt-8 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300">
+        <Info className="h-4 w-4 !text-blue-500" />
+        <AlertTitle className="font-bold">Disclaimer</AlertTitle>
+        <AlertDescription className="text-sm">
+          This is an estimated price based on the selected problem(s). The final cost, including any parts, may vary after the technician's physical inspection.
+        </AlertDescription>
+      </Alert>
+
+      <Card className="mt-4 p-4 flex items-center gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800">
         <ShieldCheck className="w-8 h-8 text-green-600 dark:text-green-400" />
         <div>
           <h3 className="font-bold text-green-800 dark:text-green-200">30-Day Guarantee</h3>
