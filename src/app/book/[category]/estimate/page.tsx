@@ -12,6 +12,7 @@ import type { ServiceCategory, Problem } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
+import { useLocation } from '@/context/LocationContext';
 
 function PriceEstimationSkeleton() {
   return (
@@ -75,6 +76,7 @@ export default function PriceEstimationPage() {
   const problemIds = searchParams.get('problems');
 
   const { t, getTranslatedCategory } = useTranslation();
+  const { location } = useLocation();
   
   const [category, setCategory] = useState<ServiceCategory | null>(null);
   const [loading, setLoading] = useState(true);
@@ -114,6 +116,8 @@ export default function PriceEstimationPage() {
   if (!category || !problemIds || selectedProblems.length === 0) {
     notFound();
   }
+
+  const inspectionFee = category.base_inspection_fee * location.inspection_multiplier;
   
   const detailsLink = `/book/${categorySlug}/details?problems=${problemIds}`;
 
@@ -131,27 +135,30 @@ export default function PriceEstimationPage() {
       
       <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Problems Selected</h2>
       <div className="space-y-3 mb-8">
-        {selectedProblems.map(problem => (
-          <Card key={problem.id} className="p-4 flex items-center gap-4 bg-card">
-            <div className="relative w-12 h-12 bg-muted/40 rounded-lg flex items-center justify-center p-1">
-              <Image
-                src={problem.image.imageUrl}
-                alt={problem.name}
-                width={40}
-                height={40}
-                className="object-contain"
-                data-ai-hint={problem.image.imageHint}
-              />
-            </div>
-            <div className="flex-grow">
-              <h3 className="font-semibold">{problem.name}</h3>
-              {problem.estimated_price > 0 && (
-                <p className="text-sm text-primary font-semibold">RANGE: ₹{problem.estimated_price - 300} - ₹{problem.estimated_price + 300}</p>
-              )}
-            </div>
-            <CheckCircle className="w-6 h-6 text-green-500" />
-          </Card>
-        ))}
+        {selectedProblems.map(problem => {
+          const dynamicPrice = problem.estimated_price * location.repair_multiplier;
+          return (
+            <Card key={problem.id} className="p-4 flex items-center gap-4 bg-card">
+              <div className="relative w-12 h-12 bg-muted/40 rounded-lg flex items-center justify-center p-1">
+                <Image
+                  src={problem.image.imageUrl}
+                  alt={problem.name}
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                  data-ai-hint={problem.image.imageHint}
+                />
+              </div>
+              <div className="flex-grow">
+                <h3 className="font-semibold">{problem.name}</h3>
+                {problem.estimated_price > 0 && (
+                  <p className="text-sm text-primary font-semibold">RANGE: ₹{dynamicPrice - 300} - ₹{dynamicPrice + 300}</p>
+                )}
+              </div>
+              <CheckCircle className="w-6 h-6 text-green-500" />
+            </Card>
+          )
+        })}
       </div>
 
       <Card className="bg-gray-800 text-white dark:bg-gray-900 rounded-2xl">
@@ -163,7 +170,7 @@ export default function PriceEstimationPage() {
           <div className="bg-white/95 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 p-4 rounded-lg space-y-3">
              <div className="flex justify-between items-center text-lg">
               <span className="font-bold text-gray-800 dark:text-gray-200">Visiting Fee</span>
-              <span className="font-extrabold text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-5 h-5" />199</span>
+              <span className="font-extrabold text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-5 h-5" />{inspectionFee}</span>
             </div>
             
             <p className="text-xs text-center text-gray-500 dark:text-gray-400 pt-2">

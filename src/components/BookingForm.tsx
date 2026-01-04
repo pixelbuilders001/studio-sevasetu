@@ -14,6 +14,7 @@ import { useLocation } from '@/context/LocationContext';
 import { bookService } from '@/app/actions';
 import Image from 'next/image';
 import { Card } from './ui/card';
+import { getServiceCategory } from '@/lib/data';
 
 const initialState = {
   message: "",
@@ -34,6 +35,8 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [referralMessage, setReferralMessage] = useState('');
   const [discount, setDiscount] = useState(0);
+  const [inspectionFee, setInspectionFee] = useState(199);
+
 
   const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
@@ -43,6 +46,16 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   const [address, setAddress] = useState('');
   const [isGpsLoading, setIsGpsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCategoryDetails = async () => {
+        const category = await getServiceCategory(categoryId);
+        if (category) {
+            setInspectionFee(category.base_inspection_fee * location.inspection_multiplier);
+        }
+    }
+    fetchCategoryDetails();
+  }, [categoryId, location.inspection_multiplier])
 
   useEffect(() => {
     if (state?.error) {
@@ -130,11 +143,6 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
         'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
          'Content-Type': 'application/json'
       };
-      // const headers: Record<string, string> = {
-      //   'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc`,
-      //   'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-      //   'Content-Type': 'application/json',
-      // };
       const res = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
         method: 'POST',
         headers,
@@ -164,7 +172,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     setDiscount(0);
   };
 
-  const finalPayable = Math.max(199 - discount, 0);
+  const finalPayable = Math.max(inspectionFee - discount, 0);
 
   return (
     <form action={formAction} className="space-y-8 pb-28">
@@ -323,7 +331,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
             {discount > 0 && (
               <div className="flex justify-between items-center text-sm mb-2 px-1">
                 <span className="font-semibold text-muted-foreground">Visiting Fee</span>
-                <span className="font-semibold text-muted-foreground flex items-center"><IndianRupee className="w-4 h-4" />199</span>
+                <span className="font-semibold text-muted-foreground flex items-center"><IndianRupee className="w-4 h-4" />{inspectionFee}</span>
               </div>
             )}
              {discount > 0 && (

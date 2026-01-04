@@ -10,6 +10,7 @@ import type { ServiceCategory } from '@/lib/data';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useLocation } from '@/context/LocationContext';
 
 function BookingDetailsContent() {
   const params = useParams();
@@ -20,6 +21,7 @@ function BookingDetailsContent() {
   const problemIds = searchParams.get('problems');
 
   const { t, getTranslatedCategory } = useTranslation();
+  const { location } = useLocation();
   const [category, setCategory] = useState<ServiceCategory | null>(null);
   const [loading, setLoading] = useState(true);
 

@@ -1,3 +1,4 @@
+
 'use client';
 import { type Problem, type ServiceCategory, ICONS } from '@/lib/data';
 import { useRouter, notFound } from 'next/navigation';
@@ -10,12 +11,15 @@ import { CheckCircle, X, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useLocation } from '@/context/LocationContext';
+import { IndianRupee } from 'lucide-react';
 
 type ClientCategory = Omit<ServiceCategory, 'icon'> & { iconName: string };
 
 export default function ProblemSelectionClient({ category }: { category: ClientCategory }) {
   const { t, getTranslatedCategory } = useTranslation();
   const router = useRouter();
+  const { location } = useLocation();
 
   const [selectedProblems, setSelectedProblems] = useState<Problem[]>([]);
 
@@ -67,6 +71,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
           <div className="space-y-3">
             {translatedCategory.problems.map((problem) => {
               const isSelected = selectedProblems.some((p) => p.id === problem.id);
+              const dynamicPrice = problem.estimated_price * location.repair_multiplier;
               return (
                 <Card
                   key={problem.id}
@@ -90,8 +95,8 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                     <div className="flex-grow">
                       <h3 className="font-semibold text-base">{problem.name}</h3>
                        {problem.estimated_price > 0 && (
-                        <p className="text-sm text-muted-foreground">
-                          ESTIMATED: Rs. {problem.estimated_price}
+                        <p className="text-sm text-muted-foreground flex items-center">
+                          ESTIMATED: <IndianRupee className="w-4 h-4" /> {dynamicPrice}
                         </p>
                       )}
                     </div>
