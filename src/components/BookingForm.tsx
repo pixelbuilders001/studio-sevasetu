@@ -35,8 +35,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
   const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [referralMessage, setReferralMessage] = useState('');
   const [discount, setDiscount] = useState(0);
-  const [inspectionFee, setInspectionFee] = useState(199);
-
+  const [inspectionFee, setInspectionFee] = useState<number | null>(null);
 
   const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
@@ -52,6 +51,8 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
         const category = await getServiceCategory(categoryId);
         if (category) {
             setInspectionFee(category.base_inspection_fee * location.inspection_multiplier);
+        } else {
+            setInspectionFee(199 * location.inspection_multiplier); // Fallback
         }
     }
     fetchCategoryDetails();
@@ -172,7 +173,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     setDiscount(0);
   };
 
-  const finalPayable = Math.max(inspectionFee - discount, 0);
+  const finalPayable = inspectionFee !== null ? Math.max(inspectionFee - discount, 0) : null;
 
   return (
     <form action={formAction} className="space-y-8 pb-28">
@@ -328,7 +329,7 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50">
           <div className="max-w-md mx-auto">
-            {discount > 0 && (
+            {discount > 0 && inspectionFee !== null && (
               <div className="flex justify-between items-center text-sm mb-2 px-1">
                 <span className="font-semibold text-muted-foreground">Visiting Fee</span>
                 <span className="font-semibold text-muted-foreground flex items-center"><IndianRupee className="w-4 h-4" />{inspectionFee}</span>
@@ -342,11 +343,15 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
             )}
              <div className="flex justify-between items-center mb-3">
               <span className="text-sm font-semibold text-muted-foreground">NET PAYABLE (VISIT FEE)</span>
-               <span className="font-extrabold text-2xl text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-6 h-6" />{finalPayable}</span>
+              {finalPayable !== null ? (
+                  <span className="font-extrabold text-2xl text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-6 h-6" />{finalPayable}</span>
+              ) : (
+                 <Loader2 className="w-6 h-6 animate-spin" />
+              )}
             </div>
           </div>
           <div className="max-w-md mx-auto">
-              <Button type="submit" disabled={isPending} size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
+              <Button type="submit" disabled={isPending || finalPayable === null} size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
                 {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Finish Booking'}
                 {!isPending && <ArrowRight className="ml-2 h-5 w-5" />}
               </Button>
@@ -355,5 +360,3 @@ export function BookingForm({ categoryId, problemIds }: { categoryId: string; pr
     </form>
   );
 }
-
-    
