@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 const services = [
     'Laptop',
-    'Washing Machine',
+    'Bike',
     'Fridge',
     'Mobile',
     'TV',
