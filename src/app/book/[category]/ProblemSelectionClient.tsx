@@ -71,7 +71,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
           <div className="space-y-3">
             {translatedCategory.problems.map((problem) => {
               const isSelected = selectedProblems.some((p) => p.id === problem.id);
-              const dynamicPrice = problem.estimated_price * location.repair_multiplier;
+              const dynamicPrice = problem.base_min_fee * location.repair_multiplier;
               return (
                 <Card
                   key={problem.id}
@@ -94,7 +94,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                     </div>
                     <div className="flex-grow">
                       <h3 className="font-semibold text-base">{problem.name}</h3>
-                       {problem.estimated_price > 0 && (
+                       {problem.base_min_fee > 0 && (
                         <p className="text-sm text-muted-foreground flex items-center">
                           ESTIMATED: <IndianRupee className="w-4 h-4" /> {dynamicPrice}
                         </p>

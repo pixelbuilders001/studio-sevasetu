@@ -136,7 +136,7 @@ export default function PriceEstimationPage() {
       <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Problems Selected</h2>
       <div className="space-y-3 mb-8">
         {selectedProblems.map(problem => {
-          const dynamicPrice = problem.estimated_price * location.repair_multiplier;
+          const dynamicPrice = problem.base_min_fee * location.repair_multiplier;
           return (
             <Card key={problem.id} className="p-4 flex items-center gap-4 bg-card">
               <div className="relative w-12 h-12 bg-muted/40 rounded-lg flex items-center justify-center p-1">
@@ -151,7 +151,7 @@ export default function PriceEstimationPage() {
               </div>
               <div className="flex-grow">
                 <h3 className="font-semibold">{problem.name}</h3>
-                {problem.estimated_price > 0 && (
+                {problem.base_min_fee > 0 && (
                   <p className="text-sm text-primary font-semibold">RANGE: ₹{dynamicPrice - 300} - ₹{dynamicPrice + 300}</p>
                 )}
               </div>
