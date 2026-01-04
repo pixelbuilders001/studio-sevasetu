@@ -1,5 +1,6 @@
 
 
+'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { getServiceCategories } from '@/lib/data';
@@ -17,11 +18,27 @@ import HeroCTA from '@/components/HeroCTA';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import AllServicesSheet from '@/components/AllServicesSheet';
 import BookingTrackerModal from '@/components/BookingTrackerModal';
+import { useLocation } from '@/context/LocationContext';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 
 function ServiceCard({ category }: { category: ServiceCategory }) {
+    const { isServiceable, setDialogOpen } = useLocation();
+    const router = useRouter();
+
+    const handleClick = (e: React.MouseEvent) => {
+        if (!isServiceable) {
+            e.preventDefault();
+            setDialogOpen(true);
+        } else {
+            router.push(`/book/${category.slug}`);
+        }
+    };
+
     return (
-        <Link href={`/book/${category.slug}`} className="group">
+        <a href={`/book/${category.slug}`} onClick={handleClick} className="group">
             <Card className="bg-card border rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full aspect-square justify-center items-center bg-white">
                 <CardContent className="p-2 flex flex-col items-center justify-center gap-2">
                     <div className="relative w-12 h-12">
@@ -37,7 +54,7 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
                     <h3 className="font-bold text-xs text-foreground">{category.name}</h3>
                 </CardContent>
             </Card>
-        </Link>
+        </a>
     );
 }
 
@@ -49,11 +66,19 @@ const HeroHouse = () => (
   </svg>
 )
 
-export default async function Home({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const lang = (searchParams?.lang as string) || 'en';
-  const t = getTranslations(lang);
+export default function Home({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  const lang = searchParams?.lang || 'en';
+  const { t } = useTranslation();
   
-  const categories: ServiceCategory[] = await getServiceCategories();
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+        const data = await getServiceCategories();
+        setCategories(data);
+    };
+    fetchCategories();
+  }, []);
 
   const featureCards = [
     {

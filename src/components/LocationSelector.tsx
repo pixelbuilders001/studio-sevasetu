@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -19,7 +19,6 @@ import { ChevronDown, Loader2, MapPin } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { useTranslation } from '@/hooks/useTranslation';
-import { createClient } from '@supabase/supabase-js'
 
 type PostalInfo = {
   Name: string;
@@ -28,34 +27,33 @@ type PostalInfo = {
   Pincode: string;
 };
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-
 export default function LocationSelector() {
-  const { location, setLocation } = useLocation();
+  const { location, setLocation, isServiceable, checkServiceability, dialogOpen, setDialogOpen } = useLocation();
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
+  
   const [pincode, setPincode] = useState(location.pincode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [postalData, setPostalData] = useState<PostalInfo[]>([]);
-  const [isServiceable, setIsServiceable] = useState(true);
+  const [currentIsServiceable, setCurrentIsServiceable] = useState(isServiceable);
   const [selectedArea, setSelectedArea] = useState<PostalInfo | null>(
     location.area ? { ...location.area, Pincode: location.pincode } : null
   );
+
+  useEffect(() => {
+    setCurrentIsServiceable(isServiceable);
+  }, [isServiceable]);
 
   const handlePincodeSearch = async () => {
     if (pincode.length !== 6) {
       setError(t('errorInvalidPincode'));
       setPostalData([]);
-      setIsServiceable(false);
+      setCurrentIsServiceable(false);
       return;
     }
     setError('');
     setIsLoading(true);
-    setIsServiceable(false);
+    setCurrentIsServiceable(false);
 
     try {
       const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
@@ -69,46 +67,35 @@ export default function LocationSelector() {
              throw new Error("Could not determine district from pincode.");
         }
 
-        // Check serviceability
-        const { data: serviceableCity, error: serviceError } = await supabase
-            .from("serviceable_cities")
-            .select("city_name")
-            .eq("city_name", district)
-            .eq("is_active", true)
-            .maybeSingle();
-
-        if (serviceError) {
-            console.error('Serviceability check error:', serviceError);
-            throw new Error('Could not verify serviceability.');
-        }
+        const serviceable = await checkServiceability(district);
         
-        if (serviceableCity) {
+        if (serviceable) {
             setPostalData(postOffices);
             setSelectedArea(postOffices[0] || null);
-            setIsServiceable(true);
+            setCurrentIsServiceable(true);
         } else {
             setError(`Sorry, we do not currently service ${district}.`);
             setPostalData([]);
-            setIsServiceable(false);
+            setCurrentIsServiceable(false);
         }
 
       } else {
         setError(data[0].Message || t('errorCouldNotFindPincode'));
         setPostalData([]);
-        setIsServiceable(false);
+        setCurrentIsServiceable(false);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : t('errorFailedToFetchLocation');
       setError(message);
       setPostalData([]);
-      setIsServiceable(false);
+      setCurrentIsServiceable(false);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleLocationConfirm = () => {
-    if (selectedArea && isServiceable) {
+    if (selectedArea && currentIsServiceable) {
       setLocation({
         pincode: selectedArea.Pincode,
         city: selectedArea.District,
@@ -117,25 +104,26 @@ export default function LocationSelector() {
           District: selectedArea.District,
           State: selectedArea.State,
         },
+        isServiceable: true,
       });
     }
-    setIsOpen(false);
+    setDialogOpen(false);
   };
 
   const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
+    setDialogOpen(open);
     if (!open) {
       // Reset state on close
       setPincode(location.pincode);
       setPostalData([]);
       setError('');
-      setIsServiceable(true);
+      setCurrentIsServiceable(isServiceable);
       setSelectedArea(location.area ? { ...location.area, Pincode: location.pincode } : null);
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2 bg-muted/50 border rounded-full h-10">
           <MapPin className="h-5 w-5 text-primary" />
@@ -168,7 +156,7 @@ export default function LocationSelector() {
             </Button>
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
-          {postalData.length > 0 && isServiceable && (
+          {postalData.length > 0 && currentIsServiceable && (
             <div className="space-y-2">
               <p className="font-medium text-sm">{t('selectYourArea')}</p>
               <RadioGroup
@@ -195,7 +183,7 @@ export default function LocationSelector() {
           <DialogClose asChild>
              <Button type="button" variant="outline">{t('cancelButton')}</Button>
           </DialogClose>
-          <Button onClick={handleLocationConfirm} disabled={!selectedArea || !isServiceable}>
+          <Button onClick={handleLocationConfirm} disabled={!selectedArea || !currentIsServiceable}>
             {t('confirmLocationButton')}
           </Button>
         </DialogFooter>
