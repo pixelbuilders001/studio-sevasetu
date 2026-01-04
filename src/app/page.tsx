@@ -129,7 +129,7 @@ export default function Home({ searchParams }: { searchParams: { [key: string]: 
                         <AnimatedHeroText />
                         <span className="text-white leading-tight tracking-tight">At Your Doorstep</span>
                     </h1>
-                    <p className="text-base text-white/80 max-w-sm mb-8">
+                    <p className="text-base text-white/80 max-w-sm mb-6">
                        Verified experts for Mobile, Laptop & AC. Fixed in 60 minutes.
                     </p>
                     <HeroCTA />

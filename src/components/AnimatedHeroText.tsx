@@ -17,17 +17,14 @@ const AnimatedHeroText = () => {
     const [displayedText, setDisplayedText] = useState(services[0]);
     const [isAnimating, setIsAnimating] = useState(true);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIsAnimating(false);
-            setTimeout(() => {
-                setIndex((prevIndex) => (prevIndex + 1) % services.length);
-                setIsAnimating(true);
-            }, 500); // Time for fade-out
-        }, 2500); // Time each word is displayed
+    const [wordIndex, setWordIndex] = useState(0);
 
-        return () => clearInterval(interval);
-    }, []);
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setWordIndex((prev) => (prev + 1) % services.length);
+      }, 2800);
+      return () => clearInterval(interval);
+    }, [services.length]);
 
     useEffect(() => {
         if (isAnimating) {
@@ -38,17 +35,14 @@ const AnimatedHeroText = () => {
     return (
         <>
             Repair{' '}
-            <span className="relative inline-block text-primary">
-                <span
-                
-                    className={cn(
-                        'transition-all duration-500 ease-in-out',
-                        isAnimating ? 'text-[#60a5fa] animate-smooth-slide-up block whitespace-nowrap text-bold' : 'opacity-0'
-                    )}
-                >
-                    {displayedText}
-                </span>
-            </span>
+            <div className="relative inline-flex flex-col h-[1.2em] overflow-hidden min-w-[140px]">
+                    <span 
+                      key={services[wordIndex]} 
+                      className="text-blue-400 animate-smooth-slide-up block whitespace-nowrap"
+                    >
+                      {services[wordIndex]}
+                    </span>
+                  </div>
             <br />
         </>
     );
