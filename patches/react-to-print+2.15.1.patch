@@ -1,0 +1,64 @@
+diff --git a/node_modules/react-to-print/lib/index.d.ts b/node_modules/react-to-print/lib/index.d.ts
+index 7545f4d..5df3896 100644
+--- a/node_modules/react-to-print/lib/index.d.ts
++++ b/node_modules/react-to-print/lib/index.d.ts
+@@ -1,5 +1,5 @@
+ import * as React from 'react';
+ export declare type ReactInstance = React.ReactInstance | null;
+ export interface ITriggerProps<T> {
+-    onClick: () => void;
+     ref: (v: T) => void;
+ }
+ export interface IReactToPrintProps {
+@@ -10,7 +10,7 @@
+     onAfterPrint?: () => void;
+     onBeforeGetContent?: () => void | Promise<any>;
+     onBeforePrint?: () => void | Promise<any>;
+     onPrintError?: (errorLocation: 'onBeforeGetContent' | 'onBeforePrint' | 'print', error: Error) => void;
+     print?: (target: HTMLIFrameElement) => Promise<any>;
+     removeAfterPrint?: boolean;
+-    trigger?: <T>() => React.ReactElement<ITriggerProps<T>>;
++    trigger?: () => React.ReactNode;
+ }
+ declare class ReactToPrint extends React.Component<IReactToPrintProps> {
+     private linkTotal;
+diff --git a/node_modules/react-to-print/lib/index.js b/node_modules/react-to-print/lib/index.js
+index b836d50..b0e6ab4 100644
+--- a/node_modules/react-to-print/lib/index.js
++++ b/node_modules/react-to-print/lib/index.js
+@@ -107,10 +107,7 @@
+         }
+         return (React.createElement(React.Fragment, null,
+             trigger && (React.cloneElement(trigger(), {
+-                onClick: this.handlePrint,
+-                ref: (triggerRef) => {
+-                    this.triggerRef = triggerRef;
+-                },
++                onClick: this.handlePrint
+             })),
+             this.state.isPrinting && (React.createElement(PrintContext.Provider, { value: this.getContext() },
+                 React.createElement("div", { ref: this.setPrintRef, style: { display: 'none' } }, this.props.content())))));
+     }
+ }
+ ReactToPrint.defaultProps = {
+     copyStyles: true,
+     removeAfterPrint: false,
+-    suppressErrors: false,
+ };
+ exports.default = ReactToPrint;
+ //# sourceMappingURL=index.js.map
+\ No newline at end of file
+diff --git a/node_modules/react-to-print/package.json b/node_modules/react-to-print/package.json
+index 32549a9..62a1b9e 100644
+--- a/node_modules/react-to-print/package.json
++++ b/node_modules/react-to-print/package.json
+@@ -34,6 +34,6 @@
+     "typescript": "^4.3.2"
+   },
+   "peerDependencies": {
+-    "react": "^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0",
+-    "react-dom": "^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0"
++    "react": "^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
++    "react-dom": "^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+   }
+ }
