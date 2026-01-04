@@ -177,7 +177,7 @@ export default function PriceEstimationPage() {
             </div>
             
             <p className="text-xs text-center text-gray-500 dark:text-gray-400 pt-2">
-              (Includes Visiting Fee: ₹{inspectionFee})
+              (Includes a minimum visiting fee of ₹{inspectionFee} payable after inspection, even if no repair is done)
             </p>
           </div>
         </CardContent>
