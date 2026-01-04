@@ -103,7 +103,7 @@ export async function bookService(
   formData.append('total_estimated_price', total_estimated_price.toString());
   formData.append('net_inspection_fee', net_inspection_fee.toString());
   formData.append('final_amount_paid', ''); // Sent as empty string
-
+  
   try {
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
         method: 'POST',
