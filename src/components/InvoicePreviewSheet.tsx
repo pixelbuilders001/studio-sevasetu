@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -27,7 +28,11 @@ const Logo = () => (
 
 const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
     
-    const sparePartsLaborCost = Math.max(0, (booking.final_amount_paid || 0) - (booking.net_inspection_fee || 0));
+    // Using dummy data as requested, since full data isn't fetched.
+    const finalAmountPaid = booking.final_amount_paid || 499;
+    const netInspectionFee = booking.net_inspection_fee || 199;
+    const sparePartsLaborCost = Math.max(0, finalAmountPaid - netInspectionFee);
+    const technicianName = booking.technicians?.full_name || 'Ramesh Kumar';
 
     return (
         <div id={`invoice-${booking.order_id}`} className="bg-white dark:bg-gray-950 p-6 md:p-8 rounded-t-2xl">
@@ -59,7 +64,7 @@ const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
                     </div>
                      <div>
                         <p className="text-xs font-bold text-muted-foreground uppercase">EXPERT TECHNICIAN</p>
-                        <p className="font-semibold">{booking.technicians?.full_name || 'N/A'}</p>
+                        <p className="font-semibold">{technicianName}</p>
                         <p className="text-sm text-muted-foreground">Verified Professional</p>
                     </div>
                 </div>
@@ -69,7 +74,7 @@ const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
                     <div className="space-y-3 text-sm">
                         <div className="flex justify-between">
                             <span>{booking.categories.name} Service Repair Visit</span>
-                            <span className="font-medium flex items-center"><IndianRupee className="w-4 h-4" />{booking.net_inspection_fee || 0}</span>
+                            <span className="font-medium flex items-center"><IndianRupee className="w-4 h-4" />{netInspectionFee}</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Spare Parts / Labor Cost</span>
@@ -83,7 +88,7 @@ const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
                     <Separator className="my-4" />
                     <div className="flex justify-between items-center text-lg">
                         <span className="font-bold flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary" /> Total Paid</span>
-                        <span className="font-extrabold text-2xl flex items-center"><IndianRupee className="w-6 h-6" />{booking.final_amount_paid || 0}</span>
+                        <span className="font-extrabold text-2xl flex items-center"><IndianRupee className="w-6 h-6" />{finalAmountPaid}</span>
                     </div>
                 </div>
 
@@ -111,7 +116,7 @@ export default function InvoicePreviewSheet({ booking }: { booking: Booking }) {
                 {`
                     @page { size: auto; margin: 0; }
                     body { -webkit-print-color-adjust: exact; }
-                    #invoice-${booking.order_id} {
+                    .invoice-print-area {
                         margin: 0;
                         padding: 0;
                         width: 100%;
@@ -125,7 +130,7 @@ export default function InvoicePreviewSheet({ booking }: { booking: Booking }) {
                     <SheetTitle className="flex items-center gap-2"><Receipt className="w-5 h-5"/>Invoice Preview</SheetTitle>
                 </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto -mx-6 px-0 pt-4">
+            <div className="flex-grow overflow-y-auto -mx-6 px-0 pt-4 invoice-print-area">
                 <InvoicePreviewContent booking={booking} />
             </div>
             <div className="grid grid-cols-2 gap-4 p-4 border-t bg-background -mb-6 -mx-6 mt-4 hide-on-print">
