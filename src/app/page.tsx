@@ -11,7 +11,7 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { getTranslations } from '@/lib/get-translation';
 import VerifiedTechnicians from '@/components/VerifiedTechnicians';
-import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase, ChevronRight, Search } from 'lucide-react';
+import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase, ChevronRight, Search, IndianRupee } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import BecomePartner from '@/components/BecomePartner';
 import HeroCTA from '@/components/HeroCTA';
@@ -25,7 +25,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 
 function ServiceCard({ category }: { category: ServiceCategory }) {
-    const { isServiceable, setDialogOpen } = useLocation();
+    const { location, isServiceable, setDialogOpen } = useLocation();
     const router = useRouter();
 
     const handleClick = (e: React.MouseEvent) => {
@@ -36,6 +36,8 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
             router.push(`/book/${category.slug}`);
         }
     };
+
+    const inspectionFee = category.base_inspection_fee * location.inspection_multiplier;
 
     return (
         <a href={`/book/${category.slug}`} onClick={handleClick} className="group">
@@ -52,6 +54,13 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
                         />
                     </div>
                     <h3 className="font-bold text-xs text-foreground">{category.name}</h3>
+                    {isServiceable && (
+                        <div className="text-xs font-bold text-primary flex items-center">
+                            <IndianRupee className="w-3 h-3" />
+                            {inspectionFee}
+                            <span className="text-muted-foreground ml-1">onwards</span>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </a>
@@ -67,7 +76,7 @@ const HeroHouse = () => (
 )
 
 export default function Home({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const lang = searchParams?.lang || 'en';
+  const { lang } = searchParams;
   const { t } = useTranslation();
   
   const [categories, setCategories] = useState<ServiceCategory[]>([]);

@@ -36,6 +36,7 @@ export type ServiceCategory = {
       imageHint: string;
   };
   problems: Problem[];
+  base_inspection_fee: number;
 };
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -74,6 +75,7 @@ export async function getServiceCategories(): Promise<ServiceCategory[]> {
         slug: category.slug,
         name: category.name,
         icon: mapCategoryIcon(category.slug),
+        base_inspection_fee: category.base_inspection_fee || 199,
         image: {
             imageUrl: category.icon_url,
             imageHint: category.name.toLowerCase()
@@ -133,6 +135,7 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
         slug: category.slug,
         name: category.name,
         icon: mapCategoryIcon(category.slug),
+        base_inspection_fee: category.base_inspection_fee || 199,
         image: {
             imageUrl: category.icon_url,
             imageHint: category.name.toLowerCase(),
@@ -151,7 +154,7 @@ export const getTranslatedCategory = (category: ServiceCategory, t: TranslationF
   return { ...category, name: translatedName, problems: translatedProblems };
 };
 
-export const getTranslatedCategories = (categories: Omit<ServiceCategory, 'problems'>[], t: TranslationFunc): Omit<ServiceCategory, 'problems'>[] => {
+export const getTranslatedCategories = (categories: Omit<ServiceCategory, 'problems' | 'base_inspection_fee'>[], t: TranslationFunc): Omit<ServiceCategory, 'problems' | 'base_inspection_fee'>[] => {
     return categories.map(category => ({
         ...category,
         name: t(`category_${category.slug}_name` as any, { defaultValue: category.name })

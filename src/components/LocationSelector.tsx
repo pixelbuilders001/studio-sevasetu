@@ -39,6 +39,7 @@ export default function LocationSelector() {
   const [selectedArea, setSelectedArea] = useState<PostalInfo | null>(
     location.area ? { ...location.area, Pincode: location.pincode } : null
   );
+  const [multipliers, setMultipliers] = useState({ inspection_multiplier: 1, repair_multiplier: 1 });
 
   useEffect(() => {
     setCurrentIsServiceable(isServiceable);
@@ -67,12 +68,16 @@ export default function LocationSelector() {
              throw new Error("Could not determine district from pincode.");
         }
 
-        const serviceable = await checkServiceability(district);
+        const serviceableCityData = await checkServiceability(district);
         
-        if (serviceable) {
+        if (serviceableCityData) {
             setPostalData(postOffices);
             setSelectedArea(postOffices[0] || null);
             setCurrentIsServiceable(true);
+            setMultipliers({
+              inspection_multiplier: serviceableCityData.inspection_multiplier,
+              repair_multiplier: serviceableCityData.repair_multiplier
+            });
         } else {
             setError(`Sorry, we do not currently service ${district}.`);
             setPostalData([]);
@@ -105,6 +110,8 @@ export default function LocationSelector() {
           State: selectedArea.State,
         },
         isServiceable: true,
+        inspection_multiplier: multipliers.inspection_multiplier,
+        repair_multiplier: multipliers.repair_multiplier,
       });
     }
     setDialogOpen(false);

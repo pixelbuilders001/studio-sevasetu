@@ -15,18 +15,26 @@ type AreaInfo = {
     State: string;
 }
 
+type ServiceableCity = {
+    city_name: string;
+    inspection_multiplier: number;
+    repair_multiplier: number;
+} | null;
+
 type Location = {
   pincode: string;
   city: string;
   area: AreaInfo | null;
   isServiceable: boolean;
+  inspection_multiplier: number;
+  repair_multiplier: number;
 };
 
 type LocationContextType = {
   location: Location;
   setLocation: (location: Location) => void;
   isServiceable: boolean;
-  checkServiceability: (city: string) => Promise<boolean>;
+  checkServiceability: (city: string) => Promise<ServiceableCity>;
   dialogOpen: boolean;
   setDialogOpen: (open: boolean) => void;
 };
@@ -41,37 +49,53 @@ const defaultLocation: Location = {
         District: 'Pune',
         State: 'Maharashtra'
     },
-    isServiceable: true, // Assuming default is serviceable, will be checked on load
+    isServiceable: true,
+    inspection_multiplier: 1,
+    repair_multiplier: 1,
 }
 
 export function LocationProvider({ children }: { children: ReactNode }) {
   const [location, setLocationState] = useState<Location>(defaultLocation);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const checkServiceability = useCallback(async (city: string): Promise<boolean> => {
-    if (!city) return false;
+  const checkServiceability = useCallback(async (city: string): Promise<ServiceableCity> => {
+    if (!city) return null;
     try {
         const { data: serviceableCity, error } = await supabase
             .from("serviceable_cities")
-            .select("city_name")
+            .select("city_name, inspection_multiplier, repair_multiplier")
             .eq("city_name", city)
             .eq("is_active", true)
             .maybeSingle();
 
         if (error) {
             console.error('Serviceability check error:', error);
-            return false;
+            return null;
         }
-        return !!serviceableCity;
+        return serviceableCity;
     } catch (e) {
         console.error("Exception during serviceability check", e);
-        return false;
+        return null;
     }
   }, []);
 
-  const updateServiceability = useCallback(async (loc: Location) => {
-    const serviceable = await checkServiceability(loc.city);
-    setLocationState(prev => ({ ...loc, isServiceable: serviceable }));
+  const updateServiceability = useCallback(async (loc: Omit<Location, 'isServiceable' | 'inspection_multiplier' | 'repair_multiplier'>) => {
+    const serviceableCityData = await checkServiceability(loc.city);
+    if (serviceableCityData) {
+        setLocationState({
+            ...loc,
+            isServiceable: true,
+            inspection_multiplier: serviceableCityData.inspection_multiplier,
+            repair_multiplier: serviceableCityData.repair_multiplier,
+        });
+    } else {
+        setLocationState({
+            ...loc,
+            isServiceable: false,
+            inspection_multiplier: 1,
+            repair_multiplier: 1
+        });
+    }
   }, [checkServiceability]);
 
   useEffect(() => {
@@ -79,13 +103,16 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       const storedLocation = localStorage.getItem('userLocation');
       if (storedLocation) {
         const parsedLocation = JSON.parse(storedLocation);
-        updateServiceability(parsedLocation);
+        const { isServiceable, inspection_multiplier, repair_multiplier, ...rest } = parsedLocation;
+        updateServiceability(rest);
       } else {
-        updateServiceability(defaultLocation);
+        const { isServiceable, inspection_multiplier, repair_multiplier, ...rest } = defaultLocation;
+        updateServiceability(rest);
       }
     } catch (error) {
       console.error("Failed to parse location from localStorage", error);
-      updateServiceability(defaultLocation);
+      const { isServiceable, inspection_multiplier, repair_multiplier, ...rest } = defaultLocation;
+      updateServiceability(rest);
     }
   }, [updateServiceability]);
 
