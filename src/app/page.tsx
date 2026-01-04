@@ -115,7 +115,7 @@ export default function Home({ searchParams }: { searchParams: { [key: string]: 
                 className="relative text-white rounded-2xl p-8 shadow-xl overflow-hidden bg-cover bg-center"
                 style={{backgroundImage: "url('https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/only%20illustration%20not%20texts%20and%20all.jpg')"}}
             >
-                <div className="absolute inset-0 bg-blue-900/70"></div>
+               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-slate-900/20"></div>
                 <div className="relative z-10">
                     <div className="absolute top-0 right-0 bg-accent text-accent-foreground font-bold px-3 py-2 rounded-bl-lg">
                         <span className="text-xl">60</span>
@@ -127,7 +127,7 @@ export default function Home({ searchParams }: { searchParams: { [key: string]: 
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight">
                         <AnimatedHeroText />
-                        <span className="text-white">At Your Doorstep</span>
+                        <span className="text-white leading-tight tracking-tight">At Your Doorstep</span>
                     </h1>
                     <p className="text-base text-white/80 max-w-sm mb-8">
                        Verified experts for Mobile, Laptop & AC. Fixed in 60 minutes.

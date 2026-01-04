@@ -40,9 +40,10 @@ const AnimatedHeroText = () => {
             Repair{' '}
             <span className="relative inline-block text-primary">
                 <span
+                
                     className={cn(
                         'transition-all duration-500 ease-in-out',
-                        isAnimating ? 'animate-fade-in-up opacity-100' : 'opacity-0'
+                        isAnimating ? 'text-[#60a5fa] animate-smooth-slide-up block whitespace-nowrap text-bold' : 'opacity-0'
                     )}
                 >
                     {displayedText}
