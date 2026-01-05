@@ -28,7 +28,7 @@ const AnimatedHeroText = () => {
             <div className="relative inline-flex flex-col h-[1.2em] overflow-hidden min-w-[140px]">
                     <span 
                       key={services[wordIndex]} 
-                      className="text-blue-400 animate-smooth-slide-up block whitespace-nowrap"
+                      className="text-blue-400 animate-smooth-slide-up block whitespace-nowrap font-bold"
                     >
                       {services[wordIndex]}
                     </span>
