@@ -25,10 +25,10 @@ const AnimatedHeroText = () => {
     return (
         <>
             Repair{' '}
-            <div className="relative inline-flex flex-col h-[1.2em] overflow-hidden min-w-[140px]">
+            <div className="relative inline-flex flex-col overflow-hidden">
                     <span 
                       key={services[wordIndex]} 
-                      className="text-blue-400 animate-smooth-slide-up block whitespace-nowrap font-bold"
+                      className="text-blue-400 animate-smooth-slide-up block whitespace-nowrap font-bold bg-white border rounded-md px-2"
                     >
                       {services[wordIndex]}
                     </span>
