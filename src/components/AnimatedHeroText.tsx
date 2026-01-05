@@ -13,10 +13,6 @@ const services = [
 ];
 
 const AnimatedHeroText = () => {
-    const [index, setIndex] = useState(0);
-    const [displayedText, setDisplayedText] = useState(services[0]);
-    const [isAnimating, setIsAnimating] = useState(true);
-
     const [wordIndex, setWordIndex] = useState(0);
 
     useEffect(() => {
@@ -25,12 +21,6 @@ const AnimatedHeroText = () => {
       }, 2800);
       return () => clearInterval(interval);
     }, [services.length]);
-
-    useEffect(() => {
-        if (isAnimating) {
-            setDisplayedText(services[index]);
-        }
-    }, [index, isAnimating]);
 
     return (
         <>
