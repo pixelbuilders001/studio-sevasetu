@@ -30,7 +30,7 @@ export default function QuotationModal({ quote, isOpen, onClose, onStatusChange 
 
   const handleAccept = async () => {
     setIsLoading('accept');
-    const result = await acceptQuote(quote.booking_id);
+    const result = await acceptQuote(quote);
     if (result.success) {
       toast({ title: 'Quote Accepted', description: 'The repair is now in progress.' });
       onStatusChange(quote.booking_id, 'in-progress');
@@ -42,7 +42,7 @@ export default function QuotationModal({ quote, isOpen, onClose, onStatusChange 
 
   const handleReject = async () => {
     setIsLoading('reject');
-    const result = await rejectQuote(quote.booking_id);
+    const result = await rejectQuote(quote);
      if (result.success) {
       toast({ title: 'Quote Rejected', description: 'This booking has been cancelled.' });
       onStatusChange(quote.booking_id, 'cancelled');
@@ -102,3 +102,5 @@ export default function QuotationModal({ quote, isOpen, onClose, onStatusChange 
     </Dialog>
   );
 }
+
+    
