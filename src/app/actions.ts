@@ -132,3 +132,55 @@ export async function bookService(
       return { message: "Error", error: errorMessage };
   }
 }
+
+
+export async function acceptQuote(bookingId: string) {
+  try {
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?id=eq.${bookingId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({ status: 'in-progress' }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to accept quote.');
+    }
+
+    return { success: true };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred.';
+    return { success: false, error: message };
+  }
+}
+
+export async function rejectQuote(bookingId: string) {
+    try {
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?id=eq.${bookingId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({ status: 'cancelled' }),
+    });
+
+     if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to reject quote.');
+    }
+    
+    return { success: true };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred.';
+    return { success: false, error: message };
+  }
+}
+

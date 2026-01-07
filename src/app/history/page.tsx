@@ -19,6 +19,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import QuotationModal from '@/components/QuotationModal';
 
 const iconMap: { [key: string]: React.ElementType } = {
   'MOBILE PHONES': Laptop, // Assuming smartphone, but Laptop icon is there
@@ -27,8 +28,16 @@ const iconMap: { [key: string]: React.ElementType } = {
   // Add other mappings as needed
 };
 
+export type RepairQuote = {
+  id: string;
+  labor_cost: number;
+  parts_cost: number;
+  total_amount: number;
+  notes: string;
+  status: string;
+};
 
-type Booking = {
+export type Booking = {
   id: string;
   order_id: string;
   status: string;
@@ -42,11 +51,13 @@ type Booking = {
     id: string;
     title: string;
   };
+  repair_quotes: RepairQuote[];
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
   const isCompleted = status.toLowerCase() === 'completed';
   const isCancelled = status.toLowerCase() === 'cancelled';
+  const isQuotationSent = status.toLowerCase() === 'quotation_sent';
   
   let variantClass = 'bg-yellow-100 text-yellow-700 border-yellow-300'; // Default for in-progress
   let Icon = Clock;
@@ -57,6 +68,9 @@ const StatusBadge = ({ status }: { status: string }) => {
   } else if (isCancelled) {
      variantClass = 'bg-red-100 text-red-700 border-red-300';
      Icon = XCircle;
+  } else if (isQuotationSent) {
+    variantClass = 'bg-blue-100 text-blue-700 border-blue-300';
+    Icon = Clock; // Or another icon
   }
 
   return (
@@ -65,7 +79,7 @@ const StatusBadge = ({ status }: { status: string }) => {
       className={cn('font-bold capitalize', variantClass)}
     >
       <Icon className="mr-1.5 h-3.5 w-3.5" />
-      {status}
+      {status.replace(/_/g, ' ')}
     </Badge>
   );
 };
@@ -78,6 +92,7 @@ export default function BookingHistoryPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedQuote, setSelectedQuote] = useState<RepairQuote | null>(null);
 
   const handleContinue = async () => {
     if (!mobileNumber.match(/^[6-9]\d{9}$/)) {
@@ -89,7 +104,7 @@ export default function BookingHistoryPage() {
     setError('');
 
     try {
-        const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,categories(id,name),issues(id,title)&order=created_at.desc`, {
+        const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
@@ -111,6 +126,11 @@ export default function BookingHistoryPage() {
     } finally {
         setIsLoading(false);
     }
+  };
+
+  const handleQuoteStatusChange = (bookingId: string, newStatus: 'in-progress' | 'cancelled') => {
+    setBookingHistory(prev => prev.map(b => b.id === bookingId ? { ...b, status: newStatus } : b));
+    setSelectedQuote(null);
   };
 
   if (!isAuthenticated) {
@@ -146,6 +166,7 @@ export default function BookingHistoryPage() {
   }
 
   return (
+    <>
     <div className="bg-muted/30 min-h-screen">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <header className="mb-8">
@@ -159,6 +180,9 @@ export default function BookingHistoryPage() {
           <div className="space-y-6">
             {bookingHistory.map((booking) => {
               const ServiceIcon = iconMap[booking.categories.name] || Laptop;
+              const isQuotationSent = booking.status.toLowerCase() === 'quotation_sent';
+              const quote = booking.repair_quotes?.[0];
+
               return (
                 <Card key={booking.id} className="rounded-2xl shadow-md border-0 overflow-hidden">
                   <CardContent className="p-5">
@@ -221,11 +245,17 @@ export default function BookingHistoryPage() {
                     </div>
                     
                     <Separator className="my-4" />
-
-                    <Button variant="ghost" size="sm" className="w-full font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200">
-                      <Download className="mr-2 h-4 w-4" />
-                      Download Invoice
-                    </Button>
+                    
+                    {isQuotationSent && quote ? (
+                       <Button onClick={() => setSelectedQuote({ ...quote, booking_id: booking.id })} className="w-full font-semibold">
+                          Open Quotation
+                       </Button>
+                    ) : (
+                       <Button variant="ghost" size="sm" className="w-full font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200">
+                        <Download className="mr-2 h-4 w-4" />
+                        Download Invoice
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               )
@@ -240,5 +270,15 @@ export default function BookingHistoryPage() {
         )}
       </div>
     </div>
+    
+    {selectedQuote && (
+        <QuotationModal
+          quote={{...selectedQuote, booking_id: (selectedQuote as any).booking_id}}
+          isOpen={!!selectedQuote}
+          onClose={() => setSelectedQuote(null)}
+          onStatusChange={handleQuoteStatusChange}
+        />
+      )}
+    </>
   );
 }
