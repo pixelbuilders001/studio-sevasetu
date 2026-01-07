@@ -183,6 +183,7 @@ export default function BookingHistoryPage() {
               const ServiceIcon = iconMap[booking.categories.name] || Laptop;
               const isQuotationShared = booking.status.toLowerCase() === 'quotation_shared';
               const isCodeSent = booking.status.toLowerCase() === 'code_sent';
+              const isCompleted = booking.status.toLowerCase() === 'completed';
               const quote = booking.repair_quotes?.[0];
 
               return (
@@ -255,15 +256,17 @@ export default function BookingHistoryPage() {
                                 <p className="text-sm font-semibold uppercase">Secret Code</p>
                             </div>
                             <p className="text-3xl font-bold tracking-widest text-blue-800 dark:text-blue-200 mt-1">{booking.completion_code}</p>
-                            <p className="text-xs text-muted-foreground mt-2">Share this code with the technician to start the repair.</p>
+                            <p className="text-xs text-muted-foreground mt-2">Share this code with the technician if the service is done.</p>
                         </div>
                     )}
                     
-                    {isQuotationShared && quote ? (
+                    {isQuotationShared && quote && (
                        <Button onClick={() => setSelectedQuote({ ...quote, booking_id: booking.id })} className="w-full font-semibold">
                           Open Quotation
                        </Button>
-                    ) : (
+                    )}
+
+                    {isCompleted && (
                        <Button variant="ghost" size="sm" className="w-full font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200">
                         <Download className="mr-2 h-4 w-4" />
                         Download Invoice
