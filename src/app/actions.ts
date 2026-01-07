@@ -136,15 +136,18 @@ export async function bookService(
 
 export async function acceptQuote(bookingId: string) {
   try {
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?id=eq.${bookingId}`, {
-      method: 'PATCH',
+    const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/update-job-status', {
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
         'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
-        'Prefer': 'return=minimal',
       },
-      body: JSON.stringify({ status: 'in-progress' }),
+      body: JSON.stringify({
+        booking_id: bookingId,
+        status: 'quotation_approved',
+        note: 'Customer has approved the quotation.'
+      }),
     });
 
     if (!response.ok) {
@@ -161,16 +164,19 @@ export async function acceptQuote(bookingId: string) {
 
 export async function rejectQuote(bookingId: string) {
     try {
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?id=eq.${bookingId}`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal',
-      },
-      body: JSON.stringify({ status: 'cancelled' }),
-    });
+      const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/update-job-status', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            booking_id: bookingId,
+            status: 'quotation_rejected',
+            note: 'Customer has rejected the quotation.'
+        }),
+      });
 
      if (!response.ok) {
       const errorData = await response.json();
@@ -184,3 +190,4 @@ export async function rejectQuote(bookingId: string) {
   }
 }
 
+    
