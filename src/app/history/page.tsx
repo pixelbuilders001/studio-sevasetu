@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle, Image as ImageIcon } from 'lucide-react';
+import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle, Image as ImageIcon, KeyRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
@@ -43,6 +43,7 @@ export type Booking = {
   status: string;
   created_at: string;
   media_url: string | null;
+  secret_code?: string;
   categories: {
     id: string;
     name: string;
@@ -104,7 +105,7 @@ export default function BookingHistoryPage() {
     setError('');
 
     try {
-        const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
+        const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,secret_code,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
@@ -181,6 +182,7 @@ export default function BookingHistoryPage() {
             {bookingHistory.map((booking) => {
               const ServiceIcon = iconMap[booking.categories.name] || Laptop;
               const isQuotationShared = booking.status.toLowerCase() === 'quotation_shared';
+              const isCodeSent = booking.status.toLowerCase() === 'code_sent';
               const quote = booking.repair_quotes?.[0];
 
               return (
@@ -245,6 +247,17 @@ export default function BookingHistoryPage() {
                     </div>
                     
                     <Separator className="my-4" />
+                    
+                    {isCodeSent && booking.secret_code && (
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/40 rounded-xl text-center mb-4 border border-blue-200 dark:border-blue-800">
+                            <div className="flex items-center justify-center gap-2 text-blue-600 dark:text-blue-300">
+                                <KeyRound className="w-5 h-5" />
+                                <p className="text-sm font-semibold uppercase">Secret Code</p>
+                            </div>
+                            <p className="text-3xl font-bold tracking-widest text-blue-800 dark:text-blue-200 mt-1">{booking.secret_code}</p>
+                            <p className="text-xs text-muted-foreground mt-2">Share this code with the technician to start the repair.</p>
+                        </div>
+                    )}
                     
                     {isQuotationShared && quote ? (
                        <Button onClick={() => setSelectedQuote({ ...quote, booking_id: booking.id })} className="w-full font-semibold">
