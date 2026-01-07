@@ -57,7 +57,7 @@ export type Booking = {
 const StatusBadge = ({ status }: { status: string }) => {
   const isCompleted = status.toLowerCase() === 'completed';
   const isCancelled = status.toLowerCase() === 'cancelled';
-  const isQuotationSent = status.toLowerCase() === 'quotation_sent';
+  const isQuotationShared = status.toLowerCase() === 'quotation_shared';
   
   let variantClass = 'bg-yellow-100 text-yellow-700 border-yellow-300'; // Default for in-progress
   let Icon = Clock;
@@ -68,7 +68,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   } else if (isCancelled) {
      variantClass = 'bg-red-100 text-red-700 border-red-300';
      Icon = XCircle;
-  } else if (isQuotationSent) {
+  } else if (isQuotationShared) {
     variantClass = 'bg-blue-100 text-blue-700 border-blue-300';
     Icon = Clock; // Or another icon
   }
@@ -180,7 +180,7 @@ export default function BookingHistoryPage() {
           <div className="space-y-6">
             {bookingHistory.map((booking) => {
               const ServiceIcon = iconMap[booking.categories.name] || Laptop;
-              const isQuotationSent = booking.status.toLowerCase() === 'quotation_sent';
+              const isQuotationShared = booking.status.toLowerCase() === 'quotation_shared';
               const quote = booking.repair_quotes?.[0];
 
               return (
@@ -246,7 +246,7 @@ export default function BookingHistoryPage() {
                     
                     <Separator className="my-4" />
                     
-                    {isQuotationSent && quote ? (
+                    {isQuotationShared && quote ? (
                        <Button onClick={() => setSelectedQuote({ ...quote, booking_id: booking.id })} className="w-full font-semibold">
                           Open Quotation
                        </Button>
