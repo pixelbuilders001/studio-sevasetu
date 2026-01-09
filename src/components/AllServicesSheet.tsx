@@ -20,10 +20,10 @@ import { IndianRupee } from 'lucide-react';
 
 function ServicesSheetSkeleton() {
     return (
-        <div className="grid grid-cols-3 gap-4 py-4">
+        <div className="grid services-grid gap-4 py-4">
             {Array.from({ length: 9 }).map((_, i) => (
-                <Card key={i} className="overflow-hidden aspect-square">
-                    <CardContent className="p-4 flex flex-col items-center justify-center h-full gap-2">
+                <Card key={i} className="overflow-hidden">
+                    <CardContent className="p-4 flex flex-col items-center justify-center gap-2">
                         <Skeleton className="w-16 h-16 rounded-lg" />
                         <Skeleton className="h-5 w-3/4" />
                     </CardContent>
@@ -64,10 +64,10 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
     return (
         <>
             {isNavigating && <FullScreenLoader />}
-            <div onClick={handleClick} className="group cursor-pointer">
-                <Card className="bg-card border rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full aspect-square justify-center items-center bg-white">
-                    <CardContent className="p-4 flex flex-col items-center justify-center gap-2">
-                        <div className="relative w-16 h-16 md:w-20 md:h-20">
+            <div onClick={handleClick} className="group cursor-pointer h-full">
+                <Card className="bg-card border rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full min-h-[120px] justify-center items-center bg-white">
+                    <CardContent className="p-3 sm:p-4 flex flex-col items-center justify-center gap-1.5 h-full">
+                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
                             <Image
                                 src={category.image.imageUrl}
                                 alt={category.name}
@@ -77,12 +77,14 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
                                 data-ai-hint={category.image.imageHint}
                             />
                         </div>
-                        <h3 className="font-bold text-sm md:text-base text-foreground">{category.name}</h3>
+                        <h3 className="font-bold text-[11px] sm:text-xs md:text-base text-foreground leading-tight px-1 uppercase tracking-tight line-clamp-2">
+                            {category.name}
+                        </h3>
                         {isServiceable && (
-                            <div className="text-xs font-bold text-primary flex items-center">
-                                <IndianRupee className="w-3 h-3" />
+                            <div className="text-[10px] sm:text-xs font-bold text-primary flex items-center mt-auto">
+                                <IndianRupee className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                 {inspectionFee}
-                                <span className="text-muted-foreground ml-1">onwards</span>
+                                <span className="text-muted-foreground ml-0.5 font-medium lowercase">onwards</span>
                             </div>
                         )}
                     </CardContent>

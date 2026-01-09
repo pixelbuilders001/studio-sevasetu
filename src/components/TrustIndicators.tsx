@@ -1,7 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import type { TranslationFunc } from '@/lib/get-translation';
 import { Gem, Award, ReceiptText, ShieldAlert } from 'lucide-react';
-import Image from 'next/image';
 
 export default function TrustIndicators({ t }: { t: TranslationFunc }) {
 
@@ -38,17 +37,6 @@ export default function TrustIndicators({ t }: { t: TranslationFunc }) {
 
   return (
     <section className="bg-slate-900 text-white py-16 rounded-[3rem] mx-2 shadow-2xl overflow-hidden relative">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/trust-technician.png"
-          alt="SevaSetu Technician"
-          fill
-          className="object-cover opacity-30"
-        />
-        <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-[2px]"></div>
-      </div>
-
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold font-headline mb-3">{t('whyChooseUs')}</h2>
@@ -58,7 +46,7 @@ export default function TrustIndicators({ t }: { t: TranslationFunc }) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {indicators.map((indicator, index) => (
-            <div key={index} className="group relative bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-colors backdrop-blur-sm">
+            <div key={index} className="group relative bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-colors">
               <div className="flex items-start gap-4">
                 <div className={`p-3.5 rounded-2xl ${indicator.bgColor} group-hover:scale-110 transition-transform duration-300`}>
                   <indicator.icon className={`w-6 h-6 ${indicator.iconColor}`} />

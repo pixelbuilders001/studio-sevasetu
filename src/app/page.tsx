@@ -122,16 +122,16 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
 
 
           {/* Banner */}
-          <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-[2/1] md:aspect-[3/1]">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center p-6 text-white">
+          <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-[1.6/1] sm:aspect-[2/1] md:aspect-[3/1]">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center p-5 sm:p-6 text-white">
               <div className="flex-1 z-10">
                 <div className="inline-block px-2 py-1 bg-white/20 rounded-md text-[10px] font-bold mb-2 backdrop-blur-sm">
                   FAST SERVICE
                 </div>
-                <div className="mb-4">
-                  <AnimatedHeroText className="text-2xl md:text-3xl leading-tight" highlightColor="text-yellow-300" />
+                <div className="mb-3 sm:mb-4">
+                  <AnimatedHeroText className="text-xl sm:text-2xl md:text-3xl leading-tight" highlightColor="text-yellow-300" />
                 </div>
-                <p className="text-white/80 text-xs mb-4">Expert technicians at your doorstep.</p>
+                <p className="text-white/80 text-[11px] sm:text-xs mb-4">Expert technicians at your doorstep.</p>
 
                 {/* Hero CTA adapted for the banner context */}
                 <HeroCTA />
@@ -213,7 +213,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         </BookingTrackerModal>
       </section>
 
-      <div className="bg-white dark:bg-card rounded-t-3xl shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-8 pb-20">
+      <div className="bg-white dark:bg-card rounded-t-3xl shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-8 pb-12">
         <div id="how-it-works">
           <HowItWorks t={t} />
         </div>
@@ -229,6 +229,27 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         <Testimonials t={t} />
 
         <BecomePartner />
+
+        {/* Mobile-only Footer Signature */}
+        <div className="md:hidden mt-8 pb-12 text-center border-t border-border/50 pt-8 px-6">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-xl font-bold text-primary-foreground">S</span>
+            </div>
+            <span className="text-lg font-bold text-foreground">SevaSetu</span>
+          </div>
+          <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+            Leading the way in doorstep mobile and appliance repairs across Bihar. Join thousands of happy customers today.
+          </p>
+          <div className="flex justify-center gap-6 mb-6">
+            <Link href="/privacy" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary">Privacy</Link>
+            <Link href="/terms" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary">Terms</Link>
+            <Link href="/contact" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary">Support</Link>
+          </div>
+          <p className="text-[10px] font-medium text-muted-foreground/40 uppercase tracking-[0.2em]">
+            &copy; {new Date().getFullYear()} SevaSetu &bull; Crafted with love
+          </p>
+        </div>
       </div>
     </div>
   );

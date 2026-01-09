@@ -30,7 +30,7 @@ type PostalInfo = {
 export default function LocationSelector() {
   const { location, setLocation, isServiceable, checkServiceability, dialogOpen, setDialogOpen } = useLocation();
   const { t } = useTranslation();
-  
+
   const [pincode, setPincode] = useState(location.pincode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -63,25 +63,25 @@ export default function LocationSelector() {
       if (data && data[0].Status === 'Success') {
         const postOffices = data[0].PostOffice;
         const district = postOffices[0]?.District;
-        
+
         if (!district) {
-             throw new Error("Could not determine district from pincode.");
+          throw new Error("Could not determine district from pincode.");
         }
 
         const serviceableCityData = await checkServiceability(district);
-        
+
         if (serviceableCityData) {
-            setPostalData(postOffices);
-            setSelectedArea(postOffices[0] || null);
-            setCurrentIsServiceable(true);
-            setMultipliers({
-              inspection_multiplier: serviceableCityData.inspection_multiplier,
-              repair_multiplier: serviceableCityData.repair_multiplier
-            });
+          setPostalData(postOffices);
+          setSelectedArea(postOffices[0] || null);
+          setCurrentIsServiceable(true);
+          setMultipliers({
+            inspection_multiplier: serviceableCityData.inspection_multiplier,
+            repair_multiplier: serviceableCityData.repair_multiplier
+          });
         } else {
-            setError(`Sorry, we do not currently service ${district}.`);
-            setPostalData([]);
-            setCurrentIsServiceable(false);
+          setError(`Sorry, we do not currently service ${district}.`);
+          setPostalData([]);
+          setCurrentIsServiceable(false);
         }
 
       } else {
@@ -142,7 +142,7 @@ export default function LocationSelector() {
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-[calc(100vw-1.5rem)] sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-6">
         <DialogHeader>
           <DialogTitle>{t('selectYourLocation')}</DialogTitle>
           <DialogDescription>
@@ -156,9 +156,9 @@ export default function LocationSelector() {
               value={pincode}
               onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder={t('pincodeInputPlaceholder')}
-              className="flex-grow"
+              className="flex-grow rounded-xl h-11"
             />
-            <Button onClick={handlePincodeSearch} disabled={isLoading}>
+            <Button onClick={handlePincodeSearch} disabled={isLoading} className="rounded-xl h-11">
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('searchButton')}
             </Button>
           </div>
@@ -186,11 +186,11 @@ export default function LocationSelector() {
             </div>
           )}
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex-row gap-2">
           <DialogClose asChild>
-             <Button type="button" variant="outline">{t('cancelButton')}</Button>
+            <Button type="button" variant="outline" className="flex-1 rounded-full h-11">{t('cancelButton')}</Button>
           </DialogClose>
-          <Button onClick={handleLocationConfirm} disabled={!selectedArea || !currentIsServiceable}>
+          <Button onClick={handleLocationConfirm} disabled={!selectedArea || !currentIsServiceable} className="flex-1 rounded-full h-11 bg-primary">
             {t('confirmLocationButton')}
           </Button>
         </DialogFooter>
