@@ -31,6 +31,8 @@ const StatusBadge = ({ status }: { status: string }) => {
     const isCompleted = status.toLowerCase() === 'completed';
     const isCancelled = status.toLowerCase() === 'cancelled';
     const isQuotationShared = status.toLowerCase() === 'quotation_shared';
+    const isQuotationApproved = status.toLowerCase() === 'quotation_approved';
+    const isRepairCompleted = status.toLowerCase() === 'repair_completed';
 
     let variantClass = 'bg-yellow-100 text-yellow-700 border-yellow-300';
     let Icon = Clock;
@@ -44,6 +46,12 @@ const StatusBadge = ({ status }: { status: string }) => {
     } else if (isQuotationShared) {
         variantClass = 'bg-blue-100 text-blue-700 border-blue-300';
         Icon = Clock;
+    } else if (isQuotationApproved) {
+        variantClass = 'bg-indigo-100 text-indigo-700 border-indigo-300';
+        Icon = CheckCircle;
+    } else if (isRepairCompleted) {
+        variantClass = 'bg-green-100 text-green-700 border-green-300';
+        Icon = CheckCircle;
     }
 
     return (
@@ -63,7 +71,7 @@ export default function BookingHistoryContent() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
-    const [selectedQuote, setSelectedQuote] = useState<RepairQuote | null>(null);
+    const [selectedQuote, setSelectedQuote] = useState<(RepairQuote & { booking_id: string }) | null>(null);
 
     const handleContinue = async () => {
         if (!mobileNumber.match(/^[6-9]\d{9}$/)) {
@@ -99,8 +107,16 @@ export default function BookingHistoryContent() {
         }
     };
 
-    const handleQuoteStatusChange = (bookingId: string, newStatus: 'in-progress' | 'cancelled') => {
-        setBookingHistory(prev => prev.map(b => b.id === bookingId ? { ...b, status: newStatus } : b));
+    const handleQuoteStatusChange = (bookingId: string, newStatus: string, finalAmount?: number | string) => {
+        setBookingHistory(prev => prev.map(b => {
+            if (b.id === bookingId) {
+                const updatedQuotes = b.repair_quotes?.map((q, idx) =>
+                    idx === 0 ? { ...q, final_amount_to_be_paid: finalAmount as any } : q
+                );
+                return { ...b, status: newStatus, repair_quotes: updatedQuotes };
+            }
+            return b;
+        }));
         setSelectedQuote(null);
     };
 
@@ -156,9 +172,21 @@ export default function BookingHistoryContent() {
                                 const isCompleted = booking.status.toLowerCase() === 'completed';
                                 const quote = booking.repair_quotes?.[0];
 
+                                const isRepairCompleted = booking.status.toLowerCase() === 'repair_completed';
+
                                 return (
-                                    <Card key={booking.id} className="rounded-2xl shadow-md border-0 overflow-hidden">
-                                        <CardContent className="p-5">
+                                    <Card key={booking.id} className={cn(
+                                        "rounded-2xl shadow-md border-0 overflow-hidden relative",
+                                        isRepairCompleted && "bg-green-50/50 border border-green-100"
+                                    )}>
+                                        {isRepairCompleted && (
+                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 pointer-events-none opacity-[0.08] select-none z-0">
+                                                <p className="text-4xl font-black border-8 border-green-600 p-4 rounded-xl text-green-600 uppercase tracking-tighter">
+                                                    COMPLETED
+                                                </p>
+                                            </div>
+                                        )}
+                                        <CardContent className="p-5 relative z-10">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div className="flex items-center gap-4">
                                                     <div className="bg-primary/10 p-3 rounded-xl">
@@ -236,6 +264,30 @@ export default function BookingHistoryContent() {
                                                 </Button>
                                             )}
 
+                                            {(quote?.status === 'quotation_approved' || isRepairCompleted) && quote?.final_amount_to_be_paid && (
+                                                <div className={cn(
+                                                    "p-3 rounded-xl flex justify-between items-center mb-4 border",
+                                                    isRepairCompleted
+                                                        ? "bg-green-50 border-green-100 dark:bg-green-900/40 dark:border-green-800"
+                                                        : "bg-indigo-50 border-indigo-100 dark:bg-indigo-900/40 dark:border-indigo-800"
+                                                )}>
+                                                    <span className={cn(
+                                                        "text-sm font-semibold uppercase tracking-wider",
+                                                        isRepairCompleted ? "text-green-700 dark:text-green-300" : "text-indigo-700 dark:text-indigo-300"
+                                                    )}>
+                                                        {isRepairCompleted ? 'Total Amount Paid' : 'Final Payable Amount'}
+                                                    </span>
+                                                    <span className={cn(
+                                                        "text-lg font-bold",
+                                                        isRepairCompleted ? "text-green-900 dark:text-green-100" : "text-indigo-900 dark:text-indigo-100"
+                                                    )}>
+                                                        ₹{typeof quote.final_amount_to_be_paid === 'string'
+                                                            ? parseFloat(quote.final_amount_to_be_paid).toFixed(2)
+                                                            : quote.final_amount_to_be_paid.toFixed(2)}
+                                                    </span>
+                                                </div>
+                                            )}
+
                                             {isCompleted && (
                                                 <Button variant="ghost" size="sm" className="w-full font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200">
                                                     <Download className="mr-2 h-4 w-4" />
@@ -259,7 +311,7 @@ export default function BookingHistoryContent() {
 
             {selectedQuote && (
                 <QuotationModal
-                    quote={{ ...selectedQuote, booking_id: (selectedQuote as any).booking_id }}
+                    quote={selectedQuote}
                     isOpen={!!selectedQuote}
                     onClose={() => setSelectedQuote(null)}
                     onStatusChange={handleQuoteStatusChange}

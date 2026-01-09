@@ -5,6 +5,7 @@ export type RepairQuote = {
     total_amount: number;
     notes: string;
     status: string;
+    final_amount_to_be_paid?: number;
 };
 
 export type Booking = {

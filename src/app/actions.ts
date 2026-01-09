@@ -141,13 +141,18 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
         ...commonHeaders,
         'Prefer': 'return=minimal'
       },
-      body: JSON.stringify({ status: 'quotation_approved' }),
+      body: JSON.stringify({
+        status: 'quotation_approved',
+        final_amount_to_be_paid: quote.total_amount
+      }),
     });
 
     if (!quoteUpdateResponse.ok) {
       const errorData = await quoteUpdateResponse.json();
       throw new Error(errorData.message || 'Failed to update quote status.');
     }
+
+
 
     // 2. Update the job status
     const jobStatusResponse = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/update-job-status', {
@@ -156,7 +161,9 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
       body: JSON.stringify({
         booking_id: quote.booking_id,
         status: 'quotation_approved',
-        note: 'Customer has approved the quotation.'
+        note: 'Customer has approved the quotation.',
+        order_id: "",
+        final_amount_to_be_paid: quote.total_amount
       }),
     });
 
@@ -165,7 +172,7 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
       throw new Error(errorData.message || 'Failed to update job status.');
     }
 
-    return { success: true };
+    return { success: true, final_amount_to_be_paid: quote.total_amount };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'An unexpected error occurred.';
     return { success: false, error: message };

@@ -21,19 +21,20 @@ type QuotationModalProps = {
   quote: RepairQuote & { booking_id: string };
   isOpen: boolean;
   onClose: () => void;
-  onStatusChange: (bookingId: string, newStatus: 'in-progress' | 'cancelled') => void;
+  onStatusChange: (bookingId: string, newStatus: 'quotation_approved' | 'cancelled', finalAmount?: number) => void;
 };
 
 export default function QuotationModal({ quote, isOpen, onClose, onStatusChange }: QuotationModalProps) {
   const [isLoading, setIsLoading] = useState<'accept' | 'reject' | null>(null);
   const { toast } = useToast();
+  console.log("quote", quote);
 
   const handleAccept = async () => {
     setIsLoading('accept');
     const result = await acceptQuote(quote);
     if (result.success) {
       toast({ title: 'Quote Accepted', description: 'The repair is now in progress.' });
-      onStatusChange(quote.booking_id, 'in-progress');
+      onStatusChange(quote.booking_id, 'quotation_approved', (result as any).final_amount_to_be_paid);
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
