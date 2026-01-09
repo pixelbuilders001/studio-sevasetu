@@ -7,13 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift, X } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift, X, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
 import { bookService } from '@/app/actions';
 import Image from 'next/image';
 import { Card } from './ui/card';
+import FullScreenLoader from '@/components/FullScreenLoader';
+import { cn } from '@/lib/utils';
 
 const initialState = {
   message: "",
@@ -34,12 +36,12 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [referralMessage, setReferralMessage] = useState('');
   const [discount, setDiscount] = useState(0);
-  
+
   const finalPayable = Math.max(inspectionFee - discount, 0);
 
   const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined, totalEstimatedPrice, finalPayable);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
-   
+
   const [selectedDay, setSelectedDay] = useState('today');
   const [selectedTime, setSelectedTime] = useState('best');
   const [address, setAddress] = useState('');
@@ -49,16 +51,16 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   useEffect(() => {
     if (state?.error) {
       toast({
-          variant: 'destructive',
-          title: t('errorTitle'),
-          description: state.error,
+        variant: 'destructive',
+        title: t('errorTitle'),
+        description: state.error,
       });
     }
     if (state?.bookingId) {
-        router.push(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode || ''}`);
+      router.push(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode || ''}`);
     }
   }, [state, t, toast, router]);
-  
+
   const handleUseGps = () => {
     if (!navigator.geolocation) {
       toast({
@@ -79,20 +81,20 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
           if (data && data.display_name) {
             setAddress(data.display_name);
           } else {
-             toast({
+            toast({
               variant: 'destructive',
               title: 'Error',
               description: 'Could not fetch address details.',
             });
           }
         } catch (error) {
-           toast({
+          toast({
             variant: 'destructive',
             title: 'Error',
             description: 'Failed to fetch address.',
           });
         } finally {
-            setIsGpsLoading(false);
+          setIsGpsLoading(false);
         }
       },
       (error) => {
@@ -105,7 +107,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
       }
     );
   };
-  
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -114,7 +116,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
       setImagePreview(null);
     }
   };
-  
+
   const verifyReferralCode = async () => {
     setReferralStatus('verifying');
     setReferralMessage('');
@@ -126,11 +128,11 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
       return;
     }
     try {
-   
+
       const headers: Record<string, string> = {
         'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
         'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-         'Content-Type': 'application/json'
+        'Content-Type': 'application/json'
       };
       const res = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
         method: 'POST',
@@ -162,187 +164,248 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   };
 
   return (
-    <form action={formAction} className="space-y-8 pb-28">
-      
-      <div>
-        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Contact Information</h2>
-        <div className="bg-card rounded-xl border p-2 space-y-2">
-            <Input icon={User} id="user_name" name="user_name" placeholder="Full Name" required className="border-0 bg-transparent text-base" />
-            <div className="h-px bg-border" />
-            <Input 
-              icon={Phone} 
-              id="mobile_number" 
-              name="mobile_number" 
-              type="tel" 
-              placeholder="Mobile Number" 
+    <>
+      <form action={formAction} className="space-y-6 pb-36">
+
+        {/* Contact Section */}
+        <div className="animate-fade-in-up" style={{ animationDelay: '50ms' }}>
+          <div className="flex items-center gap-2 px-1 mb-3">
+            <User className="w-4 h-4 text-primary" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Contact Information</h2>
+          </div>
+          <div className="bg-card rounded-2xl border p-2 space-y-1 shadow-sm">
+            <Input icon={User} id="user_name" name="user_name" placeholder="Enter Full Name" required className="border-0 bg-transparent text-sm focus-visible:ring-0 h-11" />
+            <div className="h-px bg-border/50 mx-4" />
+            <Input
+              icon={Phone}
+              id="mobile_number"
+              name="mobile_number"
+              type="tel"
+              placeholder="Enter Mobile Number"
               required
               ref={mobileInputRef}
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
-              className="border-0 bg-transparent text-base" 
+              className="border-0 bg-transparent text-sm focus-visible:ring-0 h-11"
             />
+          </div>
         </div>
-      </div>
-      
-      <div>
-        <div className="flex justify-between items-center mb-3">
-            <h2 className="text-sm font-bold uppercase text-muted-foreground">Service Address</h2>
-            <Button type="button" onClick={handleUseGps} disabled={isGpsLoading} variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 text-primary border-blue-200 h-7 text-xs">
-                {isGpsLoading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <LocateFixed className="mr-1.5 h-3.5 w-3.5"/>}
-                Use GPS
-            </Button>
-        </div>
-        <div className="bg-card rounded-xl border p-2 space-y-2">
-            <Textarea 
-                icon={MapPin}
-                id="full_address" 
-                name="full_address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="House No, Building, Area..." 
-                required 
-                className="border-0 bg-transparent text-base min-h-[60px]"
-            />
-             <div className="h-px bg-border" />
-            <Input icon={Flag} id="landmark" name="landmark" placeholder="Landmark (Optional)" className="border-0 bg-transparent text-base" />
-        </div>
-      </div>
 
-       <div>
-        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Add Problem Photos (Optional)</h2>
-        <div className="flex items-center gap-4">
-          <label htmlFor="media" className="relative flex flex-col items-center justify-center w-32 h-32 cursor-pointer bg-card border-2 border-dashed rounded-xl hover:bg-muted/50">
-              <Camera className="w-8 h-8 text-muted-foreground mb-2" />
-              <span className="text-sm font-semibold text-muted-foreground">Add Photo</span>
-              <Input id="media" name="media" type="file" accept="image/*" className="sr-only" onChange={handleImageChange} />
-          </label>
-          {imagePreview && (
-            <div className="relative w-32 h-32 rounded-xl overflow-hidden border">
-              <Image src={imagePreview} alt="Image preview" layout="fill" objectFit="cover" />
+        {/* Address Section */}
+        <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <div className="flex justify-between items-center mb-3 px-1">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-primary" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Service Address</h2>
             </div>
-          )}
+            <Button type="button" onClick={handleUseGps} disabled={isGpsLoading} variant="ghost" size="sm" className="text-primary hover:text-primary/80 h-7 text-[10px] font-bold uppercase tracking-wider px-2">
+              {isGpsLoading ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <LocateFixed className="mr-1 h-3 w-3" />}
+              GPS
+            </Button>
+          </div>
+          <div className="bg-card rounded-2xl border p-2 space-y-1 shadow-sm">
+            <Textarea
+              icon={MapPin}
+              id="full_address"
+              name="full_address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Flat No, House Name, Street Address..."
+              required
+              className="border-0 bg-transparent text-sm min-h-[80px] focus-visible:ring-0 py-3"
+            />
+            <div className="h-px bg-border/50 mx-4" />
+            <Input icon={Flag} id="landmark" name="landmark" placeholder="Nearest Landmark (Optional)" className="border-0 bg-transparent text-sm focus-visible:ring-0 h-11" />
+          </div>
         </div>
-      </div>
 
-      <div>
-        <h2 className="text-sm font-bold uppercase text-muted-foreground mb-3">Pick a Time</h2>
-        <div className="grid grid-cols-2 gap-2 mb-3">
-            <Button type="button" variant={selectedDay === 'today' ? 'default' : 'outline'} onClick={() => setSelectedDay('today')}>Today</Button>
-            <Button type="button" variant={selectedDay === 'tomorrow' ? 'default' : 'outline'} onClick={() => setSelectedDay('tomorrow')}>Tomorrow</Button>
+        {/* Photos Section */}
+        <div className="animate-fade-in-up" style={{ animationDelay: '150ms' }}>
+          <div className="flex items-center gap-2 px-1 mb-3">
+            <Camera className="w-4 h-4 text-primary" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Add Problem Photos (Optional)</h2>
+          </div>
+          <div className="flex items-center gap-4">
+            <label htmlFor="media" className="relative flex flex-col items-center justify-center w-28 h-28 cursor-pointer bg-card border-2 border-dashed border-muted-foreground/20 rounded-2xl hover:bg-primary/5 hover:border-primary/30 transition-all group">
+              <Camera className="w-6 h-6 text-muted-foreground group-hover:text-primary mb-1.5 transition-colors" />
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Add Photo</span>
+              <Input id="media" name="media" type="file" accept="image/*" className="sr-only" onChange={handleImageChange} />
+            </label>
+            {imagePreview && (
+              <div className="relative w-28 h-28 rounded-2xl overflow-hidden border shadow-sm group">
+                <Image src={imagePreview} alt="Image preview" layout="fill" objectFit="cover" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Button type="button" size="icon" variant="destructive" onClick={() => setImagePreview(null)} className="rounded-full w-8 h-8">
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-best`} />
-      </div>
 
-       <div className="mb-8">
-        <div className="relative flex items-center bg-card rounded-xl border p-2 h-14">
-          <Tag className="w-5 h-5 text-muted-foreground mx-3" />
-          <Input
-            type="text"
-            placeholder="HAVE A REFERRAL CODE?"
-            name="referral_code_input"
-            value={referral}
-            onChange={e => {
-              setReferral(e.target.value.toUpperCase());
-              if(referralStatus !== 'idle') {
+        {/* Time Selection Section */}
+        <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          <div className="flex items-center gap-2 px-1 mb-3">
+            <Calendar className="w-4 h-4 text-primary" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Pick a Schedule</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              type="button"
+              variant={selectedDay === 'today' ? 'default' : 'outline'}
+              onClick={() => setSelectedDay('today')}
+              className={cn(
+                "h-12 rounded-2xl font-bold transition-all",
+                selectedDay === 'today' ? "bg-primary shadow-lg shadow-primary/20" : "hover:border-primary/50 text-muted-foreground"
+              )}
+            >
+              Today
+            </Button>
+            <Button
+              type="button"
+              variant={selectedDay === 'tomorrow' ? 'default' : 'outline'}
+              onClick={() => setSelectedDay('tomorrow')}
+              className={cn(
+                "h-12 rounded-2xl font-bold transition-all",
+                selectedDay === 'tomorrow' ? "bg-primary shadow-lg shadow-primary/20" : "hover:border-primary/50 text-muted-foreground"
+              )}
+            >
+              Tomorrow
+            </Button>
+          </div>
+          <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-best`} />
+        </div>
+
+        {/* Referral Section */}
+        <div className="animate-fade-in-up" style={{ animationDelay: '250ms' }}>
+          <div className="flex items-center gap-2 px-1 mb-3">
+            <Tag className="w-4 h-4 text-primary" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Coupons & Offers</h2>
+          </div>
+
+          <div className={cn(
+            "relative flex items-center bg-card rounded-2xl border transition-all duration-300 h-14 pr-1 px-1 shadow-sm",
+            referralStatus === 'success' ? "border-green-500/50 bg-green-50/50" : referralStatus === 'error' ? "border-red-500/50 bg-red-50/50" : "focus-within:border-primary/50"
+          )}>
+            <Tag className={cn(
+              "w-5 h-5 mx-3 shrink-0",
+              referralStatus === 'success' ? "text-green-500" : referralStatus === 'error' ? "text-red-500" : "text-muted-foreground"
+            )} />
+            <Input
+              type="text"
+              placeholder="HAVE A REFERRAL CODE?"
+              name="referral_code_input"
+              value={referral}
+              onChange={e => {
+                setReferral(e.target.value.toUpperCase());
+                if (referralStatus !== 'idle') {
                   setReferralStatus('idle');
                   setReferralMessage('');
                   setDiscount(0);
-              }
-            }}
-            className="flex-grow border-0 bg-transparent text-base font-semibold placeholder:text-muted-foreground placeholder:font-semibold focus-visible:ring-0 p-0 h-auto"
-            style={{ boxShadow: 'none' }}
-            autoComplete="off"
-            disabled={referralStatus === 'success'}
-          />
-          {referralStatus !== 'success' ? (
+                }
+              }}
+              className="flex-grow border-0 bg-transparent text-sm font-bold placeholder:text-muted-foreground/60 placeholder:font-bold focus-visible:ring-0 p-0 h-auto"
+              style={{ boxShadow: 'none' }}
+              autoComplete="off"
+              disabled={referralStatus === 'success'}
+            />
+            {referralStatus !== 'success' ? (
               <Button
                 type="button"
-                variant="default"
-                className="rounded-full h-10 px-6 font-semibold shadow-none text-sm mr-1"
+                className="rounded-xl h-10 px-6 font-bold text-xs shadow-none hover:bg-primary/90"
                 disabled={referralStatus === 'verifying' || !referral.trim()}
                 onClick={verifyReferralCode}
               >
-                {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'APPLY'}
+                {referralStatus === 'verifying' ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : 'APPLY'}
               </Button>
-          ) : (
-            <Button
-              type="button"
-              variant="destructive"
-              className="rounded-full h-10 px-6 font-semibold shadow-none text-sm mr-1 flex items-center gap-1.5"
-              onClick={removeReferralCode}
-            >
-              <X className="w-4 h-4" />
-              REMOVE
-            </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="destructive"
+                className="rounded-xl h-10 px-4 font-bold text-[10px] shadow-none uppercase tracking-wider flex items-center gap-1.5"
+                onClick={removeReferralCode}
+              >
+                <X className="w-3.5 h-3.5" />
+                Remove
+              </Button>
+            )}
+          </div>
+
+          {referralStatus === 'success' && (
+            <div className="flex items-center gap-2 mt-2.5 text-green-600 text-xs font-bold px-3">
+              <CheckCircle className="w-4 h-4 shrink-0" />
+              <span>{referralMessage}</span>
+            </div>
+          )}
+          {referralStatus === 'error' && (
+            <div className="flex items-center gap-2 mt-2.5 text-red-600 text-xs font-bold px-3">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{referralMessage}</span>
+            </div>
+          )}
+
+          {referralStatus !== 'success' && (
+            <div className="mt-4 bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-center gap-4">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                <Gift className="w-5 h-5 text-primary" />
+              </div>
+              <div className="space-y-0.5">
+                <h4 className="text-[11px] font-bold text-primary uppercase tracking-widest leading-none">Special Offer</h4>
+                <p className="text-[10px] text-muted-foreground leading-normal">
+                  Apply a friend's code to get <span className="font-black text-foreground">₹50 OFF</span> on visit fee!
+                </p>
+              </div>
+            </div>
           )}
         </div>
 
-        {referralStatus === 'success' && (
-          <div className="flex items-center gap-2 mt-2 text-green-600 font-medium px-2">
-            <CheckCircle className="w-5 h-5" />
-            <span>{referralMessage}</span>
-          </div>
-        )}
-        {referralStatus === 'error' && (
-          <div className="flex items-center gap-2 mt-2 text-red-600 font-medium px-2">
-            <AlertCircle className="w-5 h-5" />
-            <span>{referralMessage}</span>
-          </div>
-        )}
-
-        {referralStatus !== 'success' && (
-          <Card className="mt-4 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 p-4">
-              <div className="flex items-center gap-3">
-                  <Gift className="w-8 h-8 text-blue-500 flex-shrink-0" />
-                  <div>
-                  <h4 className="font-bold text-blue-800 dark:text-blue-200">Have a Referral Code?</h4>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
-                      Apply a friend's code to get <span className="font-bold">₹50 OFF</span> instantly on your visiting fee!
-                  </p>
-                  </div>
-              </div>
-          </Card>
-        )}
-      </div>
-
-       {state?.error && (
-        <Alert variant="destructive">
+        {state?.error && (
+          <Alert variant="destructive" className="rounded-2xl border-red-500/20 bg-red-50/50">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>{t('errorTitle')}</AlertTitle>
-            <AlertDescription>{state.error}</AlertDescription>
-        </Alert>
-      )}
+            <AlertTitle className="text-sm font-bold">Booking Failed</AlertTitle>
+            <AlertDescription className="text-xs">{state.error}</AlertDescription>
+          </Alert>
+        )}
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t z-50">
-          <div className="max-w-md mx-auto">
-            {discount > 0 && inspectionFee !== null && (
-              <div className="flex justify-between items-center text-sm mb-2 px-1">
-                <span className="font-semibold text-muted-foreground">Visiting Fee</span>
-                <span className="font-semibold text-muted-foreground flex items-center"><IndianRupee className="w-4 h-4" />{inspectionFee}</span>
+        {/* Floating Bottom Bar */}
+        <div className="fixed bottom-4 left-0 right-0 px-6 z-50 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="max-w-xl mx-auto">
+            <div className="glass shadow-2xl shadow-primary/20 rounded-full p-2 flex items-center gap-3 border border-primary/20">
+              <div className="flex-grow pl-5">
+                <div className="flex flex-col">
+                  <span className="text-[9px] text-muted-foreground font-black uppercase tracking-wider leading-none mb-1">Net Payable Visit Fee</span>
+                  <div className="flex items-center text-primary font-black text-xl">
+                    <IndianRupee className="w-4 h-4 mr-0.5" strokeWidth={3} />
+                    <span>{finalPayable}</span>
+                    {discount > 0 && (
+                      <span className="ml-1.5 text-[10px] text-muted-foreground line-through decoration-red-500/50 opacity-50 font-bold">
+                        ₹{inspectionFee}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-            )}
-             {discount > 0 && (
-              <div className="flex justify-between items-center text-sm mb-3 px-1">
-                <span className="font-semibold text-green-600">Referral Discount</span>
-                <span className="font-semibold text-green-600 flex items-center">-<IndianRupee className="w-4 h-4" />{discount}</span>
-              </div>
-            )}
-             <div className="flex justify-between items-center mb-3">
-              <span className="text-sm font-semibold text-muted-foreground">NET PAYABLE (VISIT FEE)</span>
-              {finalPayable !== null ? (
-                  <span className="font-extrabold text-2xl text-gray-900 dark:text-gray-100 flex items-center"><IndianRupee className="w-6 h-6" />{finalPayable}</span>
-              ) : (
-                 <Loader2 className="w-6 h-6 animate-spin" />
-              )}
+
+              <Button
+                type="submit"
+                disabled={isPending || finalPayable === null}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full px-8 shadow-lg shadow-primary/25 h-11 flex items-center gap-2 group min-w-[140px]"
+              >
+                {isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                ) : (
+                  <>
+                    <span>Finish Booking</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
+              </Button>
             </div>
           </div>
-          <div className="max-w-md mx-auto">
-              <Button type="submit" disabled={isPending || finalPayable === null} size="lg" className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-full">
-                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Finish Booking'}
-                {!isPending && <ArrowRight className="ml-2 h-5 w-5" />}
-              </Button>
-          </div>
-      </div>
-    </form>
+        </div>
+      </form>
+      {isPending && <FullScreenLoader />}
+    </>
   );
 }
