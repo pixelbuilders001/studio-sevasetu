@@ -405,7 +405,6 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
           </div>
         </div>
       </form>
-      {isPending && <FullScreenLoader />}
     </>
   );
 }
