@@ -24,6 +24,18 @@ import { useTranslation } from '@/hooks/useTranslation';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
 import FullScreenLoader from '@/components/FullScreenLoader';
 
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+function ServiceCardSkeleton() {
+  return (
+    <Card className="bg-white dark:bg-card border-none shadow-soft h-full flex flex-col items-center justify-center p-4">
+      <Skeleton className="w-16 h-16 mb-3 rounded-2xl" />
+      <Skeleton className="h-4 w-20 mb-1 rounded" />
+      <Skeleton className="h-3 w-12 rounded-full" />
+    </Card>
+  );
+}
 
 function ServiceCard({ category }: { category: ServiceCategory }) {
   const { location, isServiceable, setDialogOpen } = useLocation();
@@ -87,11 +99,17 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
   const { t } = useTranslation();
 
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const data = await getServiceCategories();
-      setCategories(data);
+      setLoading(true);
+      try {
+        const data = await getServiceCategories();
+        setCategories(data);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchCategories();
   }, []);
@@ -180,9 +198,12 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           </Sheet>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {categories.slice(0, 6).map((category) => (
-            <ServiceCard key={category.id} category={category} />
-          ))}
+          {loading
+            ? Array.from({ length: 6 }).map((_, i) => <ServiceCardSkeleton key={i} />)
+            : categories.slice(0, 6).map((category) => (
+              <ServiceCard key={category.id} category={category} />
+            ))
+          }
         </div>
       </section>
 
