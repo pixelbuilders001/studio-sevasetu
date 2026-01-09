@@ -15,7 +15,7 @@ import { Separator } from './ui/separator';
 import { IndianRupee, Wrench, Check, X, Loader2, AlertTriangle } from 'lucide-react';
 import { acceptQuote, rejectQuote } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import type { RepairQuote } from '@/app/history/page';
+import type { RepairQuote } from '@/lib/types/booking';
 
 type QuotationModalProps = {
   quote: RepairQuote & { booking_id: string };
@@ -43,7 +43,7 @@ export default function QuotationModal({ quote, isOpen, onClose, onStatusChange 
   const handleReject = async () => {
     setIsLoading('reject');
     const result = await rejectQuote(quote);
-     if (result.success) {
+    if (result.success) {
       toast({ title: 'Quote Rejected', description: 'This booking has been cancelled.' });
       onStatusChange(quote.booking_id, 'cancelled');
     } else {
@@ -51,7 +51,7 @@ export default function QuotationModal({ quote, isOpen, onClose, onStatusChange 
     }
     setIsLoading(null);
   };
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
@@ -72,11 +72,11 @@ export default function QuotationModal({ quote, isOpen, onClose, onStatusChange 
           </div>
 
           <div className="space-y-3">
-             <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Labor Cost</span>
               <span className="font-medium flex items-center"><IndianRupee className="w-4 h-4" />{quote.labor_cost.toFixed(2)}</span>
             </div>
-             <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Parts Cost</span>
               <span className="font-medium flex items-center"><IndianRupee className="w-4 h-4" />{quote.parts_cost.toFixed(2)}</span>
             </div>
@@ -103,4 +103,3 @@ export default function QuotationModal({ quote, isOpen, onClose, onStatusChange 
   );
 }
 
-    

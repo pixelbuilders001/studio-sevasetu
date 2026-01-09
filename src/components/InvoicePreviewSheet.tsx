@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import type { Booking } from '@/app/history/page';
+import type { Booking } from '@/lib/types/booking';
 import {
     SheetHeader,
     SheetTitle,
@@ -14,20 +14,20 @@ import { IndianRupee, ShieldCheck, Printer, Download, Receipt } from 'lucide-rea
 import { Badge } from './ui/badge';
 
 const Logo = () => (
-  <div className="flex items-center gap-2 flex-shrink-0">
-    <div className="w-10 h-10 bg-primary rounded-md flex items-center justify-center">
-      <span className="text-2xl font-bold text-primary-foreground">S</span>
+    <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="w-10 h-10 bg-primary rounded-md flex items-center justify-center">
+            <span className="text-2xl font-bold text-primary-foreground">S</span>
+        </div>
+        <div>
+            <span className="text-lg font-bold text-primary leading-tight">SevaSetu</span>
+            <span className="text-xs font-semibold text-muted-foreground leading-tight tracking-wide">REPAIR & SOLUTIONS</span>
+        </div>
     </div>
-    <div>
-      <span className="text-lg font-bold text-primary leading-tight">SevaSetu</span>
-      <span className="text-xs font-semibold text-muted-foreground leading-tight tracking-wide">REPAIR & SOLUTIONS</span>
-    </div>
-  </div>
 );
 
 
 const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
-    
+
     // Using dummy data as requested, since full data isn't fetched.
     const finalAmountPaid = booking.final_amount_paid || 499;
     const netInspectionFee = booking.net_inspection_fee || 199;
@@ -36,7 +36,7 @@ const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
 
     return (
         <div id={`invoice-${booking.order_id}`} className="bg-white dark:bg-gray-950 p-6 md:p-8 rounded-t-2xl">
-             <div className="p-8 max-w-lg mx-auto bg-card rounded-2xl shadow-lg border">
+            <div className="p-8 max-w-lg mx-auto bg-card rounded-2xl shadow-lg border">
                 <div className="flex justify-between items-start mb-8">
                     <Logo />
                     <div className="text-right">
@@ -51,8 +51,8 @@ const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
                         <p className="font-semibold">{format(new Date(booking.created_at), 'dd MMM yyyy')}</p>
                     </div>
                     <div className="text-right">
-                         <p className="text-sm text-muted-foreground">STATUS</p>
-                         <Badge className="bg-green-100 text-green-700 border-green-200 font-bold" variant="outline">PAID</Badge>
+                        <p className="text-sm text-muted-foreground">STATUS</p>
+                        <Badge className="bg-green-100 text-green-700 border-green-200 font-bold" variant="outline">PAID</Badge>
                     </div>
                 </div>
 
@@ -62,7 +62,7 @@ const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
                         <p className="font-semibold">{booking.user_name}</p>
                         <p className="text-sm text-muted-foreground">{booking.full_address}</p>
                     </div>
-                     <div>
+                    <div>
                         <p className="text-xs font-bold text-muted-foreground uppercase">EXPERT TECHNICIAN</p>
                         <p className="font-semibold">{technicianName}</p>
                         <p className="text-sm text-muted-foreground">Verified Professional</p>
@@ -92,7 +92,7 @@ const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
                     </div>
                 </div>
 
-                 <div className="text-center mt-8">
+                <div className="text-center mt-8">
                     <Badge variant="secondary" className="bg-gray-200 text-gray-600 font-bold">30 DAYS POST-REPAIR WARRANTY INCLUDED</Badge>
                     <p className="text-xs text-muted-foreground mt-4">
                         This is a computer generated invoice and does not require a physical signature.
@@ -105,7 +105,7 @@ const InvoicePreviewContent = ({ booking }: { booking: Booking }) => {
 
 
 export default function InvoicePreviewSheet({ booking }: { booking: Booking }) {
-    
+
     const handlePrint = () => {
         window.print();
     };
@@ -127,7 +127,7 @@ export default function InvoicePreviewSheet({ booking }: { booking: Booking }) {
             </style>
             <div className="hide-on-print">
                 <SheetHeader className="text-left px-2">
-                    <SheetTitle className="flex items-center gap-2"><Receipt className="w-5 h-5"/>Invoice Preview</SheetTitle>
+                    <SheetTitle className="flex items-center gap-2"><Receipt className="w-5 h-5" />Invoice Preview</SheetTitle>
                 </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto -mx-6 px-0 pt-4 invoice-print-area">

@@ -7,7 +7,7 @@ import type { FormState } from '@/lib/types';
 import { getTranslations } from '@/lib/get-translation';
 import { subDays, format } from 'date-fns';
 import { CloudCog } from 'lucide-react';
-import type { RepairQuote } from '@/app/history/page';
+import type { RepairQuote } from '@/lib/types/booking';
 
 
 export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string; }> {

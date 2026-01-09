@@ -28,38 +28,13 @@ const iconMap: { [key: string]: React.ElementType } = {
   // Add other mappings as needed
 };
 
-export type RepairQuote = {
-  id: string;
-  labor_cost: number;
-  parts_cost: number;
-  total_amount: number;
-  notes: string;
-  status: string;
-};
-
-export type Booking = {
-  id: string;
-  order_id: string;
-  status: string;
-  created_at: string;
-  media_url: string | null;
-  completion_code?: string;
-  categories: {
-    id: string;
-    name: string;
-  };
-  issues: {
-    id: string;
-    title: string;
-  };
-  repair_quotes: RepairQuote[];
-};
+import { Booking, RepairQuote } from '@/lib/types/booking';
 
 const StatusBadge = ({ status }: { status: string }) => {
   const isCompleted = status.toLowerCase() === 'completed';
   const isCancelled = status.toLowerCase() === 'cancelled';
   const isQuotationShared = status.toLowerCase() === 'quotation_shared';
-  
+
   let variantClass = 'bg-yellow-100 text-yellow-700 border-yellow-300'; // Default for in-progress
   let Icon = Clock;
 
@@ -67,8 +42,8 @@ const StatusBadge = ({ status }: { status: string }) => {
     variantClass = 'bg-green-100 text-green-700 border-green-300';
     Icon = CheckCircle;
   } else if (isCancelled) {
-     variantClass = 'bg-red-100 text-red-700 border-red-300';
-     Icon = XCircle;
+    variantClass = 'bg-red-100 text-red-700 border-red-300';
+    Icon = XCircle;
   } else if (isQuotationShared) {
     variantClass = 'bg-blue-100 text-blue-700 border-blue-300';
     Icon = Clock; // Or another icon
@@ -105,27 +80,27 @@ export default function BookingHistoryPage() {
     setError('');
 
     try {
-        const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,completion_code,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-                'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch booking history.');
+      const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,completion_code,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json'
         }
-        
-        const data = await response.json();
-        setBookingHistory(data);
-        setIsAuthenticated(true);
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch booking history.');
+      }
+
+      const data = await response.json();
+      setBookingHistory(data);
+      setIsAuthenticated(true);
 
     } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -141,8 +116,8 @@ export default function BookingHistoryPage() {
           <Card className="rounded-2xl shadow-lg border-0">
             <CardContent className="px-6 pt-6 pb-6">
               <div className="text-center mb-4">
-                  <h1 className="text-2xl font-bold">View History</h1>
-                  <p className="text-muted-foreground">Enter your mobile number to see past bookings.</p>
+                <h1 className="text-2xl font-bold">View History</h1>
+                <p className="text-muted-foreground">Enter your mobile number to see past bookings.</p>
               </div>
               <div className="space-y-4">
                 <Input
@@ -168,128 +143,128 @@ export default function BookingHistoryPage() {
 
   return (
     <>
-    <div className="bg-muted/30 min-h-screen">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <header className="mb-8">
-          <h1 className="text-2xl font-bold font-headline">Booking History</h1>
-          <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            YOUR PAST SERVICE RECORDS
-          </p>
-        </header>
+      <div className="bg-muted/30 min-h-screen">
+        <div className="container mx-auto px-4 py-8 max-w-2xl">
+          <header className="mb-8">
+            <h1 className="text-2xl font-bold font-headline">Booking History</h1>
+            <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              YOUR PAST SERVICE RECORDS
+            </p>
+          </header>
 
-        {bookingHistory.length > 0 ? (
-          <div className="space-y-6">
-            {bookingHistory.map((booking) => {
-              const ServiceIcon = iconMap[booking.categories.name] || Laptop;
-              const isQuotationShared = booking.status.toLowerCase() === 'quotation_shared';
-              const isCodeSent = booking.status.toLowerCase() === 'code_sent';
-              const isCompleted = booking.status.toLowerCase() === 'completed';
-              const quote = booking.repair_quotes?.[0];
+          {bookingHistory.length > 0 ? (
+            <div className="space-y-6">
+              {bookingHistory.map((booking) => {
+                const ServiceIcon = iconMap[booking.categories.name] || Laptop;
+                const isQuotationShared = booking.status.toLowerCase() === 'quotation_shared';
+                const isCodeSent = booking.status.toLowerCase() === 'code_sent';
+                const isCompleted = booking.status.toLowerCase() === 'completed';
+                const quote = booking.repair_quotes?.[0];
 
-              return (
-                <Card key={booking.id} className="rounded-2xl shadow-md border-0 overflow-hidden">
-                  <CardContent className="p-5">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="bg-primary/10 p-3 rounded-xl">
-                          <ServiceIcon className="h-7 w-7 text-primary" />
+                return (
+                  <Card key={booking.id} className="rounded-2xl shadow-md border-0 overflow-hidden">
+                    <CardContent className="p-5">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className="bg-primary/10 p-3 rounded-xl">
+                            <ServiceIcon className="h-7 w-7 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-muted-foreground">ID: {booking.order_id}</p>
+                            <h2 className="text-lg font-bold capitalize">{booking.categories.name.toLowerCase()}</h2>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground">ID: {booking.order_id}</p>
-                          <h2 className="text-lg font-bold capitalize">{booking.categories.name.toLowerCase()}</h2>
-                        </div>
+                        <StatusBadge status={booking.status} />
                       </div>
-                      <StatusBadge status={booking.status} />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground mb-4">
+
+                      <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground mb-4">
                         <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            <span>{format(new Date(booking.created_at), 'dd MMM yyyy')}</span>
+                          <Calendar className="w-4 h-4" />
+                          <span>{format(new Date(booking.created_at), 'dd MMM yyyy')}</span>
                         </div>
                         <div className="flex items-center justify-end gap-2">
-                            <Clock className="w-4 h-4" />
-                            <span>{format(new Date(booking.created_at), 'hh:mm a')}</span>
+                          <Clock className="w-4 h-4" />
+                          <span>{format(new Date(booking.created_at), 'hh:mm a')}</span>
                         </div>
-                    </div>
+                      </div>
 
-                    <div className="flex items-start justify-between gap-4 mb-4">
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div className="flex items-start gap-3">
                           <Tag className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
                           <div>
-                              <p className="text-xs text-muted-foreground">ISSUE</p>
-                              <p className="font-semibold">{booking.issues.title}</p>
+                            <p className="text-xs text-muted-foreground">ISSUE</p>
+                            <p className="font-semibold">{booking.issues.title}</p>
                           </div>
-                      </div>
-                      {booking.media_url && (
+                        </div>
+                        {booking.media_url && (
                           <Dialog>
                             <DialogTrigger asChild>
-                               <div className="flex-shrink-0 w-16 h-16 cursor-pointer">
-                                  <Image
-                                      src={booking.media_url}
-                                      alt="Issue photo"
-                                      width={64}
-                                      height={64}
-                                      className="rounded-lg object-cover w-full h-full border"
-                                  />
-                                </div>
-                            </DialogTrigger>
-                             <DialogContent className="p-0 border-0 max-w-lg">
+                              <div className="flex-shrink-0 w-16 h-16 cursor-pointer">
                                 <Image
-                                    src={booking.media_url}
-                                    alt="Issue photo"
-                                    width={800}
-                                    height={800}
-                                    className="rounded-lg object-contain w-full h-full"
+                                  src={booking.media_url}
+                                  alt="Issue photo"
+                                  width={64}
+                                  height={64}
+                                  className="rounded-lg object-cover w-full h-full border"
                                 />
+                              </div>
+                            </DialogTrigger>
+                            <DialogContent className="p-0 border-0 max-w-lg">
+                              <Image
+                                src={booking.media_url}
+                                alt="Issue photo"
+                                width={800}
+                                height={800}
+                                className="rounded-lg object-contain w-full h-full"
+                              />
                             </DialogContent>
                           </Dialog>
-                      )}
-                    </div>
-                    
-                    <Separator className="my-4" />
-                    
-                    {isCodeSent && booking.completion_code && (
-                        <div className="p-4 bg-blue-50 dark:bg-blue-900/40 rounded-xl text-center mb-4 border border-blue-200 dark:border-blue-800">
-                            <div className="flex items-center justify-center gap-2 text-blue-600 dark:text-blue-300">
-                                <KeyRound className="w-5 h-5" />
-                                <p className="text-sm font-semibold uppercase">Secret Code</p>
-                            </div>
-                            <p className="text-3xl font-bold tracking-widest text-blue-800 dark:text-blue-200 mt-1">{booking.completion_code}</p>
-                            <p className="text-xs text-muted-foreground mt-2">Share this code with the technician if the service is done.</p>
-                        </div>
-                    )}
-                    
-                    {isQuotationShared && quote && (
-                       <Button onClick={() => setSelectedQuote({ ...quote, booking_id: booking.id })} className="w-full font-semibold">
-                          Open Quotation
-                       </Button>
-                    )}
+                        )}
+                      </div>
 
-                    {isCompleted && (
-                       <Button variant="ghost" size="sm" className="w-full font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200">
-                        <Download className="mr-2 h-4 w-4" />
-                        Download Invoice
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="p-10 text-center text-muted-foreground">
-              No booking history found for this mobile number.
-            </CardContent>
-          </Card>
-        )}
+                      <Separator className="my-4" />
+
+                      {isCodeSent && booking.completion_code && (
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/40 rounded-xl text-center mb-4 border border-blue-200 dark:border-blue-800">
+                          <div className="flex items-center justify-center gap-2 text-blue-600 dark:text-blue-300">
+                            <KeyRound className="w-5 h-5" />
+                            <p className="text-sm font-semibold uppercase">Secret Code</p>
+                          </div>
+                          <p className="text-3xl font-bold tracking-widest text-blue-800 dark:text-blue-200 mt-1">{booking.completion_code}</p>
+                          <p className="text-xs text-muted-foreground mt-2">Share this code with the technician if the service is done.</p>
+                        </div>
+                      )}
+
+                      {isQuotationShared && quote && (
+                        <Button onClick={() => setSelectedQuote({ ...quote, booking_id: booking.id })} className="w-full font-semibold">
+                          Open Quotation
+                        </Button>
+                      )}
+
+                      {isCompleted && (
+                        <Button variant="ghost" size="sm" className="w-full font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200">
+                          <Download className="mr-2 h-4 w-4" />
+                          Download Invoice
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="p-10 text-center text-muted-foreground">
+                No booking history found for this mobile number.
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
-    </div>
-    
-    {selectedQuote && (
+
+      {selectedQuote && (
         <QuotationModal
-          quote={{...selectedQuote, booking_id: (selectedQuote as any).booking_id}}
+          quote={{ ...selectedQuote, booking_id: (selectedQuote as any).booking_id }}
           isOpen={!!selectedQuote}
           onClose={() => setSelectedQuote(null)}
           onStatusChange={handleQuoteStatusChange}
