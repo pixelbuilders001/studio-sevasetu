@@ -10,7 +10,7 @@ import { CloudCog } from 'lucide-react';
 import type { RepairQuote } from '@/app/history/page';
 
 
-export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string; } > {
+export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string; }> {
   const orderId = formData.get('order_id');
   const lang = (formData.get('lang') as string) || 'en';
   const t = getTranslations(lang);
@@ -28,14 +28,14 @@ export async function trackBooking(prevState: any, formData: FormData): Promise<
       headers: {
         'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
         'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-         'Content-Type': 'application/json'
+        'Content-Type': 'application/json'
       }
     });
-    
+
     if (!response.ok) {
-        const errorData = await response.json();
-        console.error('API Error:', errorData);
-        return { error: errorData.message || 'Failed to fetch booking status.' };
+      const errorData = await response.json();
+      console.error('API Error:', errorData);
+      return { error: errorData.message || 'Failed to fetch booking status.' };
     }
 
     const historyData = await response.json();
@@ -43,7 +43,7 @@ export async function trackBooking(prevState: any, formData: FormData): Promise<
     if (!historyData || historyData.length === 0) {
       return { error: t('bookingNotFound') };
     }
-    
+
     const dateFormat = "MMM d, yyyy 'at' h:mm a";
     const history = historyData.map((item: any) => ({
       status: item.status,
@@ -61,23 +61,23 @@ export async function trackBooking(prevState: any, formData: FormData): Promise<
 }
 
 export async function bookService(
-  categoryId: string, 
+  categoryId: string,
   problemIds: string,
   pincode: string | undefined,
   referralCode: string | undefined,
   total_estimated_price: number,
   net_inspection_fee: number,
-  prevState: any, 
+  prevState: any,
   formData: FormData
 ): Promise<{ message: string, error?: string, bookingId?: string, referralCode?: string }> {
-  
+
   formData.append('category_id', categoryId);
   const issueIds = problemIds.split(',');
   if (issueIds.length > 0) {
-      formData.append('issue_id', issueIds[0]);
+    formData.append('issue_id', issueIds[0]);
   }
   if (pincode) {
-      formData.append('pincode', pincode);
+    formData.append('pincode', pincode);
   }
 
   // The referral_code is already on formData from the input field
@@ -95,33 +95,33 @@ export async function bookService(
   formData.append('total_estimated_price', total_estimated_price.toString());
   formData.append('net_inspection_fee', net_inspection_fee.toString());
   formData.append('final_amount_paid', ''); // Sent as empty string
-  
+
   try {
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-        },
-        body: formData,
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
+      },
+      body: formData,
     });
 
     const result = await response.json();
-    
+
     if (!response.ok) {
-        console.error('API Error:', result);
-        return { message: "Error", error: result.error_message || result.message || "An unexpected error occurred." };
+      console.error('API Error:', result);
+      return { message: "Error", error: result.error_message || result.message || "An unexpected error occurred." };
     }
-  
+
     const bookingId = result.order_id || result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
     const myReferralCode = result.my_referral_code;
     return { message: "Success", bookingId, referralCode: myReferralCode };
 
-    
+
   } catch (error) {
-      console.error('Booking failed:', error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
-      return { message: "Error", error: errorMessage };
+    console.error('Booking failed:', error);
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+    return { message: "Error", error: errorMessage };
   }
 }
 
@@ -145,8 +145,8 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
     });
 
     if (!quoteUpdateResponse.ok) {
-        const errorData = await quoteUpdateResponse.json();
-        throw new Error(errorData.message || 'Failed to update quote status.');
+      const errorData = await quoteUpdateResponse.json();
+      throw new Error(errorData.message || 'Failed to update quote status.');
     }
 
     // 2. Update the job status
@@ -173,44 +173,44 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
 }
 
 export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
-    try {
-      const commonHeaders = {
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      };
+  try {
+    const commonHeaders = {
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+      'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+    };
 
-      // 1. Update the repair_quotes table
-      const quoteUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/repair_quotes?id=eq.${quote.id}`, {
-        method: 'PATCH',
-        headers: {
-          ...commonHeaders,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({ status: 'quotation_rejected' }),
-      });
+    // 1. Update the repair_quotes table
+    const quoteUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/repair_quotes?id=eq.${quote.id}`, {
+      method: 'PATCH',
+      headers: {
+        ...commonHeaders,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ status: 'quotation_rejected' }),
+    });
 
-      if (!quoteUpdateResponse.ok) {
-          const errorData = await quoteUpdateResponse.json();
-          throw new Error(errorData.message || 'Failed to update quote status.');
-      }
+    if (!quoteUpdateResponse.ok) {
+      const errorData = await quoteUpdateResponse.json();
+      throw new Error(errorData.message || 'Failed to update quote status.');
+    }
 
-      // 2. Update the job status
-      const jobStatusResponse = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/update-job-status', {
-        method: 'POST',
-        headers: commonHeaders,
-        body: JSON.stringify({ 
-            booking_id: quote.booking_id,
-            status: 'quotation_rejected',
-            note: 'Customer has rejected the quotation.'
-        }),
-      });
+    // 2. Update the job status
+    const jobStatusResponse = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/update-job-status', {
+      method: 'POST',
+      headers: commonHeaders,
+      body: JSON.stringify({
+        booking_id: quote.booking_id,
+        status: 'quotation_rejected',
+        note: 'Customer has rejected the quotation.'
+      }),
+    });
 
-     if (!jobStatusResponse.ok) {
+    if (!jobStatusResponse.ok) {
       const errorData = await jobStatusResponse.json();
       throw new Error(errorData.message || 'Failed to update job status.');
     }
-    
+
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'An unexpected error occurred.';
@@ -218,6 +218,5 @@ export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
   }
 }
 
-    
 
-    
+

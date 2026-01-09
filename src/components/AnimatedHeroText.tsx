@@ -4,38 +4,40 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 const services = [
-    'Laptop',
-    'Bike',
-    'Fridge',
-    'Mobile',
-    'TV',
-    'and more'
+  'Ac',
+  'Mobile',
+  'Laptop',
+  'Bike'
 ];
 
-const AnimatedHeroText = () => {
-    const [wordIndex, setWordIndex] = useState(0);
+interface AnimatedHeroTextProps {
+  className?: string;
+  highlightColor?: string;
+}
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setWordIndex((prev) => (prev + 1) % services.length);
-      }, 2800);
-      return () => clearInterval(interval);
-    }, [services.length]);
+const AnimatedHeroText = ({ className, highlightColor = "text-primary" }: AnimatedHeroTextProps) => {
+  const [wordIndex, setWordIndex] = useState(0);
 
-    return (
-        <>
-            Repair{' '}
-            <div className="relative inline-flex flex-col overflow-hidden">
-                    <span 
-                      key={services[wordIndex]} 
-                      className="text-blue-400 animate-smooth-slide-up block whitespace-nowrap font-bold bg-white border rounded-md px-2"
-                    >
-                      {services[wordIndex]}
-                    </span>
-                  </div>
-            <br />
-        </>
-    );
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % services.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className={cn("flex flex-col font-bold leading-tight", className)}>
+      <div className="flex items-center gap-1.5">
+        <span>We Fix</span>
+        <div className="relative h-[1.2em] w-24 md:w-32 overflow-hidden flex items-center">
+          <div key={services[wordIndex]} className={cn("animate-fade-in-up absolute left-0", highlightColor)}>
+            {services[wordIndex]}
+          </div>
+        </div>
+      </div>
+      <span>At Your Doorstep</span>
+    </div>
+  );
 };
 
 export default AnimatedHeroText;

@@ -17,7 +17,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <LanguageProvider>
       <LocationProvider>
         <Header />
-        <main className="flex-grow pb-16 md:pb-0">{children}</main>
+        <main className="flex-grow pb-24 pt-16 md:pt-20">{children}</main>
         <Footer />
         {showBottomNav && <BottomNavBar />}
       </LocationProvider>

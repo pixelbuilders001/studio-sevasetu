@@ -20,15 +20,15 @@ const Logo = () => (
 
 export default function Header() {
   const { t } = useTranslation();
-  
+
   return (
-    <header className="bg-background border-b sticky top-0 z-40">
+    <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 border-b border-white/10 glass">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16 md:h-20">
           <Logo />
-          <div className="flex items-center gap-2">
-              <LocationSelector />
-              <LanguageSwitcher />
+          <div className="flex items-center gap-3">
+            <LocationSelector />
+            <LanguageSwitcher />
           </div>
         </div>
       </div>

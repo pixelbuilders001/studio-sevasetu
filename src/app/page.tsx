@@ -19,72 +19,79 @@ import AllServicesSheet from '@/components/AllServicesSheet';
 import BookingTrackerModal from '@/components/BookingTrackerModal';
 import { useLocation } from '@/context/LocationContext';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
+import FullScreenLoader from '@/components/FullScreenLoader';
 
 
 function ServiceCard({ category }: { category: ServiceCategory }) {
-    const { location, isServiceable, setDialogOpen } = useLocation();
-    const router = useRouter();
+  const { location, isServiceable, setDialogOpen } = useLocation();
+  const router = useRouter();
 
-    const handleClick = (e: React.MouseEvent) => {
-        if (!isServiceable) {
-            e.preventDefault();
-            setDialogOpen(true);
-        } else {
-            router.push(`/book/${category.slug}`);
-        }
-    };
+  const [isNavigating, setIsNavigating] = useState(false);
 
-    const inspectionFee = category.base_inspection_fee * location.inspection_multiplier;
+  const handleClick = (e: React.MouseEvent) => {
+    if (!isServiceable) {
+      e.preventDefault();
+      setDialogOpen(true);
+    } else {
+      setIsNavigating(true);
+      // Small delay to ensure loader renders before navigation starts (React batching)
+      setTimeout(() => {
+        router.push(`/book/${category.slug}`);
+      }, 100);
+    }
+  };
 
-    return (
-        <a href={`/book/${category.slug}`} onClick={handleClick} className="group">
-            <Card className="bg-card border rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full aspect-square justify-center items-center bg-white">
-                <CardContent className="p-2 flex flex-col items-center justify-center gap-2">
-                    <div className="relative w-12 h-12">
-                        <Image
-                            src={category.image.imageUrl}
-                            alt={category.name}
-                            fill
-                            sizes="(max-width: 768px) 15vw, 10vw"
-                            className="object-contain"
-                            data-ai-hint={category.image.imageHint}
-                        />
-                    </div>
-                    <h3 className="font-bold text-xs text-foreground">{category.name}</h3>
-                    {isServiceable && (
-                        <div className="text-xs font-bold text-primary flex items-center">
-                            <IndianRupee className="w-3 h-3" />
-                            {inspectionFee}
-                            <span className="text-muted-foreground ml-1">onwards</span>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-        </a>
-    );
+  const inspectionFee = category.base_inspection_fee * location.inspection_multiplier;
+
+  return (
+    <>
+      {isNavigating && <FullScreenLoader />}
+      <div onClick={handleClick} className="group block h-full cursor-pointer">
+        <Card className="bg-white dark:bg-card border-none shadow-soft hover:shadow-lg transition-all duration-300 h-full flex flex-col items-center justify-center p-4 active:scale-95">
+          <div className="relative w-16 h-16 mb-3 bg-secondary/50 rounded-2xl p-3 group-hover:bg-primary/10 transition-colors">
+            <Image
+              src={category.image.imageUrl}
+              alt={category.name}
+              fill
+              sizes="(max-width: 768px) 20vw, 15vw"
+              className="object-contain p-1"
+              data-ai-hint={category.image.imageHint}
+            />
+          </div>
+          <h3 className="font-semibold text-sm text-foreground text-center leading-tight mb-1">{category.name}</h3>
+          {isServiceable && (
+            <div className="text-[10px] font-medium text-muted-foreground flex items-center bg-secondary px-2 py-0.5 rounded-full">
+              <IndianRupee className="w-2.5 h-2.5 mr-0.5" />
+              {inspectionFee}+
+            </div>
+          )}
+        </Card>
+      </div>
+    </>
+  );
 }
 
 const HeroHouse = () => (
   <svg width="160" height="140" viewBox="0 0 160 140" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute right-0 bottom-0 opacity-20">
-    <path d="M80 0L160 50V140H0V50L80 0Z" fill="white" fillOpacity="0.1"/>
-    <path d="M105 115V95H115V115H130V85L80 55L30 85V115H45V105H55V115H70V95H95V115H105Z" fill="white" fillOpacity="0.2"/>
-    <path d="M90 105H100V115H90V105Z" fill="#FF9933"/>
+    <path d="M80 0L160 50V140H0V50L80 0Z" fill="white" fillOpacity="0.1" />
+    <path d="M105 115V95H115V115H130V85L80 55L30 85V115H45V105H55V115H70V95H95V115H105Z" fill="white" fillOpacity="0.2" />
+    <path d="M90 105H100V115H90V105Z" fill="#FF9933" />
   </svg>
 )
 
-export default function Home({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const { lang } = searchParams;
+export default function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const { lang } = use(searchParams);
   const { t } = useTranslation();
-  
+
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
-        const data = await getServiceCategories();
-        setCategories(data);
+      const data = await getServiceCategories();
+      setCategories(data);
     };
     fetchCategories();
   }, []);
@@ -92,8 +99,8 @@ export default function Home({ searchParams }: { searchParams: { [key: string]: 
   const featureCards = [
     {
       icon: ShieldCheck,
-      title: t('verifiedTechniciansTitle', {defaultValue: 'Verified'}),
-      description: t('verifiedTechniciansDesc', {defaultValue: 'SAFE PROS'}),
+      title: t('verifiedTechniciansTitle', { defaultValue: 'Verified' }),
+      description: t('verifiedTechniciansDesc', { defaultValue: 'SAFE PROS' }),
     },
     {
       icon: Clock,
@@ -108,119 +115,122 @@ export default function Home({ searchParams }: { searchParams: { [key: string]: 
   ];
 
   return (
-    <>
-      <section className="bg-background text-foreground">
-        <div className="container mx-auto px-4 pt-4 pb-8 md:pt-8 md:pb-12">
-            <div 
-                className="relative text-white rounded-2xl p-8 shadow-xl overflow-hidden bg-cover bg-center"
-                style={{backgroundImage: "url('https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/only%20illustration%20not%20texts%20and%20all.jpg')"}}
-            >
-               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-slate-900/20"></div>
-                <div className="relative z-10">
-                    <div className="absolute top-0 right-0 bg-accent text-accent-foreground font-bold px-3 py-2 rounded-bl-lg">
-                        <span className="text-xl">60</span>
-                        <span className="block text-xs leading-none">MINS</span>
-                    </div>
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white font-semibold px-3 py-1.5 rounded-full text-xs mb-4">
-                        <Zap className="w-4 h-4 text-yellow-300"/>
-                        INDIA'S TRUSTED REPAIR APP
-                    </div>
-                    <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight">
-                        <AnimatedHeroText />
-                        <span className="text-white leading-tight tracking-tight">At Your Doorstep</span>
-                    </h1>
-                    <p className="text-base text-white/80 max-w-sm mb-6">
-                       Verified experts for Mobile, Laptop & AC. Fixed in 60 minutes.
-                    </p>
-                    <HeroCTA />
-                </div>
-            </div>
-        </div>
-      </section>
-      
-      <section className="py-8 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-3 gap-2 md:gap-4">
-            {featureCards.map((card, index) => (
-              <Card key={index} className="bg-card border-none shadow-md hover:shadow-lg transition-shadow">
-                <CardContent className="p-3 flex flex-col items-center justify-center text-center">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary mb-2">
-                        <card.icon className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-bold text-xs md:text-base">{card.title}</h3>
-                    <p className="text-xs text-muted-foreground">{card.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-secondary/30 pb-20">
+      {/* Hero Section */}
+      <section className="relative bg-white dark:bg-card pb-8 rounded-b-[2.5rem] shadow-soft overflow-hidden">
+        <div className="container mx-auto px-4 pt-6">
 
-      <section className="py-6 bg-muted/30 border-y">
-        <div className="container mx-auto px-4">
-            <BookingTrackerModal asChild={true}>
-              <div className="bg-background rounded-2xl p-4 flex items-center gap-4 cursor-pointer shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-900/50 rounded-full">
-                  <Search className="w-6 h-6 text-blue-500" />
+
+          {/* Banner */}
+          <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-[2/1] md:aspect-[3/1]">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center p-6 text-white">
+              <div className="flex-1 z-10">
+                <div className="inline-block px-2 py-1 bg-white/20 rounded-md text-[10px] font-bold mb-2 backdrop-blur-sm">
+                  FAST SERVICE
                 </div>
-                <div className="flex-grow">
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs font-bold uppercase text-blue-500">Live Status</p>
-                    <div className="relative flex h-2 w-2">
-                        <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></div>
-                        <div className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></div>
-                    </div>
-                  </div>
-                  <h3 className="font-bold text-base">Track Ongoing Repair</h3>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Enter ID to check progress</p>
+                <div className="mb-4">
+                  <AnimatedHeroText className="text-2xl md:text-3xl leading-tight" highlightColor="text-yellow-300" />
                 </div>
-                 <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-full text-muted-foreground">
-                   <ChevronRight className="w-5 h-5" />
-                 </div>
+                <p className="text-white/80 text-xs mb-4">Expert technicians at your doorstep.</p>
+
+                {/* Hero CTA adapted for the banner context */}
+                <HeroCTA />
               </div>
-            </BookingTrackerModal>
+              <div className="absolute right-0 bottom-0 top-0 w-1/2 bg-[url('https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/only%20illustration%20not%20texts%20and%20all.jpg')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="services" className="py-8 md:py-12 bg-muted/20">
+      {/* Quick Features - Horizontal Scroll */}
+      <section className="py-6 overflow-x-auto no-scrollbar">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h2 className="text-3xl font-bold font-headline">What's broken?</h2>
-              <p className="text-muted-foreground">CHOOSE YOUR DEVICE</p>
-            </div>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost">{t('viewAll', {defaultValue: 'View All'})}</Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-2xl">
-                 <AllServicesSheet />
-              </SheetContent>
-            </Sheet>
-          </div>
-          <div className="services-grid grid gap-2">
-            {categories.slice(0, 6).map((category) => (
-                <ServiceCard key={category.id} category={category}/>
+          <div className="flex gap-4 min-w-max">
+            {featureCards.map((card, index) => (
+              <div key={index} className="flex items-center gap-3 bg-white dark:bg-card p-3 pr-6 rounded-full shadow-sm border border-border/50">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <card.icon className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold">{card.title}</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">{card.description}</span>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <div id="how-it-works">
-        <HowItWorks t={t} />
-      </div>
-
-      <VerifiedTechnicians t={t} />
-
-      <section id="why-choose-us" className="py-8 md:py-12">
-        <div className="container mx-auto px-4">
-          <TrustIndicators t={t} />
+      {/* Services Grid */}
+      <section id="services" className="container mx-auto px-4 mb-8">
+        <div className="flex justify-between items-end mb-4 px-1">
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Our Services</h2>
+            <p className="text-xs text-muted-foreground">Select a category to book</p>
+          </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/5 h-8 text-xs font-medium">
+                {t('viewAll', { defaultValue: 'View All' })}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[90vh] flex flex-col rounded-t-3xl">
+              <AllServicesSheet />
+            </SheetContent>
+          </Sheet>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {categories.slice(0, 6).map((category) => (
+            <ServiceCard key={category.id} category={category} />
+          ))}
         </div>
       </section>
 
-      <Testimonials t={t} />
+      {/* Live Tracking Card */}
+      <section className="container mx-auto px-4 mb-8">
+        <BookingTrackerModal asChild={true}>
+          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-5 text-white shadow-lg active:scale-98 transition-transform cursor-pointer relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-20">
+              <Search className="w-24 h-24 -mr-8 -mt-8" />
+            </div>
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                  </span>
+                  <p className="text-xs font-bold uppercase tracking-wider text-white/90">Live Status</p>
+                </div>
+                <h3 className="text-xl font-bold mb-1">Track Your Repair</h3>
+                <p className="text-white/80 text-xs">Check current status of your booking</p>
+              </div>
+              <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
+                <ChevronRight className="w-5 h-5" />
+              </div>
+            </div>
+          </div>
+        </BookingTrackerModal>
+      </section>
 
-      <BecomePartner />
-    </>
+      <div className="bg-white dark:bg-card rounded-t-3xl shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-8 pb-20">
+        <div id="how-it-works">
+          <HowItWorks t={t} />
+        </div>
+
+        <VerifiedTechnicians t={t} />
+
+        <section id="why-choose-us" className="py-8 md:py-12">
+          <div className="container mx-auto px-4">
+            <TrustIndicators t={t} />
+          </div>
+        </section>
+
+        <Testimonials t={t} />
+
+        <BecomePartner />
+      </div>
+    </div>
   );
 }
+
