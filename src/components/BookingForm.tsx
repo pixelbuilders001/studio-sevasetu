@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift, X, Calendar } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift, X, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
@@ -16,6 +16,11 @@ import Image from 'next/image';
 import { Card } from './ui/card';
 import FullScreenLoader from '@/components/FullScreenLoader';
 import { cn } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const initialState = {
   message: "",
@@ -42,11 +47,33 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined, totalEstimatedPrice, finalPayable);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
 
-  const [selectedDay, setSelectedDay] = useState('today');
-  const [selectedTime, setSelectedTime] = useState('best');
+  const [date, setDate] = useState<Date | null>(() => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    if (currentHour >= 18) {
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+      return tomorrow;
+    }
+    return now;
+  });
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("9-12");
   const [address, setAddress] = useState('');
   const [isGpsLoading, setIsGpsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    if (currentHour >= 18) {
+      toast({
+        title: "Booking for Today Closed",
+        description: "Same-day service is unavailable after 6 PM. Please select a booking for tomorrow or a future date.",
+      });
+    }
+  }, [toast]);
+
 
   useEffect(() => {
     if (state?.error) {
@@ -163,6 +190,22 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
     setDiscount(0);
   };
 
+  const onDateChange = (newDate: any) => {
+    setDate(newDate);
+    setIsCalendarOpen(false);
+  };
+
+  const getMinDate = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    if (currentHour >= 18) {
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+      return tomorrow;
+    }
+    return now;
+  };
+
   return (
     <>
       <form action={formAction} className="space-y-6 pb-36">
@@ -246,36 +289,47 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
 
         {/* Time Selection Section */}
         <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-          <div className="flex items-center gap-2 px-1 mb-3">
-            <Calendar className="w-4 h-4 text-primary" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Pick a Schedule</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              type="button"
-              variant={selectedDay === 'today' ? 'default' : 'outline'}
-              onClick={() => setSelectedDay('today')}
-              className={cn(
-                "h-12 rounded-2xl font-bold transition-all",
-                selectedDay === 'today' ? "bg-primary shadow-lg shadow-primary/20" : "hover:border-primary/50 text-muted-foreground"
-              )}
-            >
-              Today
-            </Button>
-            <Button
-              type="button"
-              variant={selectedDay === 'tomorrow' ? 'default' : 'outline'}
-              onClick={() => setSelectedDay('tomorrow')}
-              className={cn(
-                "h-12 rounded-2xl font-bold transition-all",
-                selectedDay === 'tomorrow' ? "bg-primary shadow-lg shadow-primary/20" : "hover:border-primary/50 text-muted-foreground"
-              )}
-            >
-              Tomorrow
-            </Button>
-          </div>
-          <input type="hidden" name="preferred_time_slot" value={`${selectedDay}-best`} />
+            <div className="flex items-center gap-2 px-1 mb-3">
+                <CalendarIcon className="w-4 h-4 text-primary" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Service Date & Time</h2>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                    <PopoverTrigger asChild>
+                        <Button
+                        variant={"outline"}
+                        className={cn(
+                            "w-full justify-start text-left font-normal h-12 rounded-2xl",
+                            !date && "text-muted-foreground"
+                        )}
+                        >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? date.toLocaleDateString() : <span>Pick a date</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <Calendar
+                        onChange={onDateChange}
+                        value={date}
+                        minDate={getMinDate()} // Prevents selecting past dates
+                        />
+                    </PopoverContent>
+                </Popover>
+                <Select onValueChange={setSelectedTimeSlot} value={selectedTimeSlot}>
+                <SelectTrigger className="h-12 rounded-2xl">
+                    <SelectValue placeholder="Select time" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="9 AM-12 PM">9 AM - 12 PM</SelectItem>
+                    <SelectItem value="12 PM-2 PM">12 PM - 2 PM</SelectItem>
+                    <SelectItem value="2 PM-5 PM">2 PM - 5 PM</SelectItem>
+                </SelectContent>
+                </Select>
+            </div>
+            <input type="hidden" name="preferred_service_date" value={date ? date.toISOString().split('T')[0] : ''} />
+            <input type="hidden" name="preferred_time_slot" value={selectedTimeSlot} />
         </div>
+
 
         {/* Referral Section */}
         <div className="animate-fade-in-up" style={{ animationDelay: '250ms' }}>

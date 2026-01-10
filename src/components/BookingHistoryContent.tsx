@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import QuotationModal from '@/components/QuotationModal';
 import { Booking, RepairQuote } from '@/lib/types/booking';
+import { CancelBookingModal } from '@/components/CancelBookingModal';
 
 const iconMap: { [key: string]: React.ElementType } = {
     'MOBILE PHONES': Laptop,
@@ -73,6 +74,8 @@ export default function BookingHistoryContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
     const [selectedQuote, setSelectedQuote] = useState<(RepairQuote & { booking_id: string }) | null>(null);
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [bookingToCancelId, setBookingToCancelId] = useState<string | null>(null);
 
     const handleContinue = async () => {
         if (!mobileNumber.match(/^[6-9]\d{9}$/)) {
@@ -119,6 +122,21 @@ export default function BookingHistoryContent() {
             return b;
         }));
         setSelectedQuote(null);
+    };
+
+    const openCancelModal = (bookingId: string) => {
+        setBookingToCancelId(bookingId);
+        setIsCancelModalOpen(true);
+    };
+
+    const closeCancelModal = () => {
+        setBookingToCancelId(null);
+        setIsCancelModalOpen(false);
+    };
+
+    const handleCancellationSuccess = () => {
+        closeCancelModal();
+        handleContinue(); // Refreshes the booking history
     };
 
     if (!isAuthenticated) {
@@ -172,6 +190,8 @@ export default function BookingHistoryContent() {
                                 const isCodeSent = booking.status.toLowerCase() === 'code_sent';
                                 const isCompleted = booking.status.toLowerCase() === 'completed';
                                 const quote = booking.repair_quotes?.[0];
+                                const isCancelable = ['pending', 'confirmed', 'assigned'].includes(booking.status.toLowerCase());
+
 
                                 const isRepairCompleted = booking.status.toLowerCase() === 'repair_completed';
 
@@ -278,6 +298,13 @@ export default function BookingHistoryContent() {
                                                 </Button>
                                             )}
 
+                                            {isCancelable && (
+                                            <Button variant="destructive" onClick={() => openCancelModal(booking.id)} className="w-full font-semibold mt-2">
+                                                Cancel Booking
+                                            </Button>
+                                            )}
+
+
                                             {(quote?.status === 'quotation_approved' || isRepairCompleted) && quote?.final_amount_to_be_paid && (
                                                 <div className={cn(
                                                     "p-3 rounded-xl flex justify-between items-center mb-4 border",
@@ -331,6 +358,12 @@ export default function BookingHistoryContent() {
                     onStatusChange={handleQuoteStatusChange}
                 />
             )}
+            <CancelBookingModal
+                isOpen={isCancelModalOpen}
+                onClose={closeCancelModal}
+                bookingId={bookingToCancelId}
+                onSuccess={handleCancellationSuccess}
+            />
         </>
     );
 }

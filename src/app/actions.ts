@@ -71,31 +71,48 @@ export async function bookService(
   formData: FormData
 ): Promise<{ message: string, error?: string, bookingId?: string, referralCode?: string }> {
 
-  formData.append('category_id', categoryId);
+  const payload = new FormData();
+
+  // Extract all fields from the original form data
+  for (const [key, value] of formData.entries()) {
+    payload.append(key, value);
+  }
+
+  // Append/overwrite data from function arguments for security and consistency
+  payload.set('category_id', categoryId);
+
   const issueIds = problemIds.split(',');
   if (issueIds.length > 0) {
-    formData.append('issue_id', issueIds[0]);
-  }
-  if (pincode) {
-    formData.append('pincode', pincode);
+    payload.set('issue_id', issueIds[0]);
+  } else if (payload.has('issue_id')) {
+    payload.delete('issue_id');
   }
 
-  // The referral_code is already on formData from the input field
-  // But we make sure it's the verified one passed from the function binding if available
-  if (referralCode) {
-    formData.set('referral_code', referralCode);
-  } else {
-    // Ensure we don't send an empty referral code if the user cleared the input
-    if (formData.has('referral_code')) {
-      formData.delete('referral_code');
-    }
+  if (pincode) {
+    payload.set('pincode', pincode);
   }
+
+    // The `referralCode` argument is the verified code from the `bind` call.
+    // It should be prioritized.
+    if (referralCode) {
+        payload.set('referral_code', referralCode);
+    } else {
+        // If no verified code, check for a code typed in the form.
+        const formReferralCode = payload.get('referral_code');
+        if (!formReferralCode || typeof formReferralCode !== 'string' || !formReferralCode.trim()) {
+            // If the form field is empty or missing, ensure it's not in the payload.
+            payload.delete('referral_code');
+        }
+        // If a code was typed but not verified, it will be sent as is.
+    }
+
 
   // Add new pricing fields
-  formData.append('total_estimated_price', total_estimated_price.toString());
-  formData.append('net_inspection_fee', net_inspection_fee.toString());
-  formData.append('final_amount_paid', ''); // Sent as empty string
-  formData.append('final_amount_to_be_paid', '');
+  payload.set('total_estimated_price', total_estimated_price.toString());
+  payload.set('net_inspection_fee', net_inspection_fee.toString());
+  payload.set('final_amount_paid', '');
+  payload.set('final_amount_to_be_paid', '');
+
 
   try {
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
@@ -104,7 +121,7 @@ export async function bookService(
         'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
         'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
       },
-      body: formData,
+      body: payload,
     });
 
     const result = await response.json();
