@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle, Image as ImageIcon, KeyRound } from 'lucide-react';
+import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle, Image as ImageIcon, KeyRound, IndianRupee } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
@@ -26,6 +26,7 @@ const iconMap: { [key: string]: React.ElementType } = {
     'AC': AirVent,
     'LAPTOP': Laptop,
 };
+
 
 const StatusBadge = ({ status }: { status: string }) => {
     const isCompleted = status.toLowerCase() === 'completed';
@@ -83,7 +84,7 @@ export default function BookingHistoryContent() {
         setError('');
 
         try {
-            const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,completion_code,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
+            const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,status,created_at,media_url,completion_code,final_amount_to_be_paid,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
@@ -246,6 +247,19 @@ export default function BookingHistoryContent() {
                                             </div>
 
                                             <Separator className="my-4" />
+
+                                            {isCompleted && booking.final_amount_to_be_paid && (
+                                                <div className="p-3 bg-green-50 dark:bg-green-900/40 rounded-xl flex justify-between items-center mb-4 border border-green-200 dark:border-green-800">
+                                                    <div className="flex items-center gap-2 text-green-600 dark:text-green-300">
+                                                        <CheckCircle className="w-5 h-5" />
+                                                        <p className="text-sm font-semibold uppercase">Final Amount Paid</p>
+                                                    </div>
+                                                    <p className="text-2xl font-bold text-green-800 dark:text-green-200 flex items-center">
+                                                        <IndianRupee className="w-6 h-6" />
+                                                        {booking.final_amount_to_be_paid}
+                                                    </p>
+                                                </div>
+                                            )}
 
                                             {isCodeSent && booking.completion_code && (
                                                 <div className="p-4 bg-blue-50 dark:bg-blue-900/40 rounded-xl text-center mb-4 border border-blue-200 dark:border-blue-800">

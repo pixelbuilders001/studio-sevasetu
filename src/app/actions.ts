@@ -95,6 +95,7 @@ export async function bookService(
   formData.append('total_estimated_price', total_estimated_price.toString());
   formData.append('net_inspection_fee', net_inspection_fee.toString());
   formData.append('final_amount_paid', ''); // Sent as empty string
+  formData.append('final_amount_to_be_paid', '');
 
   try {
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
@@ -152,6 +153,23 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
       throw new Error(errorData.message || 'Failed to update quote status.');
     }
 
+    // 2. Update the booking table with final amount and accepted_at
+    const bookingUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking?id=eq.${quote.booking_id}`, {
+      method: 'PATCH',
+      headers: {
+        ...commonHeaders,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        final_amount_to_be_paid: quote.total_amount,
+        accepted_at: new Date().toISOString()
+      }),
+    });
+
+    if (!bookingUpdateResponse.ok) {
+      const errorData = await bookingUpdateResponse.json();
+      throw new Error(errorData.message || 'Failed to update booking with final amount.');
+    }
 
 
     // 2. Update the job status
@@ -224,6 +242,3 @@ export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
     return { success: false, error: message };
   }
 }
-
-
-
