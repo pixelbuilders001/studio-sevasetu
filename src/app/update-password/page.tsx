@@ -1,9 +1,7 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import { useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createSupabaseBrowserClient } from '@/lib/supabaseClient'; // Correct import
 import { useRouter } from 'next/navigation';
 
 export default function UpdatePassword() {
@@ -13,9 +11,6 @@ export default function UpdatePassword() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
-  // Initialize the Supabase client once per component
-  const supabase = createClientComponentClient();
 
   const handleUpdatePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,25 +25,22 @@ export default function UpdatePassword() {
     setLoading(true);
 
     try {
-      // The user is already authenticated at this point because they followed a valid link from the password reset email.
+      // Initialize the Supabase client here, using the new ssr-friendly client
+      const supabase = createSupabaseBrowserClient();
       const { error } = await supabase.auth.updateUser({ password });
 
       if (error) {
-        // If Supabase returns an error, show it to the user
         setError(`Error updating password: ${error.message}`);
       } else {
-        // On success, show a confirmation message and then redirect
         setMessage("Password updated successfully! You will be redirected to the home page shortly.");
         setTimeout(() => {
           router.push('/');
         }, 3000);
       }
     } catch (e: any) {
-        // Catch any other unexpected errors
         console.error("An unexpected error occurred:", e);
         setError(e.message);
     } finally {
-        // IMPORTANT: This ensures the loading state is always turned off, even if an error occurs.
         setLoading(false);
     }
   };

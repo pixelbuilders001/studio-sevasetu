@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { supabase } from '@/lib/supabaseClient';
+import { createSupabaseBrowserClient } from '@/lib/supabaseClient'; // Updated import
 import { Session } from '@supabase/supabase-js';
 
 const AuthHeaderLogo = ({ title, subtitle }: { title: React.ReactNode; subtitle: string }) => (
@@ -35,6 +35,8 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  
+  const supabase = createSupabaseBrowserClient(); // New client instantiation
 
   useEffect(() => {
     const getSession = async () => {
@@ -50,7 +52,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase.auth]);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
