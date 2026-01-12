@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
@@ -11,7 +12,6 @@ export default function UpdatePassword() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const supabase = createClientComponentClient();
 
   const handleUpdatePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,6 +24,8 @@ export default function UpdatePassword() {
       setLoading(false);
       return;
     }
+    
+    const supabase = createClientComponentClient();
 
     const { error } = await supabase.auth.updateUser({ password });
 
