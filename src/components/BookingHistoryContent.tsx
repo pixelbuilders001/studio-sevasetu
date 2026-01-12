@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Card,
     CardContent,
@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle, Image as ImageIcon, KeyRound, IndianRupee } from 'lucide-react';
+import { AirVent, Laptop, Calendar, Clock, Download, Tag, Phone, ArrowRight, Loader2, XCircle, CheckCircle, Image as ImageIcon, KeyRound, IndianRupee, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
@@ -39,7 +39,7 @@ const StatusBadge = ({ status }: { status: string }) => {
     let variantClass = 'bg-yellow-100 text-yellow-700 border-yellow-300';
     let Icon = Clock;
 
-    if (isCompleted) {
+    if (isCompleted || isRepairCompleted) {
         variantClass = 'bg-green-100 text-green-700 border-green-300';
         Icon = CheckCircle;
     } else if (isCancelled) {
@@ -50,9 +50,6 @@ const StatusBadge = ({ status }: { status: string }) => {
         Icon = Clock;
     } else if (isQuotationApproved) {
         variantClass = 'bg-indigo-100 text-indigo-700 border-indigo-300';
-        Icon = CheckCircle;
-    } else if (isRepairCompleted) {
-        variantClass = 'bg-green-100 text-green-700 border-green-300';
         Icon = CheckCircle;
     }
 
@@ -67,6 +64,24 @@ const StatusBadge = ({ status }: { status: string }) => {
     );
 };
 
+const ReferralCard = ({ code, onShare }: { code: string, onShare: () => void }) => {
+    const shareMessage = `Get flat Rs. 100 OFF on your first booking using my referral code: ${code}`;
+
+    return (
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mt-4">
+            <div className="flex items-center gap-3 mb-2">
+                <Gift className="w-5 h-5 text-blue-600" />
+                <h3 className="font-bold text-blue-800">Refer & Earn!</h3>
+            </div>
+            <p className="text-sm text-blue-700 mb-3">Share your referral code with friends and get ₹50 when they complete their first service.</p>
+            <div className="bg-white rounded-lg p-2 flex items-center justify-between gap-2 border border-blue-100">
+                <p className="text-lg font-bold text-blue-900 tracking-wider font-mono">{code}</p>
+                <Button size="sm" onClick={onShare} className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 h-8">SHARE</Button>
+            </div>
+        </div>
+    )
+}
+
 export default function BookingHistoryContent() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [mobileNumber, setMobileNumber] = useState('');
@@ -76,6 +91,36 @@ export default function BookingHistoryContent() {
     const [selectedQuote, setSelectedQuote] = useState<(RepairQuote & { booking_id: string }) | null>(null);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [bookingToCancelId, setBookingToCancelId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchReferralCode = async () => {
+            const completedBookings = bookingHistory.filter(b => b.status === 'repair_completed' && !b.referral_code);
+
+            if (completedBookings.length > 0) {
+                try {
+                    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/referral_codes?mobile_number=eq.${mobileNumber}`, {
+                        headers: {
+                            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+                            'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+                        }
+                    });
+                    const referralData = await response.json();
+                    if (referralData.length > 0) {
+                        const code = referralData[0].referral_code;
+                        setBookingHistory(prev => prev.map(b => (
+                            b.status === 'repair_completed' ? { ...b, referral_code: code } : b
+                        )));
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch referral code:', error);
+                }
+            }
+        };
+
+        if (isAuthenticated) {
+            fetchReferralCode();
+        }
+    }, [bookingHistory, isAuthenticated, mobileNumber]);
 
     const handleContinue = async () => {
         if (!mobileNumber.match(/^[6-9]\d{9}$/)) {
@@ -122,6 +167,17 @@ export default function BookingHistoryContent() {
             return b;
         }));
         setSelectedQuote(null);
+    };
+
+    const handleShare = (code: string) => {
+        const shareMessage = `Get flat Rs. 100 OFF on your first booking using my referral code: ${code}`;
+        if (navigator.share) {
+            navigator.share({ title: 'Repair Service Referral', text: shareMessage });
+        } else {
+            // Fallback for browsers that don't support navigator.share
+            navigator.clipboard.writeText(shareMessage);
+            alert('Referral message copied to clipboard!');
+        }
     };
 
     const openCancelModal = (bookingId: string) => {
@@ -191,8 +247,6 @@ export default function BookingHistoryContent() {
                                 const isCompleted = booking.status.toLowerCase() === 'completed';
                                 const quote = booking.repair_quotes?.[0];
                                 const isCancelable = ['pending', 'confirmed', 'assigned'].includes(booking.status.toLowerCase());
-
-
                                 const isRepairCompleted = booking.status.toLowerCase() === 'repair_completed';
 
                                 return (
@@ -304,7 +358,6 @@ export default function BookingHistoryContent() {
                                             </Button>
                                             )}
 
-
                                             {(quote?.status === 'quotation_approved' || isRepairCompleted) && quote?.final_amount_to_be_paid && (
                                                 <div className={cn(
                                                     "p-3 rounded-xl flex justify-between items-center mb-4 border",
@@ -334,6 +387,10 @@ export default function BookingHistoryContent() {
                                                     <Download className="mr-2 h-4 w-4" />
                                                     Download Invoice
                                                 </Button>
+                                            )}
+
+                                            {isRepairCompleted && booking.referral_code && (
+                                                <ReferralCard code={booking.referral_code} onShare={() => handleShare(booking.referral_code!)} />
                                             )}
                                         </CardContent>
                                     </Card>

@@ -84,6 +84,54 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
           {translatedCategory.problems.map((problem, index) => {
             const isSelected = selectedProblems.some((p) => p.id === problem.id);
             const dynamicPrice = problem.base_min_fee * location.repair_multiplier;
+            const isOther = problem.name === 'Other / Not sure';
+
+            if (isOther) {
+              return (
+                <div
+                  key={problem.id}
+                  onClick={() => toggleProblemSelection(problem)}
+                  className={cn(
+                    'group relative overflow-hidden rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer animate-fade-in-up',
+                    isSelected
+                      ? 'border-primary bg-primary/5 ring-1 ring-primary/20 shadow-lg shadow-primary/5'
+                      : 'border-border bg-card hover:border-primary/30 hover:shadow-md',
+                    'bg-muted/20'
+                  )}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <div className="p-4 flex items-center gap-5">
+                    <div className={cn(
+                      "relative w-16 h-16 rounded-xl flex items-center justify-center p-3 transition-colors duration-300",
+                      isSelected ? "bg-primary/10" : "bg-muted/40 group-hover:bg-primary/5"
+                    )}>
+                      <HelpCircle className="w-8 h-8 text-muted-foreground" />
+                    </div>
+
+                    <div className="flex-grow space-y-1">
+                      <h3 className={cn(
+                        "font-semibold text-sm md:text-base transition-colors",
+                        isSelected ? "text-primary" : "text-foreground"
+                      )}>
+                        {problem.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {t('other_problem_description', { defaultValue: "Select this if you can't find your issue. A technician will call you to diagnose." })}
+                      </p>
+                    </div>
+
+                    <div className={cn(
+                      "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300",
+                      isSelected
+                        ? "bg-primary border-primary scale-110"
+                        : "border-muted-foreground/30 bg-background group-hover:border-primary/50"
+                    )}>
+                      {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                    </div>
+                  </div>
+                </div>
+              )
+            }
 
             return (
               <div

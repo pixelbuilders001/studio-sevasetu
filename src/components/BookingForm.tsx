@@ -58,7 +58,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
     return now;
   });
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("9-12");
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("9 AM-12 PM");
   const [address, setAddress] = useState('');
   const [isGpsLoading, setIsGpsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
