@@ -26,7 +26,7 @@ const AuthHeaderLogo = ({ title, subtitle }: { title: React.ReactNode; subtitle:
   </div>
 );
 
-type AuthView = 'signIn' | 'createAccount';
+type AuthView = 'signIn' | 'createAccount' | 'forgotPassword';
 
 export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: boolean) => void; }) {
   const [currentView, setCurrentView] = useState<AuthView>('signIn');
@@ -84,6 +84,21 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
     setLoading(false);
   };
 
+  const handlePasswordReset = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/update-password`,
+    });
+    if (error) {
+      setMessage(error.message);
+    } else {
+      setMessage('Check your email for the password reset link!');
+    }
+    setLoading(false);
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setSheetOpen(false);
@@ -109,117 +124,166 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
   };
 
   const renderAuthForm = () => {
-    if (currentView === 'signIn') {
-      return (
-        <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
-          <AuthHeaderLogo title="Welcome Back" subtitle="SECURE ACCESS TO REPAIRS" />
-          {message && <p className="text-center text-red-500 text-sm mb-4 font-sans">{message}</p>}
-          <form className="w-full space-y-6" onSubmit={handleSignIn}>
-            <div>
-              <Label htmlFor="email-signin" className="sr-only">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
-                  id="email-signin"
-                  type="email"
-                  placeholder="Email Address"
-                  className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+    switch (currentView) {
+      case 'signIn':
+        return (
+          <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
+            <AuthHeaderLogo title="Welcome Back" subtitle="SECURE ACCESS TO REPAIRS" />
+            {message && <p className="text-center text-red-500 text-sm mb-4 font-sans">{message}</p>}
+            <form className="w-full space-y-6" onSubmit={handleSignIn}>
+              <div>
+                <Label htmlFor="email-signin" className="sr-only">Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="email-signin"
+                    type="email"
+                    placeholder="Email Address"
+                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              <Label htmlFor="password-signin" className="sr-only">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
-                  id="password-signin"
-                  type="password"
-                  placeholder="Password"
-                  className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+              <div>
+                <Label htmlFor="password-signin" className="sr-only">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="password-signin"
+                    type="password"
+                    placeholder="Password"
+                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
-            <Button
-              type="submit"
-              className="w-full h-12 rounded-lg bg-primary text-white text-base font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 font-sans"
-              disabled={loading}
-            >
-              {loading ? 'Signing In...' : <>SIGN IN <ArrowRight className="h-5 w-5" /></>}
-            </Button>
-            <p className="text-center text-sm text-gray-500 mt-4 font-sans">
-              NEW HERE?{' '}
-              <button
-                type="button"
-                onClick={() => setCurrentView('createAccount')}
-                className="text-primary font-semibold hover:underline focus:outline-none"
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-lg bg-primary text-white text-base font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 font-sans"
+                disabled={loading}
               >
-                CREATE AN ACCOUNT
-              </button>
-            </p>
-          </form>
-        </div>
-      );
-    } else { 
-      return (
-        <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
-          <AuthHeaderLogo 
-            title={<>Create a <span className="font-extrabold text-[#cec16c] italic">Free</span> Account</>} 
-            subtitle="VERIFIED HOME SERVICES" 
-          />
-          {message && <p className="text-center text-green-500 text-sm mb-4 font-sans">{message}</p>}
-          <form className="w-full space-y-6" onSubmit={handleSignUp}>
-            <div>
-              <Label htmlFor="email-signup" className="sr-only">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
-                  id="email-signup"
-                  type="email"
-                  placeholder="Email Address"
-                  className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+                {loading ? 'Signing In...' : <>SIGN IN <ArrowRight className="h-5 w-5" /></>}
+              </Button>
+              <p className="text-center text-sm text-gray-500 mt-4 font-sans">
+                <button
+                  type="button"
+                  onClick={() => setCurrentView('forgotPassword')}
+                  className="text-primary font-semibold hover:underline focus:outline-none"
+                >
+                  Forgot password?
+                </button>
+              </p>
+              <p className="text-center text-sm text-gray-500 mt-4 font-sans">
+                NEW HERE?{' '}
+                <button
+                  type="button"
+                  onClick={() => setCurrentView('createAccount')}
+                  className="text-primary font-semibold hover:underline focus:outline-none"
+                >
+                  CREATE AN ACCOUNT
+                </button>
+              </p>
+            </form>
+          </div>
+        );
+      case 'createAccount':
+        return (
+          <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
+            <AuthHeaderLogo 
+              title={<>Create a <span className="font-extrabold text-[#cec16c] italic">Free</span> Account</>} 
+              subtitle="VERIFIED HOME SERVICES" 
+            />
+            {message && <p className="text-center text-green-500 text-sm mb-4 font-sans">{message}</p>}
+            <form className="w-full space-y-6" onSubmit={handleSignUp}>
+              <div>
+                <Label htmlFor="email-signup" className="sr-only">Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="email-signup"
+                    type="email"
+                    placeholder="Email Address"
+                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              <Label htmlFor="password-signup" className="sr-only">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
-                  id="password-signup"
-                  type="password"
-                  placeholder="Password"
-                  className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+              <div>
+                <Label htmlFor="password-signup" className="sr-only">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="password-signup"
+                    type="password"
+                    placeholder="Password"
+                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
-            <Button
-              type="submit"
-              className="w-full h-12 rounded-lg bg-primary text-white text-base font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 font-sans"
-              disabled={loading}
-            >
-              {loading ? 'Creating Account...' : <>CREATE ACCOUNT <ArrowRight className="h-5 w-5" /></>}
-            </Button>
-            <p className="text-center text-sm text-gray-500 mt-4 font-sans">
-              ALREADY A MEMBER?{' '}
-              <button
-                type="button"
-                onClick={() => setCurrentView('signIn')}
-                className="text-primary font-semibold hover:underline focus:outline-none"
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-lg bg-primary text-white text-base font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 font-sans"
+                disabled={loading}
               >
-                SIGN IN
-              </button>
-            </p>
-          </form>
-        </div>
-      );
+                {loading ? 'Creating Account...' : <>CREATE ACCOUNT <ArrowRight className="h-5 w-5" /></>}
+              </Button>
+              <p className="text-center text-sm text-gray-500 mt-4 font-sans">
+                ALREADY A MEMBER?{' '}
+                <button
+                  type="button"
+                  onClick={() => setCurrentView('signIn')}
+                  className="text-primary font-semibold hover:underline focus:outline-none"
+                >
+                  SIGN IN
+                </button>
+              </p>
+            </form>
+          </div>
+        );
+      case 'forgotPassword':
+        return (
+          <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
+            <AuthHeaderLogo title="Forgot Password" subtitle="ENTER YOUR EMAIL TO RESET" />
+            {message && <p className="text-center text-green-500 text-sm mb-4 font-sans">{message}</p>}
+            <form className="w-full space-y-6" onSubmit={handlePasswordReset}>
+              <div>
+                <Label htmlFor="email-forgot" className="sr-only">Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="email-forgot"
+                    type="email"
+                    placeholder="Email Address"
+                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-lg bg-primary text-white text-base font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 font-sans"
+                disabled={loading}
+              >
+                {loading ? 'Sending...' : <>SEND RESET LINK <ArrowRight className="h-5 w-5" /></>}
+              </Button>
+              <p className="text-center text-sm text-gray-500 mt-4 font-sans">
+                <button
+                  type="button"
+                  onClick={() => setCurrentView('signIn')}
+                  className="text-primary font-semibold hover:underline focus:outline-none"
+                >
+                  Back to Sign In
+                </button>
+              </p>
+            </form>
+          </div>
+        );
     }
   };
 
