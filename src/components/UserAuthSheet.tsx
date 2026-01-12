@@ -9,8 +9,8 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const AuthHeaderLogo = ({ title, subtitle }: { title: string; subtitle: string }) => (
   <div className="flex flex-col items-center justify-center text-center mb-6">
-    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-2 border-gray-100 shadow-sm relative mb-4">
-        <Avatar className="w-16 h-16">
+    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center border-2 border-gray-100 shadow-sm relative mb-4">
+        <Avatar className="w-20 h-20">
           <AvatarImage 
             src="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Jan%205%2C%202026%2C%2002_26_24%20PM.png" 
             alt="Auth Logo"
@@ -159,7 +159,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
   };
 
   return (
-    <div className="flex flex-col h-full items-center justify-center p-8 pt-16 md:pt-8">
+    <div className="flex flex-col h-full items-center justify-center p-8 pt-10 md:pt-8">
       {isLoggedIn ? <UserAccountView /> : renderAuthForm()}
     </div>
   );
