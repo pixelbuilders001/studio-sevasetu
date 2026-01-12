@@ -7,10 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
-const AuthHeaderLogo = ({ title, subtitle }: { title: string; subtitle: string }) => (
+const AuthHeaderLogo = ({ title, subtitle }: { title: React.ReactNode; subtitle: string }) => (
   <div className="flex flex-col items-center justify-center text-center mb-6">
-    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center border-2 border-gray-100 shadow-sm relative mb-4">
-        <Avatar className="w-20 h-20">
+    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-2 border-gray-100 shadow-sm relative mb-4">
+        <Avatar className="w-16 h-16">
           <AvatarImage 
             src="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Jan%205%2C%202026%2C%2002_26_24%20PM.png" 
             alt="Auth Logo"
@@ -19,7 +19,7 @@ const AuthHeaderLogo = ({ title, subtitle }: { title: string; subtitle: string }
           <AvatarFallback>S</AvatarFallback>
         </Avatar>
     </div>
-    <span className="text-3xl font-extrabold text-primary leading-tight font-sans">{title}</span>
+    <h2 className="text-3xl font-extrabold text-primary leading-tight font-sans">{title}</h2>
     <span className="text-xs font-semibold text-gray-500 leading-tight tracking-wide uppercase mt-1 font-sans">{subtitle}</span>
   </div>
 );
@@ -98,7 +98,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
                 onClick={() => setCurrentView('createAccount')}
                 className="text-primary font-semibold hover:underline focus:outline-none"
               >
-                JOIN THE CREW
+                CREATE AN ACCOUNT
               </button>
             </p>
           </form>
@@ -107,7 +107,10 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
     } else { 
       return (
         <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
-          <AuthHeaderLogo title="Join SevaSetu" subtitle="VERIFIED HOME SERVICES" />
+          <AuthHeaderLogo 
+            title={<>Create a <span className="font-extrabold text-[#cec16c] italic">Free</span> Account</>} 
+            subtitle="VERIFIED HOME SERVICES" 
+          />
           <form className="w-full space-y-6">
             <div>
               <Label htmlFor="email-signup" className="sr-only">Email Address</Label>
@@ -159,7 +162,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
   };
 
   return (
-    <div className="flex flex-col h-full items-center justify-center p-8 pt-10 md:pt-8">
+    <div className="flex flex-col h-full items-center justify-center p-8 pt-16 md:pt-8">
       {isLoggedIn ? <UserAccountView /> : renderAuthForm()}
     </div>
   );
