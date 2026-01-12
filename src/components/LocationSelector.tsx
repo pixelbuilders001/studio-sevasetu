@@ -129,6 +129,8 @@ export default function LocationSelector() {
     }
   }
 
+  const truncatedCity = location.city.length > 5 ? `${location.city.slice(0, 5)}...` : location.city;
+
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -136,9 +138,9 @@ export default function LocationSelector() {
           <MapPin className="h-5 w-5 text-primary" />
           <div className="text-left hidden md:block">
             <div className="text-xs text-muted-foreground leading-tight">SERVICE IN</div>
-            <div className="font-semibold text-sm leading-tight">{location.city}</div>
+            <div className="font-semibold text-sm leading-tight">{truncatedCity}</div>
           </div>
-          <span className='md:hidden font-semibold'>{location.city}</span>
+          <span className='md:hidden font-semibold'>{truncatedCity}</span>
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </Button>
       </DialogTrigger>
