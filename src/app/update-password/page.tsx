@@ -1,20 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export default function UpdatePassword() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const supabase = createClientComponentClient();
-
-  const token = searchParams.get('token');
 
   const handleUpdatePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,23 +25,17 @@ export default function UpdatePassword() {
       return;
     }
 
-    try {
-      const { error } = await supabase.auth.updateUser({ password });
+    const { error } = await supabase.auth.updateUser({ password });
 
-      if (error) {
-        setError(error.message);
-      } else {
-        setMessage("Password updated successfully. You can now log in with your new password.");
-        // Redirect to home or login page after a delay
-        setTimeout(() => {
-          router.push('/');
-        }, 3000);
-      }
-    } catch (error: any) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+    if (error) {
+      setError(`Error updating password: ${error.message}`);
+    } else {
+      setMessage("Password updated successfully! You will be redirected to the home page.");
+      setTimeout(() => {
+        router.push('/');
+      }, 3000);
     }
+    setLoading(false);
   };
 
   return (
