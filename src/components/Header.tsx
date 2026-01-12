@@ -44,6 +44,7 @@ export default function Header() {
               <SheetContent
                 side="bottom"
                 className="rounded-t-3xl h-[80dvh] inset-x-0 bottom-0 border-t bg-white p-0 flex flex-col"
+                onOpenAutoFocus={(e) => e.preventDefault()}
               >
                 <UserAuthSheet setSheetOpen={setSheetOpen} />
               </SheetContent>
