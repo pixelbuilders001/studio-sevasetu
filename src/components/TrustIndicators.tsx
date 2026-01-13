@@ -36,24 +36,24 @@ export default function TrustIndicators({ t }: { t: TranslationFunc }) {
   ];
 
   return (
-    <section className="bg-slate-900 text-white py-16 rounded-[3rem] mx-2 shadow-2xl overflow-hidden relative">
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold font-headline mb-3">{t('whyChooseUs')}</h2>
-          <div className="h-1.5 w-20 bg-blue-500 mx-auto rounded-full mb-4"></div>
-          <p className="text-slate-300 font-medium tracking-wide text-sm">RELIABLE SERVICE, GUARANTEED.</p>
+    <section className="bg-slate-900 text-white py-8 md:py-16 rounded-[2rem] md:rounded-[3rem] mx-2 shadow-2xl overflow-hidden relative">
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="text-center mb-6 md:mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold font-headline mb-2 md:mb-3">{t('whyChooseUs')}</h2>
+          <div className="h-1 md:h-1.5 w-16 md:w-20 bg-blue-500 mx-auto rounded-full mb-3 md:mb-4"></div>
+          <p className="text-slate-300 font-medium tracking-wide text-xs md:text-sm">RELIABLE SERVICE, GUARANTEED.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-4">
           {indicators.map((indicator, index) => (
-            <div key={index} className="group relative bg-white/5 border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-colors">
-              <div className="flex items-start gap-4">
-                <div className={`p-3.5 rounded-2xl ${indicator.bgColor} group-hover:scale-110 transition-transform duration-300`}>
-                  <indicator.icon className={`w-6 h-6 ${indicator.iconColor}`} />
+            <div key={index} className="group relative bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-6 hover:bg-white/10 transition-colors">
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-4 text-center md:text-left">
+                <div className={`p-2.5 md:p-3.5 rounded-xl md:rounded-2xl ${indicator.bgColor} group-hover:scale-110 transition-transform duration-300`}>
+                  <indicator.icon className={`w-5 h-5 md:w-6 md:h-6 ${indicator.iconColor}`} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg mb-1">{indicator.title}</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed">{indicator.description}</p>
+                  <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">{indicator.title}</h3>
+                  <p className="text-xs md:text-sm text-slate-300 leading-snug md:leading-relaxed">{indicator.description}</p>
                 </div>
               </div>
             </div>
