@@ -48,27 +48,6 @@ interface UserProfile {
 
 /* ---------------- UI COMPONENTS ---------------- */
 
-const StatCard = ({
-  icon: Icon,
-  label,
-  value,
-  onClick,
-}: {
-  icon: any;
-  label: string;
-  value: string;
-  onClick?: () => void;
-}) => (
-  <button
-    onClick={onClick}
-    className="flex flex-col items-center justify-center gap-1 bg-white rounded-2xl p-4 shadow-sm border hover:shadow-md transition"
-  >
-    <Icon className="w-6 h-6 text-primary" />
-    <span className="text-lg font-bold">{value}</span>
-    <span className="text-xs text-muted-foreground">{label}</span>
-  </button>
-);
-
 const MenuItem = ({
   icon: Icon,
   label,
@@ -93,8 +72,6 @@ const MenuItem = ({
 );
 
 /* ---------------- REFER & EARN CARD ---------------- */
-/* ---------------- REFER & EARN CARD (BLUE THEME) ---------------- */
-
 const ReferEarnCard = ({ code }: { code: string }) => {
   const { toast } = useToast();
 
@@ -271,15 +248,42 @@ function ProfileContent() {
       {/* SCROLLABLE CONTENT */}
       <div className="flex-1 overflow-y-auto">
         {/* HEADER */}
-        <div className="relative bg-gradient-to-br from-blue-600 to-indigo-600 h-40 rounded-b-[32px]">
-          <Button
-            size="sm"
-            variant="secondary"
-            className="absolute top-4 right-4 rounded-full"
-          >
-            <Edit className="w-4 h-4 mr-1" />
-            Edit
-          </Button>
+        <div
+          className="relative bg-gradient-to-br from-blue-600 to-indigo-600 h-40 rounded-b-[32px]"
+          style={{
+            backgroundImage: `
+              linear-gradient(
+                to bottom right,
+                rgba(37, 99, 235, 0.85),
+                rgba(67, 56, 202, 0.85)
+              ),
+              url('https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Jan%205%2C%202026%2C%2002_26_24%20PM.png')
+            `,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          <div className="absolute top-4 right-4 flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              className="rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
+            >
+              <Edit className="w-4 h-4 mr-1" />
+              Edit
+            </Button>
+          </div>
+            <div className="absolute top-4 left-4 flex items-center gap-2">
+                <Button
+                size="sm"
+                variant="secondary"
+                className="rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
+                onClick={() => router.push('/wallet')}
+                >
+                <Wallet className="w-4 h-4 mr-1" />
+                ₹50
+                </Button>
+            </div>
         </div>
 
         {/* AVATAR */}
@@ -293,11 +297,7 @@ function ProfileContent() {
 
         {/* NAME */}
         <div className="text-center mt-3">
-          {/* <h1 className="text-xl font-bold">
-            {profile.full_name || 'New User'}
-          </h1> */}
           <p className="text-sm text-muted-foreground">{profile.email}</p>
-      
         </div>
 
         {/* REFER & EARN */}
@@ -306,23 +306,7 @@ function ProfileContent() {
         </div>
 
         <div className="px-4 mt-4">
-  <UserDetailsCard profile={profile} />
-</div>
-
-        {/* STATS */}
-        <div className="grid grid-cols-2 gap-4 px-4 mt-6">
-          <StatCard
-            icon={Wallet}
-            label="Wallet"
-            value="₹50"
-            onClick={() => router.push('/wallet')}
-          />
-          <StatCard
-            icon={History}
-            label="Bookings"
-            value="12"
-            onClick={() => router.push('/history')}
-          />
+          <UserDetailsCard profile={profile} />
         </div>
 
         {/* MENU */}
@@ -333,11 +317,6 @@ function ProfileContent() {
             onClick={() => router.push('/history')}
           />
           <MenuItem
-            icon={Wallet}
-            label="My Wallet"
-            onClick={() => router.push('/wallet')}
-          />
-          <MenuItem
             icon={MapPin}
             label="Saved Addresses"
             onClick={() => router.push('/addresses')}
@@ -345,19 +324,18 @@ function ProfileContent() {
         </div>
       </div>
 
-   {/* LOGOUT – subtle style */}
-<div className="sticky bottom-0 bg-white px-4 py-3 border-t">
-  <button
-    onClick={logout}
-    className="w-full flex items-center justify-center gap-2 
+      {/* LOGOUT – subtle style */}
+      <div className="sticky bottom-0 bg-white px-4 py-3 border-t">
+        <button
+          onClick={logout}
+          className="w-full flex items-center justify-center gap-2 
       text-sm text-red-500 hover:text-red-600 
       hover:bg-red-50 rounded-lg py-2 transition"
-  >
-    <LogOut className="w-4 h-4" />
-    Logout
-  </button>
-</div>
-
+        >
+          <LogOut className="w-4 h-4" />
+          Logout
+        </button>
+      </div>
     </div>
   );
 }
