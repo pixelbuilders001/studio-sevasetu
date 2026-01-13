@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import LocationSelector from './LocationSelector';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -12,6 +11,7 @@ import { User } from 'lucide-react';
 import UserAuthSheet from './UserAuthSheet';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
+import { ProfileSheet } from '@/components/profile/ProfileSheet'; // Import the new ProfileSheet
 
 const Logo = () => (
   <Link href="/" className="flex items-center gap-2 flex-shrink-0">
@@ -27,7 +27,6 @@ const Logo = () => (
 
 export default function Header() {
   const { t } = useTranslation();
-  const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -44,7 +43,7 @@ export default function Header() {
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      // Close sheet when user logs in
+      // Close login sheet when user logs in
       if (session && sheetOpen) {
         setSheetOpen(false);
       }
@@ -53,18 +52,9 @@ export default function Header() {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [supabase.auth]);
+  }, [supabase.auth, sheetOpen]);
 
-  const handleUserIconClick = () => {
-    if (loading) return;
-    
-    if (session) {
-      router.push('/profile');
-    } else {
-      setSheetOpen(true);
-    }
-  };
-
+  // Skeleton loader for when session is being determined
   if (loading) {
     return (
       <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 border-b border-white/10 glass">
@@ -91,31 +81,28 @@ export default function Header() {
             <LocationSelector />
             <LanguageSwitcher />
             
-            {/* Show sheet only when user is NOT logged in */}
-            {!session && (
-              <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={handleUserIconClick}>
-                    <User className="h-5 w-5" />
-                    <span className="sr-only">Open login</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  side="bottom"
-                  className="rounded-t-3xl h-[80dvh] inset-x-0 bottom-0 border-t bg-white p-0 flex flex-col"
-                  onOpenAutoFocus={(e) => e.preventDefault()}
-                >
-                  <UserAuthSheet setSheetOpen={setSheetOpen} />
-                </SheetContent>
-              </Sheet>
-            )}
-            
-            {/* Show button without sheet when user IS logged in */}
-            {session && (
-              <Button variant="ghost" size="icon" onClick={handleUserIconClick}>
-                <User className="h-5 w-5" />
-                <span className="sr-only">Open profile</span>
-              </Button>
+            {/* If user is logged in, show the ProfileSheet component */}
+            {session ? (
+              <ProfileSheet />
+            ) : (
+              <>
+                {/* If user is not logged in, show the login sheet trigger */}
+                <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                  <SheetTrigger asChild>
+                     <Button variant="outline" size="icon" className="rounded-full w-10 h-10">
+                      <User className="h-5 w-5" />
+                      <span className="sr-only">Open login</span>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    side="bottom"
+                    className="rounded-t-3xl h-[80dvh] inset-x-0 bottom-0 border-t bg-white p-0 flex flex-col"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
+                  >
+                    <UserAuthSheet setSheetOpen={setSheetOpen} />
+                  </SheetContent>
+                </Sheet>
+              </>
             )}
           </div>
         </div>
