@@ -71,15 +71,24 @@ export async function bookService(
   prevState: any,
   formData: FormData
 ): Promise<{ message: string, error?: string, bookingId?: string, referralCode?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get: (name) => cookieStore.get(name)?.value,
-        set: (name, value, options) => cookieStore.set(name, value, options),
-        remove: (name, options) => cookieStore.delete(name, options),
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // The is called from a Server Component.
+          }
+        },
       },
     }
   );
@@ -272,34 +281,43 @@ export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
 export async function getUserProfile() {
   try {
 
-     const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get: (name) => cookieStore.get(name)?.value,
-        set: (name, value, options) => cookieStore.set(name, value, options),
-        remove: (name, options) => cookieStore.delete(name, options),
-      },
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      console.error('Authentication Error:', sessionError?.message);
+      return { message: "Error", error: "You must be logged in to create a booking." };
     }
-  );
 
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-  if (sessionError || !session) {
-    console.error('Authentication Error:', sessionError?.message);
-    return { message: "Error", error: "You must be logged in to create a booking." };
-  }
-
-  const accessToken = session.access_token;
+    const accessToken = session.access_token;
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/rest/v1/profiles', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json'
-      }
+      },
+      cache: 'no-store', // Ensure fresh data on every fetch
     });
 
     if (!response.ok) {
@@ -310,9 +328,73 @@ export async function getUserProfile() {
 
     const profileData = await response.json();
     return profileData[0]; // Return the first (and only) profile object
-    
+
   } catch (error) {
     console.error('Profile fetch failed:', error);
     throw error;
+  }
+}
+
+export async function updateUserProfile(data: { full_name: string; phone: string }) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      return { success: false, error: "You must be logged in to update your profile." };
+    }
+
+    const accessToken = session.access_token;
+    const userId = session.user.id;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({
+        full_name: data.full_name,
+        phone: data.phone
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Profile Update API Error:', errorData);
+      return { success: false, error: errorData.message || 'Failed to update profile.' };
+    }
+
+    // Refresh the path to show updated data
+    // revalidatePath('/profile'); // Optimistic updates might be better, or client-side reload
+
+    return { success: true };
+
+  } catch (error) {
+    console.error('Profile update failed:', error);
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred.';
+    return { success: false, error: message };
   }
 }

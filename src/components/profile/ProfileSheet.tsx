@@ -25,6 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { getUserProfile } from '@/app/actions';
+import { EditProfileModal } from './EditProfileModal';
 
 import {
   Sheet,
@@ -59,7 +60,8 @@ const MenuItem = ({
 }) => (
   <button
     onClick={onClick}
-    className="flex items-center justify-between w-full px-4 py-4 bg-white rounded-xl shadow-sm border hover:bg-gray-50"
+    className="flex items-center justify-between w-full px-4 py-3 bg-white rounded-xl shadow-sm border hover:bg-gray-50"
+
   >
     <div className="flex items-center gap-3">
       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -81,7 +83,7 @@ const ReferEarnCard = ({ code }: { code: string }) => {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl p-5 text-white 
+    <div className="relative overflow-hidden rounded-2xl p-4 text-white 
       bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 
       shadow-md">
 
@@ -138,7 +140,7 @@ const UserDetailsCard = ({ profile }: { profile: UserProfile }) => {
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm">
-      <div className="px-5 py-4 border-b">
+      <div className="px-4 py-3 border-b">
         <h3 className="text-sm font-semibold text-blue-700">
           User Details
         </h3>
@@ -148,7 +150,7 @@ const UserDetailsCard = ({ profile }: { profile: UserProfile }) => {
         {details.map((item, index) => (
           <div
             key={index}
-            className="flex items-center gap-4 px-5 py-4"
+            className="flex items-center gap-4 px-4 py-3"
           >
             <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
               <item.icon className="w-4 h-4 text-blue-700" />
@@ -197,6 +199,7 @@ function ProfileContent() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -216,6 +219,14 @@ function ProfileContent() {
     };
     init();
   }, []);
+
+  const refreshProfile = async () => {
+    const p = await getUserProfile();
+    setProfile({
+      ...p,
+      referral_code: p.referral_code || `REF${p.id.slice(0, 5).toUpperCase()}`,
+    });
+  };
 
   const logout = async () => {
     await supabase.auth.signOut();
@@ -249,7 +260,7 @@ function ProfileContent() {
       <div className="flex-1 overflow-y-auto">
         {/* HEADER */}
         <div
-          className="relative bg-gradient-to-br from-blue-600 to-indigo-600 h-40 rounded-b-[32px]"
+          className="relative bg-gradient-to-br from-blue-600 to-indigo-600 h-32 rounded-b-[32px]"
           style={{
             backgroundImage: `
               linear-gradient(
@@ -268,28 +279,29 @@ function ProfileContent() {
               size="sm"
               variant="secondary"
               className="rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
+              onClick={() => setIsEditModalOpen(true)}
             >
               <Edit className="w-4 h-4 mr-1" />
               Edit
             </Button>
           </div>
-            <div className="absolute top-4 left-4 flex items-center gap-2">
-                <Button
-                size="sm"
-                variant="secondary"
-                className="rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
-                onClick={() => router.push('/wallet')}
-                >
-                <Wallet className="w-4 h-4 mr-1" />
-                ₹50
-                </Button>
-            </div>
+          <div className="absolute top-4 left-4 flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              className="rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
+              onClick={() => router.push('/wallet')}
+            >
+              <Wallet className="w-4 h-4 mr-1" />
+              ₹50
+            </Button>
+          </div>
         </div>
 
         {/* AVATAR */}
-        <div className="flex justify-center -mt-14">
-          <Avatar className="w-28 h-28 border-4 border-white shadow-lg">
-            <AvatarFallback className="text-3xl font-bold bg-blue-100 text-blue-700">
+        <div className="flex justify-center -mt-10">
+          <Avatar className="w-20 h-20 border-4 border-white shadow-lg">
+            <AvatarFallback className="text-xl font-bold bg-blue-100 text-blue-700">
               {initials(profile.full_name || profile.email)}
             </AvatarFallback>
           </Avatar>
@@ -301,7 +313,7 @@ function ProfileContent() {
         </div>
 
         {/* REFER & EARN */}
-        <div className="px-4 mt-6">
+        <div className="px-4 mt-4">
           <ReferEarnCard code={profile.referral_code!} />
         </div>
 
@@ -310,7 +322,7 @@ function ProfileContent() {
         </div>
 
         {/* MENU */}
-        <div className="px-4 mt-8 space-y-3 pb-8">
+        <div className="px-4 mt-6 space-y-3">
           <MenuItem
             icon={History}
             label="Booking History"
@@ -322,20 +334,26 @@ function ProfileContent() {
             onClick={() => router.push('/addresses')}
           />
         </div>
-      </div>
 
-      {/* LOGOUT – subtle style */}
-      <div className="sticky bottom-0 bg-white px-4 py-3 border-t">
-        <button
-          onClick={logout}
-          className="w-full flex items-center justify-center gap-2 
-      text-sm text-red-500 hover:text-red-600 
-      hover:bg-red-50 rounded-lg py-2 transition"
-        >
-          <LogOut className="w-4 h-4" />
-          Logout
-        </button>
+        {/* LOGOUT */}
+        <div className="px-4 mt-6 pb-8">
+          <button
+            onClick={logout}
+            className="w-full flex items-center justify-center gap-2 
+        text-sm text-red-500 hover:text-red-600 
+        hover:bg-red-50 rounded-lg py-3 border border-red-100 transition"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
       </div>
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        currentProfile={profile ? { full_name: profile.full_name, phone: profile.phone } : null}
+        onProfileUpdated={refreshProfile}
+      />
     </div>
   );
 }
