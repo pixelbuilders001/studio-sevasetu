@@ -1,4 +1,3 @@
-
 'use server';
 
 import { z } from 'zod';
@@ -8,6 +7,8 @@ import { getTranslations } from '@/lib/get-translation';
 import { subDays, format } from 'date-fns';
 import { CloudCog } from 'lucide-react';
 import type { RepairQuote } from '@/lib/types/booking';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 
 export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string; }> {
@@ -70,15 +71,34 @@ export async function bookService(
   prevState: any,
   formData: FormData
 ): Promise<{ message: string, error?: string, bookingId?: string, referralCode?: string }> {
+  const cookieStore = cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: (name) => cookieStore.get(name)?.value,
+        set: (name, value, options) => cookieStore.set(name, value, options),
+        remove: (name, options) => cookieStore.delete(name, options),
+      },
+    }
+  );
+
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError || !session) {
+    console.error('Authentication Error:', sessionError?.message);
+    return { message: "Error", error: "You must be logged in to create a booking." };
+  }
+
+  const accessToken = session.access_token;
 
   const payload = new FormData();
 
-  // Extract all fields from the original form data
   for (const [key, value] of formData.entries()) {
     payload.append(key, value);
   }
 
-  // Append/overwrite data from function arguments for security and consistency
   payload.set('category_id', categoryId);
 
   const issueIds = problemIds.split(',');
@@ -92,34 +112,26 @@ export async function bookService(
     payload.set('pincode', pincode);
   }
 
-    // The `referralCode` argument is the verified code from the `bind` call.
-    // It should be prioritized.
-    if (referralCode) {
-        payload.set('referral_code', referralCode);
-    } else {
-        // If no verified code, check for a code typed in the form.
-        const formReferralCode = payload.get('referral_code');
-        if (!formReferralCode || typeof formReferralCode !== 'string' || !formReferralCode.trim()) {
-            // If the form field is empty or missing, ensure it's not in the payload.
-            payload.delete('referral_code');
-        }
-        // If a code was typed but not verified, it will be sent as is.
+  if (referralCode) {
+    payload.set('referral_code', referralCode);
+  } else {
+    const formReferralCode = payload.get('referral_code');
+    if (!formReferralCode || typeof formReferralCode !== 'string' || !formReferralCode.trim()) {
+      payload.delete('referral_code');
     }
+  }
 
-
-  // Add new pricing fields
   payload.set('total_estimated_price', total_estimated_price.toString());
   payload.set('net_inspection_fee', net_inspection_fee.toString());
   payload.set('final_amount_paid', '');
   payload.set('final_amount_to_be_paid', '');
-
-
+  console.log(payload);
   try {
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwb2FmaHRpZGl3c2lod2lqd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MjYyNjUsImV4cCI6MjAzNjEwMjI2NX0.0_2p5B0a3O-j1h-a2yA9Ier3a8LVi-Sg3O_2M6CqTOc',
+        'Authorization': `Bearer ${accessToken}`,
+        // 'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
       },
       body: payload,
     });
@@ -128,13 +140,16 @@ export async function bookService(
 
     if (!response.ok) {
       console.error('API Error:', result);
+      // Enhanced error handling for row-level security violations
+      if (result.code === 'PGRST116' || (result.error && result.error.includes('row-level security policy'))) {
+        return { message: "Error", error: "We're unable to create your booking due to access restrictions. Please try again or contact support." };
+      }
       return { message: "Error", error: result.error_message || result.message || "An unexpected error occurred." };
     }
 
     const bookingId = result.order_id || result.bookingId || `SS-${Math.floor(100000 + Math.random() * 900000)}`;
     const myReferralCode = result.my_referral_code;
     return { message: "Success", bookingId, referralCode: myReferralCode };
-
 
   } catch (error) {
     console.error('Booking failed:', error);
@@ -152,7 +167,6 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
       'Content-Type': 'application/json',
     };
 
-    // 1. Update the repair_quotes table
     const quoteUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/repair_quotes?id=eq.${quote.id}`, {
       method: 'PATCH',
       headers: {
@@ -170,7 +184,6 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
       throw new Error(errorData.message || 'Failed to update quote status.');
     }
 
-    // 2. Update the booking table with final amount and accepted_at
     const bookingUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking?id=eq.${quote.booking_id}`, {
       method: 'PATCH',
       headers: {
@@ -188,8 +201,6 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
       throw new Error(errorData.message || 'Failed to update booking with final amount.');
     }
 
-
-    // 2. Update the job status
     const jobStatusResponse = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/update-job-status', {
       method: 'POST',
       headers: commonHeaders,
@@ -222,7 +233,6 @@ export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
       'Content-Type': 'application/json',
     };
 
-    // 1. Update the repair_quotes table
     const quoteUpdateResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/repair_quotes?id=eq.${quote.id}`, {
       method: 'PATCH',
       headers: {
@@ -237,7 +247,6 @@ export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
       throw new Error(errorData.message || 'Failed to update quote status.');
     }
 
-    // 2. Update the job status
     const jobStatusResponse = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/update-job-status', {
       method: 'POST',
       headers: commonHeaders,
@@ -257,5 +266,53 @@ export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'An unexpected error occurred.';
     return { success: false, error: message };
+  }
+}
+
+export async function getUserProfile() {
+  try {
+
+     const cookieStore = cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: (name) => cookieStore.get(name)?.value,
+        set: (name, value, options) => cookieStore.set(name, value, options),
+        remove: (name, options) => cookieStore.delete(name, options),
+      },
+    }
+  );
+
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError || !session) {
+    console.error('Authentication Error:', sessionError?.message);
+    return { message: "Error", error: "You must be logged in to create a booking." };
+  }
+
+  const accessToken = session.access_token;
+    const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/rest/v1/profiles', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Profile API Error:', errorData);
+      throw new Error(errorData.message || 'Failed to fetch user profile.');
+    }
+
+    const profileData = await response.json();
+    return profileData[0]; // Return the first (and only) profile object
+    
+  } catch (error) {
+    console.error('Profile fetch failed:', error);
+    throw error;
   }
 }
