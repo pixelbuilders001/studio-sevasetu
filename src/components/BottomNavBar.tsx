@@ -7,6 +7,7 @@ import AllServicesSheet from './AllServicesSheet';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetTrigger, SheetContent } from './ui/sheet';
+import BookingHistorySheet from './BookingHistorySheet';
 
 export default function BottomNavBar() {
   const { t } = useTranslation();
@@ -40,11 +41,20 @@ export default function BottomNavBar() {
       )
     },
     {
-      href: '/history',
+      href: '#',
       label: 'Bookings',
       icon: History,
-      isActive: pathname === '/history',
-      component: null
+      isActive: false,
+      component: (
+        <BookingHistorySheet>
+          <button className={cn("flex flex-col items-center justify-center text-center transition-all w-full h-full active:scale-95 duration-200", 'text-muted-foreground')}>
+            <div className="relative">
+              <History className="w-6 h-6 mb-1" />
+            </div>
+            <span className="text-[10px] font-medium leading-none">Bookings</span>
+          </button>
+        </BookingHistorySheet>
+      )
     },
     {
       href: '/wallet',
