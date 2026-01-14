@@ -24,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
-import { getUserProfile } from '@/app/actions';
+import { getUserProfile, getWalletBalance, getReferralCode } from '@/app/actions';
 import { EditProfileModal } from './EditProfileModal';
 
 import {
@@ -198,8 +198,8 @@ function ProfileContent() {
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  console.log(session);
   const [loading, setLoading] = useState(true);
+  const [walletBalance, setWalletBalance] = useState<number>(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
@@ -211,11 +211,19 @@ function ProfileContent() {
         return;
       }
       setSession(data.session);
-      const p = await getUserProfile();
+      setSession(data.session);
+
+      const [p, balance, refCode] = await Promise.all([
+        getUserProfile(),
+        getWalletBalance(),
+        getReferralCode()
+      ]);
       setProfile({
         ...p,
-        referral_code: p.referral_code || `REF${p.id.slice(0, 5).toUpperCase()}`,
+        referral_code: refCode || p.referral_code || 0,
       });
+      setWalletBalance(balance);
+
       setLoading(false);
     };
     init();
@@ -294,7 +302,7 @@ function ProfileContent() {
               onClick={() => router.push('/wallet')}
             >
               <Wallet className="w-4 h-4 mr-1" />
-              ₹50
+              ₹{walletBalance}
             </Button>
           </div>
         </div>

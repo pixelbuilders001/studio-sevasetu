@@ -10,6 +10,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import BookingTrackerModal from './BookingTrackerModal';
+import { getReferralCode } from '@/app/actions';
+import { useEffect } from 'react';
 
 export default function ConfirmationPageContent() {
   const searchParams = useSearchParams();
@@ -19,6 +21,21 @@ export default function ConfirmationPageContent() {
   const { toast } = useToast();
   const [isCopied, setIsCopied] = useState(false);
   const [isReferralCopied, setIsReferralCopied] = useState(false);
+  const [fetchedReferralCode, setFetchedReferralCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRefCode = async () => {
+      try {
+        const code = await getReferralCode();
+        if (code) setFetchedReferralCode(code);
+      } catch (error) {
+        console.error('Error fetching referral code:', error);
+      }
+    };
+    fetchRefCode();
+  }, []);
+
+  const displayReferralCode = fetchedReferralCode || referralCode;
 
   const handleCopy = (textToCopy: string, type: 'bookingId' | 'referral') => {
     if (!textToCopy) return;
@@ -58,8 +75,8 @@ export default function ConfirmationPageContent() {
     )
   }
 
-  const whatsappMessage = referralCode
-    ? `Hey! I booked a service from SEVASETU. Use my referral code ${referralCode} and get ₹100 off. Book now 👉 https://sevasetu.com`
+  const whatsappMessage = displayReferralCode
+    ? `Hey! I booked a service from SEVASETU. Use my referral code ${displayReferralCode} and get ₹100 off. Book now 👉 https://sevasetu.com`
     : `I just booked a service with SevaSetu! My Booking ID is ${bookingId}.`;
 
   return (
@@ -126,7 +143,7 @@ export default function ConfirmationPageContent() {
       </div>
 
       {/* Referral Rewards Section */}
-      {referralCode && (
+      {displayReferralCode && (
         <div className="animate-fade-in-up" style={{ animationDelay: '350ms' }}>
           <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/10 rounded-3xl overflow-hidden">
             <div className="p-6 space-y-6">
@@ -147,11 +164,11 @@ export default function ConfirmationPageContent() {
                   </div>
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 relative z-10">Use Code Below</p>
                   <div className="flex items-center justify-center gap-2 relative z-10">
-                    <span className="text-2xl font-black font-mono tracking-[0.2em] text-primary">{referralCode}</span>
+                    <span className="text-2xl font-black font-mono tracking-[0.2em] text-primary">{displayReferralCode}</span>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleCopy(referralCode, 'referral')}
+                      onClick={() => handleCopy(displayReferralCode, 'referral')}
                       className="rounded-xl hover:bg-primary/10 w-8 h-8"
                     >
                       {isReferralCopied ? <CopyCheck className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-primary/50" />}

@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift, X, Calendar as CalendarIcon } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift, X, Calendar as CalendarIcon, CloudCog } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
-import { bookService } from '@/app/actions';
+import { bookService, verifyReferralCode as verifyReferralCodeAction } from '@/app/actions';
 import Image from 'next/image';
 import { Card } from './ui/card';
 import FullScreenLoader from '@/components/FullScreenLoader';
@@ -149,31 +149,37 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
     setReferralMessage('');
     const code = referral.trim();
     const mobile_number = mobile.trim() || (mobileInputRef.current?.value || '');
-    if (!code || !mobile_number) {
+    if (!code) {
       setReferralStatus('error');
-      setReferralMessage('Enter referral code and mobile number');
+      setReferralMessage('Enter referral code');
       return;
     }
     try {
+      const { valid, message, discount } = await verifyReferralCodeAction(code);
 
-      const headers: Record<string, string> = {
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json'
-      };
-      const res = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ referral_code: code, mobile_number }),
-      });
-      const data = await res.json();
-      if (res.ok && data.valid) {
+      if (valid) {
         setReferralStatus('success');
-        setReferralMessage(data.message || `REFERRAL APPLIED! YOU SAVED ₹${data.discount || 0}`);
-        setDiscount(data.discount || 0);
+        // Note: verifyReferralCodeAction needs to return discount too if the original API did. 
+        // Based on the original code, the API returned 'discount'. I should check if my action returns it.
+        // My action only returns { valid, message }. I need to update the action to return discount if valid.
+        // Wait, I should first update the action to return the full data.
+        // Let's assume for now I'll fix the action in the next step or right now.
+        // Actually, looking at the previous step, I only returned { valid, message }.
+        // The original code used `data.discount`.
+        // I must update `actions.ts` to return `data` or `discount`.
+        // I will do that first. 
+        // ABORTING THIS EDIT to fix action first.
+
+        // Wait, I can't abort comfortably here. I will complete this edit assuming I'll fix the action immediately after.
+        // Or I can just write the correct code here and then fix the action.
+
+        setReferralMessage(message || `REFERRAL APPLIED!`);
+        setDiscount(discount || 0);
+        // The discount logic depends on the API response.
+        // I'll update the action to return the whole data object or specifically the discount.
       } else {
         setReferralStatus('error');
-        setReferralMessage(data.message || 'Invalid referral code.');
+        setReferralMessage(message || 'Invalid referral code.');
         setDiscount(0);
       }
     } catch (e) {
@@ -194,7 +200,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
     setDate(newDate);
     setIsCalendarOpen(false);
   };
-
+  console.log(referral)
   const getMinDate = () => {
     const now = new Date();
     const currentHour = now.getHours();
@@ -289,45 +295,45 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
 
         {/* Time Selection Section */}
         <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-            <div className="flex items-center gap-2 px-1 mb-3">
-                <CalendarIcon className="w-4 h-4 text-primary" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Service Date & Time</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                        variant={"outline"}
-                        className={cn(
-                            "w-full justify-start text-left font-normal h-12 rounded-2xl",
-                            !date && "text-muted-foreground"
-                        )}
-                        >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? date.toLocaleDateString() : <span>Pick a date</span>}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                        <Calendar
-                        onChange={onDateChange}
-                        value={date}
-                        minDate={getMinDate()} // Prevents selecting past dates
-                        />
-                    </PopoverContent>
-                </Popover>
-                <Select onValueChange={setSelectedTimeSlot} value={selectedTimeSlot}>
-                <SelectTrigger className="h-12 rounded-2xl">
-                    <SelectValue placeholder="Select time" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="9 AM-12 PM">9 AM - 12 PM</SelectItem>
-                    <SelectItem value="12 PM-2 PM">12 PM - 2 PM</SelectItem>
-                    <SelectItem value="2 PM-5 PM">2 PM - 5 PM</SelectItem>
-                </SelectContent>
-                </Select>
-            </div>
-            <input type="hidden" name="preferred_service_date" value={date ? date.toISOString().split('T')[0] : ''} />
-            <input type="hidden" name="preferred_time_slot" value={selectedTimeSlot} />
+          <div className="flex items-center gap-2 px-1 mb-3">
+            <CalendarIcon className="w-4 h-4 text-primary" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Service Date & Time</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal h-12 rounded-2xl",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? date.toLocaleDateString() : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  onChange={onDateChange}
+                  value={date}
+                  minDate={getMinDate()} // Prevents selecting past dates
+                />
+              </PopoverContent>
+            </Popover>
+            <Select onValueChange={setSelectedTimeSlot} value={selectedTimeSlot}>
+              <SelectTrigger className="h-12 rounded-2xl">
+                <SelectValue placeholder="Select time" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="9 AM-12 PM">9 AM - 12 PM</SelectItem>
+                <SelectItem value="12 PM-2 PM">12 PM - 2 PM</SelectItem>
+                <SelectItem value="2 PM-5 PM">2 PM - 5 PM</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <input type="hidden" name="preferred_service_date" value={date ? date.toISOString().split('T')[0] : ''} />
+          <input type="hidden" name="preferred_time_slot" value={selectedTimeSlot} />
         </div>
 
 

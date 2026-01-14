@@ -54,7 +54,7 @@ export default function BookingHistorySheet({ children }: { children: React.Reac
 
             setIsLoading(true);
             try {
-                const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?select=id,order_id,status,created_at,media_url,completion_code,final_amount_to_be_paid,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.asc`, {
+                const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?select=id,order_id,status,created_at,media_url,completion_code,final_amount_to_be_paid,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${session.access_token}`,
@@ -123,7 +123,7 @@ export default function BookingHistorySheet({ children }: { children: React.Reac
         // simple way:
         const fetchHistory = async () => {
             if (!session?.access_token) return;
-            const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?select=id,order_id,status,created_at,media_url,completion_code,final_amount_to_be_paid,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.asc`, {
+            const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?select=id,order_id,status,created_at,media_url,completion_code,final_amount_to_be_paid,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`,

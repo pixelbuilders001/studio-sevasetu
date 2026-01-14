@@ -398,3 +398,183 @@ export async function updateUserProfile(data: { full_name: string; phone: string
     return { success: false, error: message };
   }
 }
+
+export async function getWalletBalance() {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      console.error('Authentication Error:', sessionError?.message);
+      return 0;
+    }
+
+    const accessToken = session.access_token;
+    const userId = session.user.id;
+
+    // Direct REST API call as requested
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallets`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      // If not found (404) or empty, checking return
+      if (response.status === 404) return 0;
+      console.error('Failed to fetch wallet balance', response.statusText);
+      return 0;
+    }
+
+    const walletData = await response.json();
+    if (walletData && walletData.length > 0) {
+      return walletData[0].balance;
+    }
+
+    return 0;
+
+  } catch (error) {
+    console.error('Wallet fetch failed:', error);
+    return 0;
+  }
+}
+
+export async function getReferralCode() {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      console.error('Authentication Error:', sessionError?.message);
+      return null;
+    }
+
+    const accessToken = session.access_token;
+    const userId = session.user.id;
+
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/referral_codes`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      console.error('Failed to fetch referral code', response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    console.log("refCode", data, accessToken);
+
+    if (data && data.length > 0) {
+      return data[0].referral_code;
+    }
+
+    return null;
+
+  } catch (error) {
+    console.error('Referral code fetch failed:', error);
+    return null;
+  }
+}
+
+export async function verifyReferralCode(code: string) {
+  try {
+
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      console.error('Authentication Error:', sessionError?.message);
+      return null;
+    }
+
+    const accessToken = session.access_token;
+
+    const commonHeaders = {
+      'Authorization': `Bearer ${accessToken}`,
+      'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+    };
+
+    const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
+      method: 'POST',
+      headers: commonHeaders,
+      body: JSON.stringify({ referral_code: code }),
+    });
+
+    const data = await response.json();
+    console.log(data)
+    return { valid: response.ok && data.valid, message: data.message, discount: data.discount };
+
+  } catch (error) {
+    console.error('Referral verification failed:', error);
+    return { valid: false, message: "Verification failed", discount: 0 };
+  }
+}
