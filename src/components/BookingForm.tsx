@@ -200,7 +200,6 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
     setDate(newDate);
     setIsCalendarOpen(false);
   };
-  console.log(referral)
   const getMinDate = () => {
     const now = new Date();
     const currentHour = now.getHours();

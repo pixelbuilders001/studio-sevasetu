@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetTrigger, SheetContent } from './ui/sheet';
 import BookingHistorySheet from './BookingHistorySheet';
+import WalletSheet from '@/components/wallet/WalletSheet';
 
 export default function BottomNavBar() {
   const { t } = useTranslation();
@@ -57,11 +58,20 @@ export default function BottomNavBar() {
       )
     },
     {
-      href: '/wallet',
+      href: '#',
       label: 'Wallet',
       icon: Wallet,
-      isActive: pathname === '/wallet',
-      component: null,
+      isActive: false,
+      component: (
+        <WalletSheet>
+          <button className={cn("flex flex-col items-center justify-center text-center transition-all w-full h-full active:scale-95 duration-200", 'text-muted-foreground')}>
+            <div className="relative">
+              <Wallet className="w-6 h-6 mb-1" />
+            </div>
+            <span className="text-[10px] font-medium leading-none">Wallet</span>
+          </button>
+        </WalletSheet>
+      ),
       isExternal: false,
     },
   ]

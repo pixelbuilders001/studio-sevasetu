@@ -134,7 +134,6 @@ export async function bookService(
   payload.set('net_inspection_fee', net_inspection_fee.toString());
   payload.set('final_amount_paid', '');
   payload.set('final_amount_to_be_paid', '');
-  console.log(payload);
   try {
     const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
       method: 'POST',
@@ -510,7 +509,6 @@ export async function getReferralCode() {
     }
 
     const data = await response.json();
-    console.log("refCode", data, accessToken);
 
     if (data && data.length > 0) {
       return data[0].referral_code;
@@ -521,6 +519,69 @@ export async function getReferralCode() {
   } catch (error) {
     console.error('Referral code fetch failed:', error);
     return null;
+  }
+}
+
+export async function getWalletTransactions() {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      return null;
+    }
+
+    const accessToken = session.access_token;
+    const userId = session.user.id;
+    // We need mobile number to query transactions as per original code.
+    // Or maybe we can query by user_id if the table supports it?
+    // The original code used mobile_number.
+    // Let's fetch user profile to get mobile number first, or check if transactions table has user_id.
+    // Assuming transactions might be linked to mobile_number as per WalletPage.tsx:
+    // `wallet_transactions?mobile_number=eq.${mobileNumber}`
+
+    // Efficient way: Get profile -> get mobile -> get transactions.
+    const profile = await getUserProfile();
+    if (!profile || !profile.mobile_number) return [];
+
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallet_transactions`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+    return await response.json();
+
+  } catch (error) {
+    console.error('Transactions fetch failed:', error);
+    return [];
   }
 }
 
@@ -570,7 +631,6 @@ export async function verifyReferralCode(code: string) {
     });
 
     const data = await response.json();
-    console.log(data)
     return { valid: response.ok && data.valid, message: data.message, discount: data.discount };
 
   } catch (error) {
