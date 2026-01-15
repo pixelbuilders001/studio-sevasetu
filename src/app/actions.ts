@@ -169,8 +169,40 @@ export async function bookService(
 
 export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
   try {
+
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+              // The is called from a Server Component.
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      console.error('Authentication Error:', sessionError?.message);
+      return { message: "Error", error: "You must be logged in to create a booking." };
+    }
+
+    const accessToken = session.access_token;
+
     const commonHeaders = {
-      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+      'Authorization': `Bearer ${accessToken}`,
       'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
       'Content-Type': 'application/json',
     };
@@ -235,8 +267,38 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
 
 export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
   try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+              // The is called from a Server Component.
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      console.error('Authentication Error:', sessionError?.message);
+      return { message: "Error", error: "You must be logged in to create a booking." };
+    }
+
+    const accessToken = session.access_token;
     const commonHeaders = {
-      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+      'Authorization': `Bearer ${accessToken}`,
       'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
       'Content-Type': 'application/json',
     };
