@@ -1,5 +1,5 @@
-
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 export default function FullScreenLoader() {
     return (
@@ -9,7 +9,18 @@ export default function FullScreenLoader() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/20 rounded-full blur-2xl animate-pulse"></div>
 
                 {/* Scooter Image with animation */}
-                <div className="relative z-10 animate-scooter-ride">
+                <motion.div
+                    className="relative z-10"
+                    animate={{
+                        y: [0, -4, 0],
+                        x: [0, 1, -1, 0]
+                    }}
+                    transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                >
                     <Image
                         src="/images/scooter-loader.png"
                         alt="Loading..."
@@ -18,7 +29,7 @@ export default function FullScreenLoader() {
                         priority
                         className="drop-shadow-lg"
                     />
-                </div>
+                </motion.div>
 
                 {/* Optional: Subtle road line */}
                 <div className="w-16 h-1 bg-foreground/10 rounded-full mt-[-4px] animate-pulse"></div>

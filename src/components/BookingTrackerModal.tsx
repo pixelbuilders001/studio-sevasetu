@@ -19,6 +19,7 @@ import { DialogFooter } from './ui/dialog';
 import { Loader2, Search, XCircle, CheckCircle, History, Briefcase, Zap } from 'lucide-react';
 import React from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 type View = 'form' | 'history' | 'error';
 type TrackResult = { history?: { status: string; date: string, note?: string }[]; error?: string; } | null;
@@ -86,14 +87,25 @@ export default function BookingTrackerModal({ asChild = false, children }: { asC
           <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 pt-7">
             <DialogHeader className="text-center flex flex-col items-center">
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-3 p-2 shadow-soft">
-                <div className="animate-scooter-ride relative w-full h-full">
+                <motion.div
+                  className="relative w-full h-full"
+                  animate={{
+                    y: [0, -3, 0],
+                    x: [0, 1, -1, 0]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
                   <Image
                     src="/images/scooter-loader.png"
                     alt="Scooter"
                     fill
                     className="object-contain"
                   />
-                </div>
+                </motion.div>
               </div>
               <DialogTitle className="text-xl font-bold font-headline leading-tight">{t('trackYourBookingTitle')}</DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground/80 mt-1 px-4">
@@ -165,10 +177,10 @@ export default function BookingTrackerModal({ asChild = false, children }: { asC
             <div className="pt-4">
               <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-1 no-scrollbar">
                 {trackResult.history.map((item, index) => {
-                  const isLatest = index === trackResult.history.length - 1;
+                  const isLatest = index === (trackResult.history?.length ?? 0) - 1;
                   return (
                     <div key={index} className="flex gap-3 relative">
-                      {index < trackResult.history.length - 1 && (
+                      {index < (trackResult.history?.length ?? 0) - 1 && (
                         <div className="absolute left-[17px] top-9 bottom-[-12px] w-[2px] bg-muted-foreground/20"></div>
                       )}
                       <div className="flex flex-col items-center">

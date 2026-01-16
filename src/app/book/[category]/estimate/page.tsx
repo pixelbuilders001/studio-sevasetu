@@ -15,6 +15,10 @@ import Image from 'next/image';
 import { useLocation } from '@/context/LocationContext';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import FullScreenLoader from '@/components/FullScreenLoader';
+import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import UserAuthSheet from '@/components/UserAuthSheet';
+import { Session } from '@supabase/supabase-js';
 
 function PriceEstimationSkeleton() {
   return (
@@ -54,6 +58,27 @@ export default function PriceEstimationPage() {
   const [category, setCategory] = useState<ServiceCategory | null>(null);
   const [loading, setLoading] = useState(true);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [authSheetOpen, setAuthSheetOpen] = useState(false);
+
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+
+  useEffect(() => {
+    const getInitialSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+    };
+    getInitialSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+        setAuthSheetOpen(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   useEffect(() => {
     const fetchCategoryAndProblem = async () => {
@@ -102,6 +127,10 @@ export default function PriceEstimationPage() {
   const detailsLink = `/book/${categorySlug}/details?problems=${problemIds}`;
 
   const handleConfirmVisit = () => {
+    if (!session) {
+      setAuthSheetOpen(true);
+      return;
+    }
     setIsNavigating(true);
     router.push(detailsLink);
   };
@@ -245,6 +274,16 @@ export default function PriceEstimationPage() {
       </div>
 
       {isNavigating && <FullScreenLoader />}
+
+      <Sheet open={authSheetOpen} onOpenChange={setAuthSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-3xl h-[80dvh] inset-x-0 bottom-0 border-t bg-white p-0 flex flex-col"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          <UserAuthSheet setSheetOpen={setAuthSheetOpen} />
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

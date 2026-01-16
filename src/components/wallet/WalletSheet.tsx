@@ -111,7 +111,11 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
             <SheetTrigger asChild>
                 {children}
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[85vh] flex flex-col rounded-t-3xl p-0 overflow-hidden bg-white dark:bg-card">
+            <SheetContent
+                side="bottom"
+                className="h-[85vh] flex flex-col rounded-t-3xl p-0 overflow-hidden bg-white dark:bg-card"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 <SheetHeader className="px-6 pt-6 pb-2">
                     <SheetTitle className="text-center font-bold text-xl">
                         {session ? 'Your Wallet' : 'Login to view wallet'}
