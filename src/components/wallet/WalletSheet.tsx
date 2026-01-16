@@ -40,15 +40,15 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
 
     // Auth State Listener
     useEffect(() => {
-        const getSession = async () => {
-            const { data } = await supabase.auth.getSession();
-            setSession(data.session);
-            if (data.session?.user) {
-                // Ideally we get mobile number from profile if needed for inner sheet
-                // For now, we'll fetch data which usually relies on session in actions.ts
+        const getInitialSession = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            setSession(currentSession);
+            if (user) {
+                console.log('WalletSheet current user:', user.email);
             }
         };
-        getSession();
+        getInitialSession();
 
         const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);

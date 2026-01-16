@@ -65,8 +65,12 @@ export default function PriceEstimationPage() {
 
   useEffect(() => {
     const getInitialSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+      if (user) {
+        console.log('Estimate page current user:', user.email);
+      }
     };
     getInitialSession();
 

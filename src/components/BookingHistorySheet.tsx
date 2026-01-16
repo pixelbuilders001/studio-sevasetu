@@ -32,11 +32,15 @@ export default function BookingHistorySheet({ children }: { children: React.Reac
 
     // Auth State Listener
     useEffect(() => {
-        const getSession = async () => {
-            const { data } = await supabase.auth.getSession();
-            setSession(data.session);
+        const getInitialSession = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            setSession(currentSession);
+            if (user) {
+                console.log('BookingHistorySheet current user:', user.email);
+            }
         };
-        getSession();
+        getInitialSession();
 
         const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);

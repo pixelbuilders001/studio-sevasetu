@@ -31,7 +31,20 @@ export async function GET(req: NextRequest) {
   const next = searchParams.get('next') ?? '/'
 
   if (code) {
-    await supabase.auth.exchangeCodeForSession(code)
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    if (error) {
+      console.error('Auth callback exchange error:', error.message)
+    } else {
+      console.log('Auth callback exchange success for user:', data.user?.email)
+    }
+  }
+
+  // After exchange, verify if we have a user
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    console.log('Final auth callback user check:', user.email)
+  } else {
+    console.warn('Final auth callback user check: No user found after exchange')
   }
 
   return NextResponse.redirect(new URL(next, req.url))
