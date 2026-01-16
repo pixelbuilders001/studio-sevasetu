@@ -1,6 +1,6 @@
 
 'use client';
-import { getServiceCategory } from '@/lib/data';
+import { getServiceCategoryAction } from '@/app/actions';
 import { notFound, useParams, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingForm } from '@/components/BookingForm';
@@ -43,7 +43,7 @@ function BookingDetailsContent() {
         return;
       }
       try {
-        const originalCategory = await getServiceCategory(categorySlug as string);
+        const originalCategory = await getServiceCategoryAction(categorySlug as string);
         if (!originalCategory) {
           notFound();
           return;

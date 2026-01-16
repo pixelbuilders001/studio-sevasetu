@@ -4,6 +4,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Smartphone, Laptop, AirVent, Refrigerator, Fan, LucideIcon, Tv, WashingMachine } from 'lucide-react';
 import type { TranslationFunc } from '@/context/LanguageContext';
 import { createClient } from '@supabase/supabase-js'
+import { unstable_cache } from "next/cache";
 
 export const ICONS: Record<string, LucideIcon> = {
     "Smartphone": Smartphone,
@@ -16,27 +17,27 @@ export const ICONS: Record<string, LucideIcon> = {
 }
 
 export type Problem = {
-  id: string; 
-  name: string;
-  image: {
-      imageUrl: string;
-      imageHint: string;
-  };
-  category_id: string;
-  base_min_fee: number;
+    id: string;
+    name: string;
+    image: {
+        imageUrl: string;
+        imageHint: string;
+    };
+    category_id: string;
+    base_min_fee: number;
 };
 
 export type ServiceCategory = {
-  id: string;
-  slug: string;
-  name: string;
-  icon: string;
-  image: {
-      imageUrl: string;
-      imageHint: string;
-  };
-  problems: Problem[];
-  base_inspection_fee: number;
+    id: string;
+    slug: string;
+    name: string;
+    icon: string;
+    image: {
+        imageUrl: string;
+        imageHint: string;
+    };
+    problems: Problem[];
+    base_inspection_fee: number;
 };
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -57,13 +58,13 @@ const mapCategoryIcon = (slug: string): string => {
     return iconMap[slug] || 'Smartphone';
 }
 
-export async function getServiceCategories(): Promise<ServiceCategory[]> {
+const fetchServiceCategoriesInternal = async (): Promise<ServiceCategory[]> => {
+    console.log('🔥 FETCHING FROM DB');
     const { data, error } = await supabase
-        .from('categories')
-        .select('*, issues(*)')
-        .order('sort_order', { ascending: true })
-        .eq('issues.is_active', true);
-
+        .from("categories")
+        .select("*, issues(*)")
+        .order("sort_order", { ascending: true })
+        .eq("issues.is_active", true);
 
     if (error) {
         console.error("Failed to fetch service categories:", error);
@@ -78,42 +79,60 @@ export async function getServiceCategories(): Promise<ServiceCategory[]> {
         base_inspection_fee: category.base_inspection_fee || 199,
         image: {
             imageUrl: category.icon_url,
-            imageHint: category.name.toLowerCase()
+            imageHint: category.name.toLowerCase(),
         },
-        problems: category.issues.map((p: any) => ({
-            id: p.id,
-            name: p.title,
-            category_id: p.category_id,
-            base_min_fee: p.base_min_fee,
-            image: {
-                imageUrl: p.icon_url,
-                imageHint: p.title.toLowerCase()
-            }
-        })).sort((a: any, b: any) => a.sort_order - b.sort_order)
+        problems: category.issues
+            .map((p: any) => ({
+                id: p.id,
+                name: p.title,
+                category_id: p.category_id,
+                base_min_fee: p.base_min_fee,
+                sort_order: p.sort_order,
+                image: {
+                    imageUrl: p.icon_url,
+                    imageHint: p.title.toLowerCase(),
+                },
+            }))
+            .sort((a: any, b: any) => a.sort_order - b.sort_order),
     }));
+};
+
+export const getServiceCategoriesCached = unstable_cache(
+    fetchServiceCategoriesInternal,
+    ["service-categories"], // cache key
+    {
+        revalidate: 60 * 60 * 24 * 30, // 30 days
+    }
+);
+
+export async function getServiceCategories(): Promise<ServiceCategory[]> {
+    if (typeof window === 'undefined') {
+        return getServiceCategoriesCached();
+    }
+    return fetchServiceCategoriesInternal();
 }
 
-export async function getServiceCategory(slug: string): Promise<ServiceCategory | null> {
+const fetchServiceCategoryInternal = async (slug: string): Promise<ServiceCategory | null> => {
     const { data: categoryData, error: categoryError } = await supabase
         .from('categories')
         .select('*')
         .eq('slug', slug)
         .single();
-    
+
     if (categoryError || !categoryData) {
         console.error(`Failed to fetch category with slug ${slug}:`, categoryError);
         return null;
     }
 
     const category = categoryData;
-    
+
     const { data: problemsData, error: problemsError } = await supabase
         .from('issues')
         .select('*')
         .eq('category_id', category.id)
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
-        
+
     if (problemsError) {
         console.error(`Failed to fetch problems for category ${category.id}:`, problemsError);
         throw new Error(`Failed to fetch problems for category ${category.name}`);
@@ -142,16 +161,31 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
         },
         problems: problems as Problem[],
     };
+};
+
+export const getServiceCategoryCached = unstable_cache(
+    fetchServiceCategoryInternal,
+    ["service-category"], // cache key base
+    {
+        revalidate: 60 * 60 * 24 * 30, // 30 days
+    }
+);
+
+export async function getServiceCategory(slug: string): Promise<ServiceCategory | null> {
+    if (typeof window === 'undefined') {
+        return getServiceCategoryCached(slug);
+    }
+    return fetchServiceCategoryInternal(slug);
 }
 
 
 export const getTranslatedCategory = (category: ServiceCategory, t: TranslationFunc): ServiceCategory => {
-  const translatedName = t(`category_${category.slug}_name` as any, { defaultValue: category.name });
-  const translatedProblems = category.problems.map(problem => ({
-    ...problem,
-    name: t(`problem_${category.slug}_${problem.id}_name` as any, { defaultValue: problem.name }),
-  }));
-  return { ...category, name: translatedName, problems: translatedProblems };
+    const translatedName = t(`category_${category.slug}_name` as any, { defaultValue: category.name });
+    const translatedProblems = category.problems.map(problem => ({
+        ...problem,
+        name: t(`problem_${category.slug}_${problem.id}_name` as any, { defaultValue: problem.name }),
+    }));
+    return { ...category, name: translatedName, problems: translatedProblems };
 };
 
 export const getTranslatedCategories = (categories: Omit<ServiceCategory, 'problems' | 'base_inspection_fee'>[], t: TranslationFunc): Omit<ServiceCategory, 'problems' | 'base_inspection_fee'>[] => {

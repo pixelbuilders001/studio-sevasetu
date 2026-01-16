@@ -26,7 +26,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
-import { getServiceCategories } from '@/lib/data';
+import { getServiceCategoriesAction } from '@/app/actions';
 import type { ServiceCategory } from '@/lib/data';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
@@ -172,7 +172,7 @@ export default function PartnerOnboardingPage() {
 
   useEffect(() => {
     async function fetchSkills() {
-      const skills = await getServiceCategories();
+      const skills = await getServiceCategoriesAction();
       setCategories(skills);
     }
     fetchSkills();

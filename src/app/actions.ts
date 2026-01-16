@@ -11,6 +11,17 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 
+import { getServiceCategoriesCached, getServiceCategoryCached } from '@/lib/data';
+import type { ServiceCategory } from '@/lib/data';
+
+export async function getServiceCategoriesAction(): Promise<ServiceCategory[]> {
+  return getServiceCategoriesCached();
+}
+
+export async function getServiceCategoryAction(slug: string): Promise<ServiceCategory | null> {
+  return getServiceCategoryCached(slug);
+}
+
 export async function trackBooking(prevState: any, formData: FormData): Promise<{ history?: { status: string; date: string }[]; error?: string; }> {
   const orderId = formData.get('order_id');
   const lang = (formData.get('lang') as string) || 'en';

@@ -2,7 +2,7 @@
 'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { getServiceCategories } from '@/lib/data';
+import { getServiceCategoriesAction } from '@/app/actions';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import TrustIndicators from '@/components/TrustIndicators';
@@ -105,7 +105,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
     const fetchCategories = async () => {
       setLoading(true);
       try {
-        const data = await getServiceCategories();
+        const data = await getServiceCategoriesAction();
         setCategories(data);
       } finally {
         setLoading(false);

@@ -6,7 +6,8 @@ import {
     SheetClose
 } from '@/components/ui/sheet';
 import { useTranslation } from '@/hooks/useTranslation';
-import { getServiceCategories, ServiceCategory } from '@/lib/data';
+import { getServiceCategoriesAction } from '@/app/actions';
+import { ServiceCategory } from '@/lib/data';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
@@ -104,7 +105,7 @@ export default function AllServicesSheet() {
         const fetchCategories = async () => {
             setLoading(true);
             try {
-                const originalCategories = await getServiceCategories();
+                const originalCategories = await getServiceCategoriesAction();
                 setCategories(originalCategories);
             } catch (error) {
                 console.error("Failed to fetch service categories", error);

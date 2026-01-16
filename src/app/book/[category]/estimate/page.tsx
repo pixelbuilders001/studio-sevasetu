@@ -1,6 +1,6 @@
 
 'use client';
-import { getServiceCategory } from '@/lib/data';
+import { getServiceCategoryAction } from '@/app/actions';
 import { notFound, useParams, useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -88,7 +88,7 @@ export default function PriceEstimationPage() {
     const fetchCategoryAndProblem = async () => {
       if (!categorySlug || !problemIds) return;
       try {
-        const originalCategory = await getServiceCategory(categorySlug as string);
+        const originalCategory = await getServiceCategoryAction(categorySlug as string);
         if (!originalCategory) {
           notFound();
           return;
