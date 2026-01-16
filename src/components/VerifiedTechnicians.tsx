@@ -1,7 +1,8 @@
-import { Card, CardContent } from '@/components/ui/card';
+'use client';
+
+import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Star, MapPin, CheckCircle2 } from 'lucide-react';
+import { Star, MapPin, CheckCircle2, ChevronRight, Briefcase } from 'lucide-react';
 import type { TranslationFunc } from '@/lib/get-translation';
 
 const technicians = [
@@ -9,113 +10,155 @@ const technicians = [
     name: 'Ramesh Kumar',
     expertise: 'Mobile Expert',
     imageUrl: 'https://picsum.photos/seed/tech1/300/300',
-    imageHint: 'male technician portrait',
     ratingValue: 4.9,
     jobs: '1.2k+',
-    location: 'Indiranagar'
+    location: 'Indiranagar',
+    tags: ['FAST', 'SMART']
   },
   {
     name: 'Suresh Singh',
     expertise: 'AC Specialist',
     imageUrl: 'https://picsum.photos/seed/tech2/300/300',
-    imageHint: 'male technician smiling',
     ratingValue: 4.8,
     jobs: '850+',
-    location: 'Koramangala'
+    location: 'Koramangala',
+    tags: ['EXPERT', 'POLITE']
   },
   {
     name: 'Vikas Sharma',
     expertise: 'Appliance Pro',
     imageUrl: 'https://picsum.photos/seed/tech3/300/300',
-    imageHint: 'technician portrait',
     ratingValue: 4.7,
     jobs: '2k+',
-    location: 'HSR Layout'
+    location: 'HSR Layout',
+    tags: ['QUICK', 'RELIABLE']
   },
   {
     name: 'Anjali Gupta',
     expertise: 'TV & Audio',
     imageUrl: 'https://picsum.photos/seed/tech4/300/300',
-    imageHint: 'female technician',
     ratingValue: 4.9,
     jobs: '900+',
-    location: 'Whitefield'
+    location: 'Whitefield',
+    tags: ['CERTIFIED', 'PROFESSIONAL']
   },
   {
     name: 'Prakash Rao',
     expertise: 'Washing Machine',
     imageUrl: 'https://picsum.photos/seed/tech5/300/300',
-    imageHint: 'male technician tools',
     ratingValue: 4.8,
     jobs: '1.5k+',
-    location: 'Jayanagar'
+    location: 'Jayanagar',
+    tags: ['TRUSTED']
   }
 ];
 
-function TechnicianCard({ technician }: { technician: typeof technicians[0] }) {
+function TechnicianCard({ technician, index }: { technician: typeof technicians[0], index: number }) {
   return (
-    <Card className="bg-white dark:bg-card border-none rounded-3xl shadow-sm hover:shadow-lg transition-all duration-300 h-full overflow-hidden group w-full max-w-[280px]">
-      <div className="relative h-24 bg-gradient-to-r from-blue-500 to-indigo-600">
-        <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 text-[10px] text-white font-medium">
-          <CheckCircle2 className="w-3 h-3" />
-          VERIFIED
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className="inline-block w-[240px] md:w-[280px]"
+    >
+      <div className="bg-white dark:bg-card border border-border/50 rounded-[2rem] p-4 shadow-soft hover:shadow-xl transition-all duration-300 group">
+        {/* Header / Image Section */}
+        <div className="relative mb-4">
+          <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-3">
+            <Image
+              src={technician.imageUrl}
+              alt={technician.name}
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
+              <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+              <span className="text-[10px] font-black">{technician.ratingValue}</span>
+            </div>
+          </div>
+
+          <div className="absolute -bottom-2 -right-2 bg-primary text-white p-2 rounded-xl shadow-lg border-2 border-white">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className="space-y-3">
+          <div>
+            <h3 className="font-black text-lg font-headline leading-tight text-foreground truncate">{technician.name}</h3>
+            <p className="text-[10px] font-black text-primary uppercase tracking-widest">{technician.expertise}</p>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5">
+            {technician.tags.map((tag, idx) => (
+              <span key={idx} className="text-[8px] font-black px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full border border-border/40 uppercase tracking-tighter">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="h-px bg-border/40 w-full" />
+
+          {/* Footer Info */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Briefcase className="w-3 h-3" />
+              <span className="text-[10px] font-bold">{technician.jobs} Jobs</span>
+            </div>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <MapPin className="w-3 h-3" />
+              <span className="text-[10px] font-bold">{technician.location}</span>
+            </div>
+          </div>
         </div>
       </div>
-      <CardContent className="px-4 pb-4 pt-0 text-center -mt-12">
-        <div className="relative w-24 h-24 mx-auto mb-3">
-          <Image
-            src={technician.imageUrl}
-            alt={technician.name}
-            fill
-            sizes="96px"
-            className="object-cover rounded-2xl border-4 border-white dark:border-card shadow-md group-hover:scale-105 transition-transform duration-300"
-            data-ai-hint={technician.imageHint}
-          />
-          <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full border-4 border-white dark:border-card"></div>
-        </div>
-
-        <div className="space-y-1 mb-4">
-          <h3 className="font-bold text-lg text-foreground leading-tight">{technician.name}</h3>
-          <p className="text-xs font-semibold text-primary uppercase tracking-wide">{technician.expertise}</p>
-        </div>
-
-        <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mb-4">
-          <div className="flex items-center gap-1">
-            <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-            <span className="font-bold text-foreground">{technician.ratingValue}</span>
-          </div>
-          <div className="w-1 h-1 bg-gray-300 rounded-full" />
-          <div className="font-medium">{technician.jobs} Jobs</div>
-        </div>
-
-        <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground bg-secondary/50 py-2 rounded-xl">
-          <MapPin className="w-3.5 h-3.5" />
-          {technician.location}
-        </div>
-      </CardContent>
-    </Card>
+    </motion.div>
   );
 }
 
 export default function VerifiedTechnicians({ t }: { t: TranslationFunc }) {
   return (
-    <section className="py-12 bg-muted/20">
+    <section className="py-12 md:py-20 bg-slate-50/50 dark:bg-slate-900/20">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-end mb-8 px-2">
-          <div>
-            <h2 className="text-2xl font-bold font-headline text-foreground">Top Experts Near You</h2>
-            <p className="text-xs text-muted-foreground mt-1">Based on genuine user reviews</p>
+        {/* Section Header */}
+        <div className="flex items-end justify-between mb-8 md:mb-12 px-2">
+          <div className="space-y-1">
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="text-primary font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2"
+            >
+              <div className="w-6 h-px bg-primary" />
+              Premium Service
+            </motion.div>
+            <h2 className="text-3xl md:text-4xl font-black font-headline tracking-tight text-foreground">
+              Top Experts <span className="text-primary">Near You</span>
+            </h2>
+          </div>
+          <button className="hidden md:flex items-center gap-2 text-sm font-black text-primary hover:gap-3 transition-all">
+            VIEW ALL <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Scrolling List */}
+        <div className="relative -mx-4 px-4">
+          <div className="flex overflow-x-auto no-scrollbar gap-4 pb-8 snap-x snap-mandatory">
+            {technicians.map((technician, index) => (
+              <div key={index} className="snap-center first:pl-2 last:pr-4">
+                <TechnicianCard technician={technician} index={index} />
+              </div>
+            ))}
           </div>
         </div>
-        <div>
-          <ScrollArea className="w-full whitespace-nowrap -mx-4 px-4 pb-4">
-            <div className="flex w-max space-x-4 pb-2 pl-2">
-              {technicians.map((technician, index) => (
-                <TechnicianCard key={index} technician={technician} />
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" className="hidden" />
-          </ScrollArea>
+
+        {/* Mobile View All */}
+        <div className="md:hidden text-center mt-2">
+          <button className="inline-flex items-center gap-2 text-xs font-black text-primary bg-primary/5 px-6 py-3 rounded-full border border-primary/10 active:scale-95 transition-all">
+            SEE ALL TECHNICIANS <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </section>

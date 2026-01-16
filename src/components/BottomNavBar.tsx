@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Home, LayoutGrid, Wallet, Briefcase, History } from 'lucide-react';
+import { Home, LayoutGrid, Wallet, Activity } from 'lucide-react';
 import BookingTrackerModal from './BookingTrackerModal';
 import { useTranslation } from '@/hooks/useTranslation';
 import AllServicesSheet from './AllServicesSheet';
@@ -14,13 +14,23 @@ export default function BottomNavBar() {
   const { t } = useTranslation();
   const pathname = usePathname();
 
-  const navItems = [
+  interface NavItem {
+    href: string;
+    label: string;
+    icon: React.ElementType;
+    isActive: boolean;
+    component: React.ReactNode | null;
+    isExternal?: boolean;
+  }
+
+  const navItems: NavItem[] = [
     {
       href: '/',
       label: 'Home',
       icon: Home,
       isActive: pathname === '/',
-      component: null
+      component: null,
+      isExternal: false
     },
     {
       href: '#',
@@ -39,23 +49,27 @@ export default function BottomNavBar() {
             <AllServicesSheet />
           </SheetContent>
         </Sheet>
-      )
+      ),
+      isExternal: false
     },
     {
       href: '#',
-      label: 'Bookings',
-      icon: History,
+      label: 'Ongoing',
+      icon: Activity,
       isActive: false,
       component: (
         <BookingHistorySheet>
           <button className={cn("flex flex-col items-center justify-center text-center transition-all w-full h-full active:scale-95 duration-200", 'text-muted-foreground')}>
             <div className="relative">
-              <History className="w-6 h-6 mb-1" />
+              <Activity className="w-6 h-6 mb-1" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-blink border-2 border-white dark:border-black shadow-sm" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-ping opacity-75" />
             </div>
-            <span className="text-[10px] font-medium leading-none">Bookings</span>
+            <span className="text-[10px] font-medium leading-none">Ongoing</span>
           </button>
         </BookingHistorySheet>
-      )
+      ),
+      isExternal: false
     },
     {
       href: '#',
@@ -74,7 +88,7 @@ export default function BottomNavBar() {
       ),
       isExternal: false,
     },
-  ]
+  ];
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none md:hidden pb-4">

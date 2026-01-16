@@ -23,7 +23,7 @@ import { useState, useEffect, use } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
 import FullScreenLoader from '@/components/FullScreenLoader';
-
+import ReferralBanner from '@/components/ReferralBanner';
 import { Skeleton } from '@/components/ui/skeleton';
 
 
@@ -160,24 +160,26 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         </div>
       </section>
 
-      {/* Quick Features - Horizontal Scroll */}
-      <section className="py-6 overflow-x-auto no-scrollbar">
+      {/* Quick Features - Grid Layout */}
+      <section className="py-4 -mt-2 mb-4">
         <div className="container mx-auto px-4">
-          <div className="flex gap-4 min-w-max">
+          <div className="grid grid-cols-3 gap-2 md:gap-4">
             {featureCards.map((card, index) => (
-              <div key={index} className="flex items-center gap-3 bg-white dark:bg-card p-3 pr-6 rounded-full shadow-sm border border-border/50">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <div key={index} className="flex flex-col items-center justify-center bg-white dark:bg-card py-4 px-2 rounded-2xl shadow-soft border border-border/40 text-center transition-all hover:shadow-md active:scale-95">
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2 shadow-inner">
                   <card.icon className="w-4 h-4" />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold">{card.title}</span>
-                  <span className="text-[10px] text-muted-foreground font-medium">{card.description}</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[10px] md:text-xs font-black uppercase tracking-tight text-foreground leading-none">{card.title}</span>
+                  <span className="text-[7px] md:text-[9px] text-muted-foreground font-black uppercase tracking-[0.1em] leading-none">{card.description}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </section>
+
+
 
       {/* Services Grid */}
       <section id="services" className="container mx-auto px-4 mb-8">
@@ -206,38 +208,42 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           }
         </div>
       </section>
-
-      {/* Live Tracking Card */}
+      {/* Referral Banner */}
       <section className="container mx-auto px-4 mb-8">
-        <BookingTrackerModal asChild={true}>
-          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-5 text-white shadow-lg active:scale-98 transition-transform cursor-pointer relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-20">
-              <Search className="w-24 h-24 -mr-8 -mt-8" />
-            </div>
-            <div className="relative z-10 flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="flex h-2 w-2 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                  </span>
-                  <p className="text-xs font-bold uppercase tracking-wider text-white/90">Live Status</p>
-                </div>
-                <h3 className="text-xl font-bold mb-1">Track Your Repair</h3>
-                <p className="text-white/80 text-xs">Check current status of your booking</p>
-              </div>
-              <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
-                <ChevronRight className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        </BookingTrackerModal>
+        <ReferralBanner />
       </section>
 
       <div className="bg-white dark:bg-card rounded-t-3xl shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-8 pb-12">
         <div id="how-it-works">
           <HowItWorks t={t} />
         </div>
+        {/* Live Tracking Card */}
+        <section className="container mx-auto px-4 mb-8">
+          <BookingTrackerModal asChild={true}>
+            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-5 text-white shadow-lg active:scale-98 transition-transform cursor-pointer relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-20">
+                <Search className="w-24 h-24 -mr-8 -mt-8" />
+              </div>
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="flex h-2 w-2 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                    </span>
+                    <p className="text-xs font-bold uppercase tracking-wider text-white/90">Live Status</p>
+                  </div>
+                  <h3 className="text-xl font-bold mb-1">Track Your Repair</h3>
+                  <p className="text-white/80 text-xs">Check current status of your booking</p>
+                </div>
+                <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
+                  <ChevronRight className="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+          </BookingTrackerModal>
+        </section>
+
 
         <VerifiedTechnicians t={t} />
 

@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AirVent, Laptop, Clock, Download, Tag, CheckCircle, XCircle, Image as ImageIcon, KeyRound, IndianRupee, Gift } from 'lucide-react';
+import { AirVent, Laptop, Clock, Download, Tag, CheckCircle, XCircle, Image as ImageIcon, KeyRound, IndianRupee, Gift, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import Image from 'next/image';
@@ -164,16 +164,26 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare 
 
                 <Separator className="my-4" />
 
-                {isCompleted && booking.final_amount_to_be_paid && (
-                    <div className="p-3 bg-green-50 dark:bg-green-900/40 rounded-xl flex justify-between items-center mb-4 border border-green-200 dark:border-green-800">
-                        <div className="flex items-center gap-2 text-green-600 dark:text-green-300">
-                            <CheckCircle className="w-5 h-5" />
-                            <p className="text-sm font-semibold uppercase">Final Amount Paid</p>
+                {(isCompleted || isRepairCompleted) && (booking.final_amount_paid !== undefined || booking.final_amount_to_be_paid !== undefined) && (
+                    <div className="space-y-3 mb-4">
+                        <div className="p-4 bg-green-50 dark:bg-green-900/40 rounded-2xl flex justify-between items-center border border-green-200 dark:border-green-800 shadow-sm">
+                            <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                                <CheckCircle className="w-5 h-5" />
+                                <p className="text-sm font-bold uppercase tracking-tight">Total Amount Paid</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-black text-green-900 dark:text-green-100 flex items-center justify-end">
+                                    <IndianRupee className="w-5 h-5 mr-0.5" />
+                                    {booking.final_amount_paid || booking.final_amount_to_be_paid}
+                                </p>
+                                {booking.payment_method && (
+                                    <div className="flex items-center justify-end gap-1.5 mt-1 text-green-700/70 dark:text-green-300/70">
+                                        <CreditCard className="w-3 h-3" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest">{booking.payment_method}</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <p className="text-2xl font-bold text-green-800 dark:text-green-200 flex items-center">
-                            <IndianRupee className="w-6 h-6" />
-                            {booking.final_amount_to_be_paid}
-                        </p>
                     </div>
                 )}
 
@@ -200,23 +210,12 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare 
                     </Button>
                 )}
 
-                {(quote?.status === 'quotation_approved' || isRepairCompleted) && quote?.final_amount_to_be_paid && (
-                    <div className={cn(
-                        "p-3 rounded-xl flex justify-between items-center mb-4 border",
-                        isRepairCompleted
-                            ? "bg-green-50 border-green-100 dark:bg-green-900/40 dark:border-green-800"
-                            : "bg-indigo-50 border-indigo-100 dark:bg-indigo-900/40 dark:border-indigo-800"
-                    )}>
-                        <span className={cn(
-                            "text-sm font-semibold uppercase tracking-wider",
-                            isRepairCompleted ? "text-green-700 dark:text-green-300" : "text-indigo-700 dark:text-indigo-300"
-                        )}>
-                            {isRepairCompleted ? 'Total Amount Paid' : 'Final Payable Amount'}
+                {(quote?.status === 'quotation_approved' && !isRepairCompleted) && quote?.final_amount_to_be_paid && (
+                    <div className="p-3 rounded-xl flex justify-between items-center mb-4 border bg-indigo-50 border-indigo-100 dark:bg-indigo-900/40 dark:border-indigo-800">
+                        <span className="text-sm font-semibold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
+                            Final Payable Amount
                         </span>
-                        <span className={cn(
-                            "text-lg font-bold",
-                            isRepairCompleted ? "text-green-900 dark:text-green-100" : "text-indigo-900 dark:text-indigo-100"
-                        )}>
+                        <span className="text-lg font-bold text-indigo-900 dark:text-indigo-100">
                             ₹{typeof quote.final_amount_to_be_paid === 'string'
                                 ? parseFloat(quote.final_amount_to_be_paid).toFixed(2)
                                 : quote.final_amount_to_be_paid.toFixed(2)}

@@ -27,6 +27,7 @@ import { Session } from '@supabase/supabase-js';
 import { getUserProfile, getWalletBalance, getReferralCode } from '@/app/actions';
 import { EditProfileModal } from './EditProfileModal';
 import { AddressManagementModal } from './AddressManagementModal';
+import { BookingHistoryModal } from './BookingHistoryModal';
 
 import {
   Sheet,
@@ -203,6 +204,7 @@ function ProfileContent() {
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -337,7 +339,7 @@ function ProfileContent() {
           <MenuItem
             icon={History}
             label="Booking History"
-            onClick={() => router.push('/history')}
+            onClick={() => setIsBookingModalOpen(true)}
           />
           <MenuItem
             icon={MapPin}
@@ -368,6 +370,10 @@ function ProfileContent() {
       <AddressManagementModal
         isOpen={isAddressModalOpen}
         onClose={() => setIsAddressModalOpen(false)}
+      />
+      <BookingHistoryModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
       />
     </div>
   );

@@ -26,6 +26,8 @@ export type Booking = {
     repair_quotes: RepairQuote[];
     // Added fields used in InvoicePreviewSheet (even if dummy)
     final_amount_paid?: number;
+    payment_method?: string | null;
+    referral_code?: string | null;
     final_amount_to_be_paid?: number;
     net_inspection_fee?: number;
     user_name?: string;
