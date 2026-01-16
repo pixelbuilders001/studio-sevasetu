@@ -164,7 +164,7 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
                                             {/* TransactionHistorySheet likely does its own fetching using mobile number. */}
                                             {/* If I rewrite TransactionHistorySheet to use actions, that would be best, but out of scope? */}
                                             {/* I'll leave a note or try to pass it if I fetched profile. */}
-                                            <TransactionHistorySheet mobileNumber={session?.user?.phone || ''} />
+                                            <TransactionHistorySheet />
                                         </SheetContent>
                                     </Sheet>
                                 </div>

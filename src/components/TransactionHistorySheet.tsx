@@ -10,6 +10,8 @@ import { ArrowUpRight, ArrowDownLeft, IndianRupee, Loader2, Info } from 'lucide-
 import { ScrollArea } from './ui/scroll-area';
 import { format } from 'date-fns';
 
+import { getWalletTransactions } from '@/app/actions';
+
 type Transaction = {
     type: 'credit' | 'debit';
     source: string;
@@ -18,38 +20,19 @@ type Transaction = {
     amount: number;
 }
 
-const TransactionHistorySheet = ({ mobileNumber }: { mobileNumber: string }) => {
+const TransactionHistorySheet = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchHistory = async () => {
-            if (!mobileNumber) {
-                setLoading(false);
-                return;
-            };
-
             setLoading(true);
             setError(null);
 
             try {
-                const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallet_transactions?mobile_number=eq.${mobileNumber}&select=type,source,note,created_at,amount`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-                        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch transaction history.');
-                }
-                
-                const data = await response.json();
-                setTransactions(data);
-
+                const data = await getWalletTransactions();
+                setTransactions(data || []);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An unknown error occurred.');
             } finally {
@@ -58,7 +41,7 @@ const TransactionHistorySheet = ({ mobileNumber }: { mobileNumber: string }) => 
         };
 
         fetchHistory();
-    }, [mobileNumber]);
+    }, []);
 
     return (
         <>
@@ -73,9 +56,9 @@ const TransactionHistorySheet = ({ mobileNumber }: { mobileNumber: string }) => 
                 )}
                 {!loading && error && (
                     <div className="flex justify-center items-center h-40">
-                         <Card className="p-4 m-4 bg-destructive/10 text-destructive border-destructive/20">
+                        <Card className="p-4 m-4 bg-destructive/10 text-destructive border-destructive/20">
                             <CardContent className="p-0 flex items-center gap-3">
-                                <Info className="w-5 h-5"/>
+                                <Info className="w-5 h-5" />
                                 <div>
                                     <h3 className="font-bold">Error</h3>
                                     <p>{error}</p>
@@ -85,7 +68,7 @@ const TransactionHistorySheet = ({ mobileNumber }: { mobileNumber: string }) => 
                     </div>
                 )}
                 {!loading && !error && transactions.length === 0 && (
-                     <div className="flex justify-center items-center h-40">
+                    <div className="flex justify-center items-center h-40">
                         <p className="text-muted-foreground">No transactions found.</p>
                     </div>
                 )}
@@ -111,7 +94,7 @@ const TransactionHistorySheet = ({ mobileNumber }: { mobileNumber: string }) => 
                                                 <span className="text-lg">{transaction.type === 'credit' ? '+' : '-'}</span>
                                                 <IndianRupee className="w-4 h-4" />{transaction.amount || 0}
                                             </p>
-                                             <p className="text-xs text-muted-foreground">{format(new Date(transaction.created_at), 'MMM d, yyyy')}</p>
+                                            <p className="text-xs text-muted-foreground">{format(new Date(transaction.created_at), 'MMM d, yyyy')}</p>
                                         </div>
                                     </div>
                                 </CardContent>

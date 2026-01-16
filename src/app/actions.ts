@@ -68,6 +68,7 @@ export async function bookService(
   referralCode: string | undefined,
   total_estimated_price: number,
   net_inspection_fee: number,
+  wallet_used_amount: number | null,
   prevState: any,
   formData: FormData
 ): Promise<{ message: string, error?: string, bookingId?: string, referralCode?: string }> {
@@ -132,6 +133,7 @@ export async function bookService(
 
   payload.set('total_estimated_price', total_estimated_price.toString());
   payload.set('net_inspection_fee', net_inspection_fee.toString());
+  payload.set('wallet_used_amount', wallet_used_amount !== null ? wallet_used_amount.toString() : 'null');
   payload.set('final_amount_paid', '');
   payload.set('final_amount_to_be_paid', '');
   try {
@@ -610,23 +612,12 @@ export async function getWalletTransactions() {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      return null;
+      return [];
     }
 
     const accessToken = session.access_token;
-    const userId = session.user.id;
-    // We need mobile number to query transactions as per original code.
-    // Or maybe we can query by user_id if the table supports it?
-    // The original code used mobile_number.
-    // Let's fetch user profile to get mobile number first, or check if transactions table has user_id.
-    // Assuming transactions might be linked to mobile_number as per WalletPage.tsx:
-    // `wallet_transactions?mobile_number=eq.${mobileNumber}`
 
-    // Efficient way: Get profile -> get mobile -> get transactions.
-    const profile = await getUserProfile();
-    if (!profile || !profile.mobile_number) return [];
-
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallet_transactions`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/wallet_transactions?order=created_at.desc`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -637,6 +628,7 @@ export async function getWalletTransactions() {
     });
 
     if (!response.ok) {
+      console.error('Transactions fetch error:', await response.text());
       return [];
     }
     return await response.json();
@@ -698,5 +690,228 @@ export async function verifyReferralCode(code: string) {
   } catch (error) {
     console.error('Referral verification failed:', error);
     return { valid: false, message: "Verification failed", discount: 0 };
+  }
+}
+
+export async function saveAddress(data: { full_address: string; city?: string; state?: string; pincode?: string }) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      return { success: false, error: "You must be logged in to save an address." };
+    }
+
+    const accessToken = session.access_token;
+    const userId = session.user.id;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/addresses`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        full_address: data.full_address,
+        city: data.city || null,
+        state: data.state || null,
+        pincode: data.pincode || null,
+        is_default: false
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Address Save API Error:', errorData);
+      return { success: false, error: errorData.message || 'Failed to save address.' };
+    }
+
+    return { success: true };
+
+  } catch (error) {
+    console.error('Address save failed:', error);
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred.';
+    return { success: false, error: message };
+  }
+}
+
+export async function getSavedAddresses() {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      return [];
+    }
+
+    const accessToken = session.access_token;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/addresses?order=created_at.desc`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      console.error('Failed to fetch addresses', response.statusText);
+      return [];
+    }
+
+    return await response.json();
+
+  } catch (error) {
+    console.error('Fetch addresses failed:', error);
+    return [];
+  }
+}
+
+export async function setDefaultAddress(addressId: string) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session) return { error: 'Unauthorized' };
+
+    const accessToken = session.access_token;
+    const userId = session.user.id;
+
+    // 1. Reset all addresses for this user to is_default = false
+    await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/addresses?user_id=eq.${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ is_default: false })
+    });
+
+    // 2. Set the selected address as default
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/addresses?id=eq.${addressId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ is_default: true })
+    });
+
+    if (!response.ok) throw new Error('Failed to set default address');
+    return { success: true };
+
+  } catch (error) {
+    console.error('Set default address failed:', error);
+    return { error: 'Failed to update address' };
+  }
+}
+
+export async function deleteAddress(addressId: string) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session) return { error: 'Unauthorized' };
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/addresses?id=eq.${addressId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) throw new Error('Failed to delete address');
+    return { success: true };
+
+  } catch (error) {
+    console.error('Delete address failed:', error);
+    return { error: 'Failed to delete address' };
   }
 }

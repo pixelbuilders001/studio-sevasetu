@@ -26,6 +26,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { getUserProfile, getWalletBalance, getReferralCode } from '@/app/actions';
 import { EditProfileModal } from './EditProfileModal';
+import { AddressManagementModal } from './AddressManagementModal';
 
 import {
   Sheet,
@@ -201,6 +202,7 @@ function ProfileContent() {
   const [loading, setLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -340,7 +342,7 @@ function ProfileContent() {
           <MenuItem
             icon={MapPin}
             label="Saved Addresses"
-            onClick={() => router.push('/addresses')}
+            onClick={() => setIsAddressModalOpen(true)}
           />
         </div>
 
@@ -362,6 +364,10 @@ function ProfileContent() {
         onClose={() => setIsEditModalOpen(false)}
         currentProfile={profile ? { full_name: profile.full_name, phone: profile.phone } : null}
         onProfileUpdated={refreshProfile}
+      />
+      <AddressManagementModal
+        isOpen={isAddressModalOpen}
+        onClose={() => setIsAddressModalOpen(false)}
       />
     </div>
   );

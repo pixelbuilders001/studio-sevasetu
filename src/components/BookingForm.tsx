@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift, X, Calendar as CalendarIcon, CloudCog } from 'lucide-react';
+import { AlertCircle, Loader2, User, Phone, MapPin, LocateFixed, Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee, Tag, Gift, X, Calendar as CalendarIcon, CloudCog, Wallet } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
-import { bookService, verifyReferralCode as verifyReferralCodeAction } from '@/app/actions';
+import { bookService, verifyReferralCode as verifyReferralCodeAction, saveAddress, getSavedAddresses, getWalletBalance, getUserProfile } from '@/app/actions';
 import Image from 'next/image';
 import { Card } from './ui/card';
 import FullScreenLoader from '@/components/FullScreenLoader';
@@ -36,15 +36,20 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   const router = useRouter();
 
   const [referral, setReferral] = useState('');
+  const [userName, setUserName] = useState('');
   const [mobile, setMobile] = useState('');
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const [referralStatus, setReferralStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [referralMessage, setReferralMessage] = useState('');
   const [discount, setDiscount] = useState(0);
+  const [walletBalance, setWalletBalance] = useState<number>(0);
+  const [useWallet, setUseWallet] = useState(false);
 
-  const finalPayable = Math.max(inspectionFee - discount, 0);
+  const initialPayable = Math.max(inspectionFee - discount, 0);
+  const walletDeduction = useWallet ? Math.min(walletBalance, initialPayable) : 0;
+  const finalPayable = Math.max(initialPayable - walletDeduction, 0);
 
-  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined, totalEstimatedPrice, finalPayable);
+  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined, totalEstimatedPrice, finalPayable, useWallet ? walletDeduction : null);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
 
   const [date, setDate] = useState<Date | null>(() => {
@@ -61,7 +66,37 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("9 AM-12 PM");
   const [address, setAddress] = useState('');
   const [isGpsLoading, setIsGpsLoading] = useState(false);
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      setIsLoadingAddresses(true);
+      const [addresses, balance, profile] = await Promise.all([
+        getSavedAddresses(),
+        getWalletBalance(),
+        getUserProfile()
+      ]);
+
+      setSavedAddresses(addresses);
+      setWalletBalance(balance);
+
+      if (profile) {
+        setUserName(profile.full_name || '');
+        setMobile(profile.phone || '');
+      }
+
+      // Auto-select is_default address
+      const defaultAddr = addresses.find((addr: any) => addr.is_default);
+      if (defaultAddr) {
+        setAddress(defaultAddr.full_address);
+      }
+      setIsLoadingAddresses(false);
+    };
+    fetchInitialData();
+  }, []);
 
   useEffect(() => {
     const now = new Date();
@@ -135,9 +170,71 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
     );
   };
 
+  const handleSaveAddress = async () => {
+    if (!address.trim()) {
+      toast({
+        variant: 'destructive',
+        title: 'Empty Address',
+        description: 'Please enter a full address before saving.',
+      });
+      return;
+    }
+
+    setIsSavingAddress(true);
+    try {
+      const result = await saveAddress({
+        full_address: address,
+        city: location.city,
+        state: location.area?.State,
+        pincode: location.pincode,
+      });
+
+      if (result.success) {
+        toast({
+          title: 'Address Saved',
+          description: 'Your address has been saved for future bookings.',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error Saving Address',
+          description: result.error || 'Something went wrong.',
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to save address.',
+      });
+    } finally {
+      setIsSavingAddress(false);
+      // Refresh addresses list after saving
+      const addresses = await getSavedAddresses();
+      setSavedAddresses(addresses);
+    }
+  };
+
+  const handleSelectSavedAddress = (addrId: string) => {
+    const selected = savedAddresses.find(a => a.id === addrId);
+    if (selected) {
+      setAddress(selected.full_address);
+    }
+  };
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.size > 1024 * 1024) { // 1MB check
+        toast({
+          variant: 'destructive',
+          title: 'Image Too Large',
+          description: 'Please select an image smaller than 1MB.',
+        });
+        event.target.value = ''; // Reset input
+        setImagePreview(null);
+        return;
+      }
       setImagePreview(URL.createObjectURL(file));
     } else {
       setImagePreview(null);
@@ -222,7 +319,16 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
             <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Contact Information</h2>
           </div>
           <div className="bg-card rounded-2xl border p-2 space-y-1 shadow-sm">
-            <Input icon={User} id="user_name" name="user_name" placeholder="Enter Full Name" required className="border-0 bg-transparent text-sm focus-visible:ring-0 h-11" />
+            <Input
+              icon={User}
+              id="user_name"
+              name="user_name"
+              placeholder="Enter Full Name"
+              required
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              className="border-0 bg-transparent text-sm focus-visible:ring-0 h-11"
+            />
             <div className="h-px bg-border/50 mx-4" />
             <Input
               icon={Phone}
@@ -252,6 +358,26 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
             </Button>
           </div>
           <div className="bg-card rounded-2xl border p-2 space-y-1 shadow-sm">
+            {savedAddresses.length > 0 && (
+              <>
+                <div className="px-2 pt-1 pb-2">
+                  <Select onValueChange={handleSelectSavedAddress}>
+                    <SelectTrigger className="h-9 rounded-xl text-[10px] font-bold uppercase tracking-wider bg-primary/5 border-primary/10">
+                      <SelectValue placeholder="CHOOSE FROM SAVED ADDRESSES" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {savedAddresses.map((addr) => (
+                        <SelectItem key={addr.id} value={addr.id} className="text-xs">
+                          {addr.full_address.length > 40 ? addr.full_address.substring(0, 40) + '...' : addr.full_address}
+                          {addr.is_default && " (Default)"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="h-px bg-border/50 mx-4" />
+              </>
+            )}
             <Textarea
               icon={MapPin}
               id="full_address"
@@ -264,6 +390,23 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
             />
             <div className="h-px bg-border/50 mx-4" />
             <Input icon={Flag} id="landmark" name="landmark" placeholder="Nearest Landmark (Optional)" className="border-0 bg-transparent text-sm focus-visible:ring-0 h-11" />
+            <div className="px-2 pb-2">
+              <Button
+                type="button"
+                onClick={handleSaveAddress}
+                disabled={!address.trim() || isSavingAddress || savedAddresses.some(a => a.full_address === address)}
+                variant="outline"
+                size="sm"
+                className="w-full text-blue-700 bg-blue-50/50 border-blue-200/50 hover:bg-blue-100/50 hover:border-blue-300/50 rounded-xl h-10 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+              >
+                {isSavingAddress ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <CheckCircle className="h-3 w-3" />
+                )}
+                Save Address for next time
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -419,6 +562,53 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
           )}
         </div>
 
+        {/* Wallet Section */}
+        {walletBalance > 0 && (
+          <div className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            <div className="flex items-center gap-2 px-1 mb-3">
+              <Wallet className="w-4 h-4 text-primary" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Wallet Credits</h2>
+            </div>
+            <div
+              onClick={() => setUseWallet(!useWallet)}
+              className={cn(
+                "relative flex items-center justify-between bg-card rounded-2xl border p-4 cursor-pointer transition-all duration-300 shadow-sm",
+                useWallet ? "border-primary bg-primary/5 ring-1 ring-primary/20" : "hover:border-primary/30"
+              )}
+            >
+              <div className="flex items-center gap-4">
+                <div className={cn(
+                  "w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-inner",
+                  useWallet ? "bg-primary text-white" : "bg-primary/10 text-primary"
+                )}>
+                  <Wallet className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-xl font-black">₹{walletBalance}</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Available</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground font-medium">Use credits to pay for this booking</p>
+                </div>
+              </div>
+              <div className={cn(
+                "w-12 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out",
+                useWallet ? "bg-primary" : "bg-muted"
+              )}>
+                <div className={cn(
+                  "w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out transform",
+                  useWallet ? "translate-x-6" : "translate-x-0"
+                )} />
+              </div>
+              {useWallet && (
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[9px] font-black px-2 py-1 rounded-full shadow-lg animate-bounce uppercase tracking-tighter">
+                  -₹{walletDeduction} Applied
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {state?.error && (
           <Alert variant="destructive" className="rounded-2xl border-red-500/20 bg-red-50/50">
             <AlertCircle className="h-4 w-4" />
@@ -437,10 +627,17 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
                   <div className="flex items-center text-primary font-black text-xl">
                     <IndianRupee className="w-4 h-4 mr-0.5" strokeWidth={3} />
                     <span>{finalPayable}</span>
-                    {discount > 0 && (
-                      <span className="ml-1.5 text-[10px] text-muted-foreground line-through decoration-red-500/50 opacity-50 font-bold">
-                        ₹{inspectionFee}
-                      </span>
+                    {(discount > 0 || useWallet) && (
+                      <div className="flex flex-col ml-2">
+                        <span className="text-[9px] text-muted-foreground line-through decoration-red-500/50 opacity-50 font-bold leading-none">
+                          ₹{inspectionFee}
+                        </span>
+                        {useWallet && (
+                          <span className="text-[8px] bg-green-500 text-white px-1 rounded-sm mt-0.5 font-black uppercase tracking-tighter leading-none">
+                            Wallet Applied
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
