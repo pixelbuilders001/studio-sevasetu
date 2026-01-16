@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient'; // Correct import
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function UpdatePassword() {
+function UpdatePasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = useMemo(() => searchParams.get('next') ?? '/', [searchParams]);
@@ -93,5 +93,17 @@ export default function UpdatePassword() {
         {message && <p style={{ color: 'green', marginTop: '10px', textAlign: 'center' }}>{message}</p>}
       </form>
     </div>
+  );
+}
+
+export default function UpdatePassword() {
+  return (
+    <Suspense fallback={
+      <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', textAlign: 'center' }}>
+        Loading...
+      </div>
+    }>
+      <UpdatePasswordForm />
+    </Suspense>
   );
 }
