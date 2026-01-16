@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient'; // Correct import
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function UpdatePassword() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = useMemo(() => searchParams.get('next') ?? '/', [searchParams]);
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -21,7 +24,7 @@ export default function UpdatePassword() {
       setError("Passwords do not match.");
       return;
     }
-    
+
     setLoading(true);
 
     try {
@@ -32,16 +35,16 @@ export default function UpdatePassword() {
       if (error) {
         setError(`Error updating password: ${error.message}`);
       } else {
-        setMessage("Password updated successfully! You will be redirected to the home page shortly.");
+        setMessage(`Password updated successfully! You will be redirected shortly.`);
         setTimeout(() => {
-          router.push('/');
+          router.push(next);
         }, 3000);
       }
     } catch (e: any) {
-        console.error("An unexpected error occurred:", e);
-        setError(e.message);
+      console.error("An unexpected error occurred:", e);
+      setError(e.message);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 

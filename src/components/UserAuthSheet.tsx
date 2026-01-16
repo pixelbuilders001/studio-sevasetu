@@ -12,14 +12,14 @@ import { Session } from '@supabase/supabase-js';
 const AuthHeaderLogo = ({ title, subtitle }: { title: React.ReactNode; subtitle: string }) => (
   <div className="flex flex-col items-center justify-center text-center mb-6">
     <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-2 border-gray-100 shadow-sm relative mb-4">
-        <Avatar className="w-16 h-16">
-          <AvatarImage 
-            src="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Jan%205%2C%202026%2C%2002_26_24%20PM.png" 
-            alt="Auth Logo"
-            className="object-contain" 
-          />
-          <AvatarFallback>S</AvatarFallback>
-        </Avatar>
+      <Avatar className="w-16 h-16">
+        <AvatarImage
+          src="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Jan%205%2C%202026%2C%2002_26_24%20PM.png"
+          alt="Auth Logo"
+          className="object-contain"
+        />
+        <AvatarFallback>S</AvatarFallback>
+      </Avatar>
     </div>
     <h2 className="text-3xl font-extrabold text-primary leading-tight font-sans">{title}</h2>
     <span className="text-xs font-semibold text-gray-500 leading-tight tracking-wide uppercase mt-1 font-sans">{subtitle}</span>
@@ -35,7 +35,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  
+
   const supabase = createSupabaseBrowserClient(); // New client instantiation
 
   useEffect(() => {
@@ -58,11 +58,12 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
     e.preventDefault();
     setLoading(true);
     setMessage('');
+    const redirectPath = window.location.pathname + window.location.search;
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`,
       },
     });
     if (error) {
@@ -90,8 +91,9 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
     e.preventDefault();
     setLoading(true);
     setMessage('');
+    const redirectPath = window.location.pathname + window.location.search;
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/update-password`,
+      redirectTo: `${window.location.origin}/update-password?next=${encodeURIComponent(redirectPath)}`,
     });
     if (error) {
       setMessage(error.message);
@@ -193,9 +195,9 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
       case 'createAccount':
         return (
           <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
-            <AuthHeaderLogo 
-              title={<>Create a <span className="font-extrabold text-[#cec16c] italic">Free</span> Account</>} 
-              subtitle="VERIFIED HOME SERVICES" 
+            <AuthHeaderLogo
+              title={<>Create a <span className="font-extrabold text-[#cec16c] italic">Free</span> Account</>}
+              subtitle="VERIFIED HOME SERVICES"
             />
             {message && <p className="text-center text-green-500 text-sm mb-4 font-sans">{message}</p>}
             <form className="w-full space-y-6" onSubmit={handleSignUp}>
