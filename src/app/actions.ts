@@ -801,7 +801,7 @@ export async function getSavedAddresses() {
 
     const accessToken = session.access_token;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/addresses?user_id=eq.${session.user.id}&limit=1`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/addresses?user_id=eq.${session.user.id}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
