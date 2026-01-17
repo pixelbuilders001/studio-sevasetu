@@ -629,7 +629,7 @@ export async function getWalletTransactions() {
 
     const accessToken = session.access_token;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/wallet_transactions?user_id=eq.${session.user.id}&limit=1`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/wallet_transactions?user_id=eq.${session.user.id}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
