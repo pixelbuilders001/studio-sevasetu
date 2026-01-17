@@ -384,7 +384,7 @@ export async function getUserProfile() {
     }
 
     const accessToken = session.access_token;
-    const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/rest/v1/profiles', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}&limit=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -401,6 +401,7 @@ export async function getUserProfile() {
     }
 
     const profileData = await response.json();
+    // console.log(profileData);
     return profileData[0]; // Return the first (and only) profile object
 
   } catch (error) {
