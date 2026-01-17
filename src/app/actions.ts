@@ -570,7 +570,7 @@ export async function getReferralCode() {
     const accessToken = session.access_token;
     const userId = session.user.id;
 
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/referral_codes`, {
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/referral_codes?user_id=eq.${session.user.id}&limit=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -629,7 +629,7 @@ export async function getWalletTransactions() {
 
     const accessToken = session.access_token;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/wallet_transactions?order=created_at.desc`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/wallet_transactions?user_id=eq.${session.user.id}&limit=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -801,7 +801,7 @@ export async function getSavedAddresses() {
 
     const accessToken = session.access_token;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/addresses?order=created_at.desc`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/addresses?user_id=eq.${session.user.id}&limit=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
