@@ -14,13 +14,30 @@ import { Session } from '@supabase/supabase-js';
 import { ProfileSheet } from '@/components/profile/ProfileSheet'; // Import the new ProfileSheet
 
 const Logo = () => (
-  <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-    <div className="w-9 h-9 bg-primary rounded-md flex items-center justify-center">
-      <span className="text-2xl font-bold text-primary-foreground">S</span>
+  <Link href="/" className="flex flex-col flex-shrink-0 group transition-all duration-300 hover:scale-105 active:scale-95">
+    <div className="flex items-center gap-1.5">
+      <div className="bg-[#6366F1] px-1 rounded md:rounded shadow-[0_4px_10px_rgba(99,102,241,0.25)] group-hover:shadow-[0_6px_15px_rgba(99,102,241,0.35)] transition-all duration-300">
+        <span
+          //  className="text-xl md:text-2xl font-[1000] text-[#1E293B] dark:text-white tracking-tighter italic leading-none"
+          className="text-[11px] md:text-[13px] font-[1000] text-white italic tracking-tighter leading-none whitespace-nowrap uppercase"
+        >
+          FIX on Click
+        </span>
+      </div>
+      {/* <div className="bg-[#6366F1] px-2.5 py-1.2 rounded-xl md:rounded-2xl shadow-[0_4px_10px_rgba(99,102,241,0.25)] group-hover:shadow-[0_6px_15px_rgba(99,102,241,0.35)] transition-all duration-300"> */}
+      {/* <span
+        className="text-md md:text-2xl font-[1000] text-[#1E293B] dark:text-white tracking-tighter italic leading-none -ml-1"
+      // className="text-[11px] md:text-[13px] font-[1000] text-white italic tracking-tighter leading-none whitespace-nowrap uppercase"
+      >
+        CLICK
+      </span> */}
+      {/* </div> */}
     </div>
-    <div className="flex flex-col">
-      <span className="text-lg font-bold text-primary leading-tight">SevaSetu</span>
-      <span className="text-xs font-semibold text-muted-foreground leading-tight tracking-wide">TRUSTED REPAIR</span>
+    <div className=" flex items-center gap-1 mt-1 px-0.5">
+      {/* <div className="h-[2px] w-4 bg-primary rounded-full opacity-50" /> */}
+      <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-none">
+        Home Services
+      </span>
     </div>
   </Link>
 );
@@ -30,7 +47,7 @@ export default function Header() {
   const [session, setSession] = useState<Session | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  
+
   const supabase = createSupabaseBrowserClient();
 
   useEffect(() => {
@@ -80,7 +97,7 @@ export default function Header() {
           <div className="flex items-center gap-3">
             <LocationSelector />
             <LanguageSwitcher />
-            
+
             {/* If user is logged in, show the ProfileSheet component */}
             {session ? (
               <ProfileSheet />
@@ -89,7 +106,7 @@ export default function Header() {
                 {/* If user is not logged in, show the login sheet trigger */}
                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                   <SheetTrigger asChild>
-                     <Button variant="outline" size="icon" className="rounded-full w-10 h-10">
+                    <Button variant="outline" size="icon" className="rounded-full w-10 h-10">
                       <User className="h-5 w-5" />
                       <span className="sr-only">Open login</span>
                     </Button>

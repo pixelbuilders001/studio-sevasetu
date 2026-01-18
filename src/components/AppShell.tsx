@@ -8,6 +8,7 @@ import BottomNavBar from '@/components/BottomNavBar';
 import { Toaster } from '@/components/ui/toaster';
 import { LocationProvider } from '@/context/LocationContext';
 import { LanguageProvider } from '@/context/LanguageContext';
+import SplashScreen from '@/components/SplashScreen';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -16,6 +17,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <LanguageProvider>
       <LocationProvider>
+        <SplashScreen />
         <Header />
         <main className="flex-grow pb-24 pt-16 md:pt-20">{children}</main>
         <Footer />

@@ -140,44 +140,48 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
 
 
           {/* Banner */}
-          <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-[1.6/1] sm:aspect-[2/1] md:aspect-[3/1]">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center p-5 sm:p-6 text-white">
-              <div className="flex-1 z-10">
-                <div className="inline-block px-2 py-1 bg-white/20 rounded-md text-[10px] font-bold mb-2 backdrop-blur-sm">
-                  FAST SERVICE
-                </div>
-                <div className="mb-3 sm:mb-4">
-                  <AnimatedHeroText className="text-xl sm:text-2xl md:text-3xl leading-tight" highlightColor="text-yellow-300" />
-                </div>
-                <p className="text-white/80 text-[11px] sm:text-xs mb-4">Expert technicians at your doorstep.</p>
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[1.6/1] sm:aspect-[2/1] md:aspect-[3/1] group transition-all duration-500 hover:shadow-primary/20">
+            {/* Animated WebP Background */}
+            <div className="absolute inset-0">
+              <Image
+                src="/hero-video.webp"
+                alt="SevaSetu Hero"
+                fill
+                className="object-cover"
+                unoptimized
+                priority
+              />
+              {/* Smart Gradient Overlays */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-transparent z-10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 z-10" />
+              <div className="absolute inset-0 bg-primary/20 mix-blend-overlay z-10 group-hover:bg-primary/10 transition-colors duration-700" />
+            </div>
 
-                {/* Hero CTA adapted for the banner context */}
-                <HeroCTA />
+            <div className="relative h-full flex items-center p-5 sm:p-8 md:p-12 text-white z-20">
+              <div className="max-w-[85%] sm:max-w-[70%] space-y-3 sm:space-y-5">
+                <div className="drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+                  <AnimatedHeroText className="text-2xl sm:text-4xl md:text-6xl font-black leading-[1.1] tracking-tight" highlightColor="text-yellow-400" />
+                </div>
+                <p className="text-white/95 text-xs sm:text-base md:text-lg font-medium max-w-md leading-relaxed drop-shadow-md">
+                  Professional doorstep repairs with Bihar's most trusted technicians.
+                  <span className="hidden sm:inline"> Quality guaranteed.</span>
+                </p>
+
+                <div className="pt-2 sm:pt-4">
+                  <HeroCTA />
+                </div>
               </div>
-              <div className="absolute right-0 bottom-0 top-0 w-1/2 bg-[url('https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/only%20illustration%20not%20texts%20and%20all.jpg')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
+
+              {/* Decorative side element */}
+              <div className="absolute right-0 bottom-0 top-0 w-1/3 pointer-events-none overflow-hidden hidden md:block">
+                <div className="absolute right-[-10%] bottom-[-20%] w-[120%] h-[120%] bg-primary/20 blur-[100px] rounded-full" />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Quick Features - Grid Layout */}
-      <section className="py-4 -mt-2 mb-4">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-3 gap-2 md:gap-4">
-            {featureCards.map((card, index) => (
-              <div key={index} className="flex flex-col items-center justify-center bg-white dark:bg-card py-4 px-2 rounded-2xl shadow-soft border border-border/40 text-center transition-all hover:shadow-md active:scale-95">
-                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2 shadow-inner">
-                  <card.icon className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] md:text-xs font-black uppercase tracking-tight text-foreground leading-none">{card.title}</span>
-                  <span className="text-[7px] md:text-[9px] text-muted-foreground font-black uppercase tracking-[0.1em] leading-none">{card.description}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
 
 
@@ -208,11 +212,30 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           }
         </div>
       </section>
+
+
       {/* Referral Banner */}
       <section className="container mx-auto px-4 mb-8">
         <ReferralBanner />
       </section>
-
+      {/* Quick Features - Grid Layout */}
+      <section className="py-4 -mt-2 mb-4">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-3 gap-2 md:gap-4">
+            {featureCards.map((card, index) => (
+              <div key={index} className="flex flex-col items-center justify-center bg-white dark:bg-card py-4 px-2 rounded-2xl shadow-soft border border-border/40 text-center transition-all hover:shadow-md active:scale-95">
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2 shadow-inner">
+                  <card.icon className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[10px] md:text-xs font-black uppercase tracking-tight text-foreground leading-none">{card.title}</span>
+                  <span className="text-[7px] md:text-[9px] text-muted-foreground font-black uppercase tracking-[0.1em] leading-none">{card.description}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
       <div className="bg-white dark:bg-card rounded-t-3xl shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-8 pb-12">
         <div id="how-it-works">
           <HowItWorks t={t} />
