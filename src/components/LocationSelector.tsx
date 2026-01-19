@@ -135,8 +135,8 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {isHero ? (
-          <div className="flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 cursor-pointer active:scale-95 transition-all group shadow-lg">
-            <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+          <div className="flex items-center gap-2 bg-primary/1 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10 cursor-pointer active:scale-95 transition-all group shadow-lg">
+            <div className="w-7 h-7 rounded-full bg-white/30 flex items-center justify-center">
               <MapPin className="h-3.5 w-3.5 text-white" />
             </div>
             <div className="flex flex-col">

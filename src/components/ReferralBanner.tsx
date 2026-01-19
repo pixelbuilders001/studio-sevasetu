@@ -76,10 +76,10 @@ export default function ReferralBanner() {
     }
 
     const BannerContent = () => (
-        <div className="relative w-full bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[2.5rem] p-4 sm:p-6 overflow-hidden shadow-xl active:scale-[0.98] transition-all group cursor-pointer border border-white/10">
+        <div className="relative w-full bg-primary rounded-[2.5rem] p-4 sm:p-6 overflow-hidden shadow-xl active:scale-[0.98] transition-all group cursor-pointer border border-white/10">
             {/* Background Orbs */}
             <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-40 h-40 bg-indigo-400/20 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-40 h-40 bg-white/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl pointer-events-none" />
 
             <div className="relative z-10 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4 sm:gap-6 flex-1">

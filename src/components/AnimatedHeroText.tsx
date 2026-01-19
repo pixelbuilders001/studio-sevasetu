@@ -33,6 +33,9 @@ const AnimatedHeroText = ({ className, highlightColor = "text-primary" }: Animat
           <div
             key={services[wordIndex]}
             className={cn("animate-fade-in-up absolute left-0 whitespace-nowrap drop-shadow-[0_0_8px_rgba(79,70,229,0.3)]", highlightColor)}
+            style={{
+              textShadow: '-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff'
+            }}
           >
             {services[wordIndex]}
           </div>

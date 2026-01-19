@@ -80,7 +80,14 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
               data-ai-hint={category.image.imageHint}
             />
           </div>
-          <h3 className="font-semibold text-sm text-foreground text-center leading-tight mb-1">{category.name}</h3>
+          <h3
+            className="font-black text-sm text-primary text-center leading-tight mb-1"
+            style={{
+              textShadow: '-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff'
+            }}
+          >
+            {category.name}
+          </h3>
           {isServiceable && (
             <div className="text-[10px] font-medium text-muted-foreground flex items-center bg-secondary px-2 py-0.5 rounded-full">
               <IndianRupee className="w-2.5 h-2.5 mr-0.5" />
@@ -190,8 +197,8 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
               ) : (
                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                   <SheetTrigger asChild>
-                    <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 cursor-pointer active:scale-90 transition-transform shadow-lg group">
-                      <User className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
+                    <div className="w-12 h-12 bg-indigo-200/90 backdrop-blur-sm rounded-full flex items-center justify-center border border-indigo-300/50 cursor-pointer active:scale-90 transition-transform shadow-lg group">
+                      <User className="h-6 w-6 text-indigo-700 group-hover:scale-110 transition-transform" />
                     </div>
                   </SheetTrigger>
                   <SheetContent

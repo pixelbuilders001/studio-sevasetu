@@ -387,7 +387,7 @@ export function ProfileSheet({ isHero }: { isHero?: boolean }) {
     <Sheet>
       <SheetTrigger asChild>
         {isHero ? (
-          <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 cursor-pointer active:scale-90 transition-transform shadow-lg group">
+          <div className="w-10 h-10 bg-primary/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 cursor-pointer active:scale-90 transition-transform shadow-lg group">
             <User className="h-5 w-5 text-white group-hover:scale-110 transition-transform" />
           </div>
         ) : (
