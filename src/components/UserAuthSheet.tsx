@@ -10,19 +10,19 @@ import { createSupabaseBrowserClient } from '@/lib/supabaseClient'; // Updated i
 import { Session } from '@supabase/supabase-js';
 
 const AuthHeaderLogo = ({ title, subtitle }: { title: React.ReactNode; subtitle: string }) => (
-  <div className="flex flex-col items-center justify-center text-center mb-6">
-    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-2 border-gray-100 shadow-sm relative mb-4">
-      <Avatar className="w-16 h-16">
+  <div className="flex flex-col items-center justify-center text-center mb-8">
+    <div className="w-24 h-24  flex items-center justify-center  relative mb-6">
+      <Avatar className="w-20 h-20">
         <AvatarImage
           src="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Jan%205%2C%202026%2C%2002_26_24%20PM.png"
           alt="Auth Logo"
-          className="object-contain"
+          className="object-contain p-2"
         />
-        <AvatarFallback>S</AvatarFallback>
+        <AvatarFallback className="text-3xl font-black text-white">H</AvatarFallback>
       </Avatar>
     </div>
-    <h2 className="text-3xl font-extrabold text-primary leading-tight font-sans">{title}</h2>
-    <span className="text-xs font-semibold text-gray-500 leading-tight tracking-wide uppercase mt-1 font-sans">{subtitle}</span>
+    <h2 className="text-3xl font-black text-[#1e1b4b] leading-tight tracking-tight mb-1">{title}</h2>
+    <span className="text-[10px] font-black text-indigo-600 tracking-[0.3em] uppercase">{subtitle}</span>
   </div>
 );
 
@@ -115,17 +115,20 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
   const UserAccountView = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
-        <Avatar className="w-24 h-24 mb-6">
-          <AvatarImage src="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Jan%205%2C%202026%2C%2002_26_24%20PM.png" alt="User Avatar" />
-          <AvatarFallback>{session?.user?.email?.[0].toUpperCase()}</AvatarFallback>
-        </Avatar>
-        <h2 className="text-2xl font-bold text-primary mb-2 font-sans">Welcome!</h2>
-        <p className="text-gray-600 mb-6 font-sans">{session?.user?.email}</p>
+        <div className="relative mb-8">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full blur-xl opacity-30" />
+          <Avatar className="w-28 h-28 border-4 border-indigo-100 shadow-2xl relative z-10">
+            <AvatarImage src="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Jan%205%2C%202026%2C%2002_26_24%20PM.png" alt="User Avatar" />
+            <AvatarFallback className="text-3xl font-black bg-indigo-50 text-indigo-600">{session?.user?.email?.[0].toUpperCase()}</AvatarFallback>
+          </Avatar>
+        </div>
+        <h2 className="text-3xl font-black text-[#1e1b4b] mb-2">Welcome Back!</h2>
+        <p className="text-indigo-600 font-bold mb-8 text-sm">{session?.user?.email}</p>
         <Button
-          className="w-full max-w-xs h-12 rounded-lg bg-primary text-white text-base font-semibold hover:bg-primary/90 font-sans"
+          className="w-full max-w-xs h-14 rounded-2xl bg-red-500 text-white text-base font-black hover:bg-red-600 shadow-lg shadow-red-200 transition-all"
           onClick={handleLogout}
         >
-          Logout
+          LOGOUT
         </Button>
       </div>
     );
@@ -137,17 +140,18 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
         return (
           <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
             <AuthHeaderLogo title="Welcome Back" subtitle="SECURE ACCESS TO REPAIRS" />
-            {message && <p className="text-center text-red-500 text-sm mb-4 font-sans">{message}</p>}
-            <form className="w-full space-y-6" onSubmit={handleSignIn}>
+            {message && <p className="text-center text-red-500 text-sm mb-4 font-bold">{message}</p>}
+            <form className="w-full space-y-5" onSubmit={handleSignIn}>
               <div>
                 <Label htmlFor="email-signin" className="sr-only">Email Address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <div className="absolute inset-0 bg-indigo-50 rounded-2xl" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-600 z-10" />
                   <Input
                     id="email-signin"
                     type="email"
                     placeholder="Email Address"
-                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    className="relative z-10 pl-12 pr-4 h-14 text-base rounded-2xl border-indigo-200 bg-transparent focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-0 font-medium placeholder:text-indigo-400"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -156,12 +160,13 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               <div>
                 <Label htmlFor="password-signin" className="sr-only">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <div className="absolute inset-0 bg-indigo-50 rounded-2xl" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-600 z-10" />
                   <Input
                     id="password-signin"
                     type="password"
                     placeholder="Password"
-                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    className="relative z-10 pl-12 pr-4 h-14 text-base rounded-2xl border-indigo-200 bg-transparent focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-0 font-medium placeholder:text-indigo-400"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -169,26 +174,26 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               </div>
               <Button
                 type="submit"
-                className="w-full h-12 rounded-lg bg-primary text-white text-base font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 font-sans"
+                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all"
                 disabled={loading}
               >
-                {loading ? 'Signing In...' : <>SIGN IN <ArrowRight className="h-5 w-5" /></>}
+                {loading ? 'SIGNING IN...' : <>SIGN IN <ArrowRight className="h-5 w-5" /></>}
               </Button>
-              <p className="text-center text-sm text-gray-500 mt-4 font-sans">
+              <p className="text-center text-sm text-gray-600 mt-4">
                 <button
                   type="button"
                   onClick={() => setCurrentView('forgotPassword')}
-                  className="text-primary font-semibold hover:underline focus:outline-none"
+                  className="text-indigo-600 font-bold hover:text-indigo-700 hover:underline focus:outline-none transition-colors"
                 >
                   Forgot password?
                 </button>
               </p>
-              <p className="text-center text-sm text-gray-500 mt-4 font-sans">
+              <p className="text-center text-sm text-gray-600 mt-4">
                 NEW HERE?{' '}
                 <button
                   type="button"
                   onClick={() => setCurrentView('createAccount')}
-                  className="text-primary font-semibold hover:underline focus:outline-none"
+                  className="text-indigo-600 font-black hover:text-indigo-700 hover:underline focus:outline-none transition-colors"
                 >
                   CREATE AN ACCOUNT
                 </button>
@@ -200,20 +205,21 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
         return (
           <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
             <AuthHeaderLogo
-              title={<>Create a <span className="font-extrabold text-[#cec16c] italic">Free</span> Account</>}
+              title={<>Create a <span className="font-black text-primary italic">Free</span> Account</>}
               subtitle="VERIFIED HOME SERVICES"
             />
-            {message && <p className="text-center text-green-500 text-sm mb-4 font-sans">{message}</p>}
-            <form className="w-full space-y-6" onSubmit={handleSignUp}>
+            {message && <p className="text-center text-green-600 text-sm mb-4 font-bold">{message}</p>}
+            <form className="w-full space-y-5" onSubmit={handleSignUp}>
               <div>
                 <Label htmlFor="email-signup" className="sr-only">Email Address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <div className="absolute inset-0 bg-indigo-50 rounded-2xl" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-600 z-10" />
                   <Input
                     id="email-signup"
                     type="email"
                     placeholder="Email Address"
-                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    className="relative z-10 pl-12 pr-4 h-14 text-base rounded-2xl border-indigo-200 bg-transparent focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-0 font-medium placeholder:text-indigo-400"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -222,12 +228,13 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               <div>
                 <Label htmlFor="password-signup" className="sr-only">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <div className="absolute inset-0 bg-indigo-50 rounded-2xl" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-600 z-10" />
                   <Input
                     id="password-signup"
                     type="password"
                     placeholder="Password"
-                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    className="relative z-10 pl-12 pr-4 h-14 text-base rounded-2xl border-indigo-200 bg-transparent focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-0 font-medium placeholder:text-indigo-400"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -235,17 +242,17 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               </div>
               <Button
                 type="submit"
-                className="w-full h-12 rounded-lg bg-primary text-white text-base font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 font-sans"
+                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all"
                 disabled={loading}
               >
-                {loading ? 'Creating Account...' : <>CREATE ACCOUNT <ArrowRight className="h-5 w-5" /></>}
+                {loading ? 'CREATING ACCOUNT...' : <>CREATE ACCOUNT <ArrowRight className="h-5 w-5" /></>}
               </Button>
-              <p className="text-center text-sm text-gray-500 mt-4 font-sans">
+              <p className="text-center text-sm text-gray-600 mt-4">
                 ALREADY A MEMBER?{' '}
                 <button
                   type="button"
                   onClick={() => setCurrentView('signIn')}
-                  className="text-primary font-semibold hover:underline focus:outline-none"
+                  className="text-indigo-600 font-black hover:text-indigo-700 hover:underline focus:outline-none transition-colors"
                 >
                   SIGN IN
                 </button>
@@ -257,17 +264,18 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
         return (
           <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
             <AuthHeaderLogo title="Forgot Password" subtitle="ENTER YOUR EMAIL TO RESET" />
-            {message && <p className="text-center text-green-500 text-sm mb-4 font-sans">{message}</p>}
-            <form className="w-full space-y-6" onSubmit={handlePasswordReset}>
+            {message && <p className="text-center text-green-600 text-sm mb-4 font-bold">{message}</p>}
+            <form className="w-full space-y-5" onSubmit={handlePasswordReset}>
               <div>
                 <Label htmlFor="email-forgot" className="sr-only">Email Address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <div className="absolute inset-0 bg-indigo-50 rounded-2xl" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-600 z-10" />
                   <Input
                     id="email-forgot"
                     type="email"
                     placeholder="Email Address"
-                    className="pl-10 h-12 text-base rounded-lg border-gray-300 focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 font-sans"
+                    className="relative z-10 pl-12 pr-4 h-14 text-base rounded-2xl border-indigo-200 bg-transparent focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-0 font-medium placeholder:text-indigo-400"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -275,16 +283,16 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               </div>
               <Button
                 type="submit"
-                className="w-full h-12 rounded-lg bg-primary text-white text-base font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 font-sans"
+                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all"
                 disabled={loading}
               >
-                {loading ? 'Sending...' : <>SEND RESET LINK <ArrowRight className="h-5 w-5" /></>}
+                {loading ? 'SENDING...' : <>SEND RESET LINK <ArrowRight className="h-5 w-5" /></>}
               </Button>
-              <p className="text-center text-sm text-gray-500 mt-4 font-sans">
+              <p className="text-center text-sm text-gray-600 mt-4">
                 <button
                   type="button"
                   onClick={() => setCurrentView('signIn')}
-                  className="text-primary font-semibold hover:underline focus:outline-none"
+                  className="text-indigo-600 font-bold hover:text-indigo-700 hover:underline focus:outline-none transition-colors"
                 >
                   Back to Sign In
                 </button>

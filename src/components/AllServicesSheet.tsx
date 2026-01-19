@@ -66,19 +66,24 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
         <>
             {isNavigating && <FullScreenLoader />}
             <div onClick={handleClick} className="group cursor-pointer h-full">
-                <Card className="bg-card border rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col text-center overflow-hidden h-full min-h-[120px] justify-center items-center bg-white">
-                    <CardContent className="p-3 sm:p-4 flex flex-col items-center justify-center gap-1.5 h-full">
-                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
+                <Card className="bg-white border-2 border-indigo-100 rounded-3xl shadow-sm hover:shadow-xl hover:border-indigo-300 transition-all duration-300 flex flex-col text-center overflow-hidden h-full min-h-[130px] justify-center items-center active:scale-95">
+                    <CardContent className="p-4 sm:p-5 flex flex-col items-center justify-center gap-2 h-full">
+                        <div className="relative w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-indigo-50 rounded-2xl p-3 group-hover:bg-indigo-100 transition-colors">
                             <Image
                                 src={category.image.imageUrl}
                                 alt={category.name}
                                 fill
                                 sizes="(max-width: 768px) 20vw, 10vw"
-                                className="object-contain"
+                                className="object-contain p-1"
                                 data-ai-hint={category.image.imageHint}
                             />
                         </div>
-                        <h3 className="font-bold text-[11px] sm:text-xs md:text-base text-foreground leading-tight px-1 uppercase tracking-tight line-clamp-2">
+                        <h3
+                            className="font-black text-xs sm:text-sm md:text-base text-primary leading-tight px-1 uppercase tracking-tight line-clamp-2"
+                            style={{
+                                textShadow: '-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff'
+                            }}
+                        >
                             {category.name}
                         </h3>
                         {isServiceable && (

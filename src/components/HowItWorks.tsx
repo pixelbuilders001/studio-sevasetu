@@ -48,19 +48,19 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
 
   return (
     <section className="py-12 md:py-20 bg-white dark:bg-card overflow-hidden">
-      <div className="container mx-auto px-4 max-w-lg">
+      <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-12">
           <motion.h2
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-2xl md:text-3xl font-black tracking-tight"
+            className="text-3xl md:text-4xl font-black tracking-tight text-[#1e1b4b]"
           >
-            How it <span className="text-primary italic">Works</span>
+            How it <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent italic">Works</span>
           </motion.h2>
-          <div className="h-1 w-12 bg-primary/20 mx-auto mt-2 rounded-full overflow-hidden">
+          <div className="h-1.5 w-16 bg-indigo-100 mx-auto mt-3 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-primary"
+              className="h-full bg-gradient-to-r from-indigo-600 to-indigo-500"
               animate={{ width: `${(activeStep + 1) * 25}%` }}
               transition={{ duration: 0.3 }}
             />
@@ -68,9 +68,9 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
         </div>
 
         {/* Interactive Step Navigation */}
-        <div className="flex justify-between items-center mb-8 relative px-2">
+        <div className="flex justify-between items-center mb-10 relative px-2 md:px-8">
           {/* Connecting Line Backdrop */}
-          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-secondary -translate-y-1/2 -z-10" />
+          <div className="absolute top-1/2 left-0 right-0 h-1 bg-indigo-100 -translate-y-1/2 -z-10 rounded-full" />
 
           {steps.map((step, index) => {
             const Icon = step.icon;
@@ -84,20 +84,20 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
                 className="relative group transition-all duration-300"
               >
                 <div className={cn(
-                  "w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all duration-300 relative z-10",
+                  "w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center border-4 transition-all duration-300 relative z-10 shadow-lg",
                   isActive
-                    ? "bg-white border-primary shadow-lg scale-110"
-                    : isCompleted ? "bg-primary border-transparent" : "bg-secondary border-secondary"
+                    ? "bg-indigo-600 border-indigo-600 scale-110"
+                    : isCompleted ? "bg-indigo-400 border-indigo-400" : "bg-white border-indigo-200"
                 )}>
                   <Icon className={cn(
-                    "w-5 h-5 transition-colors",
-                    isActive ? "text-primary" : isCompleted ? "text-white" : "text-muted-foreground/50"
+                    "w-6 h-6 md:w-7 md:h-7 transition-colors",
+                    isActive || isCompleted ? "text-white" : "text-indigo-300"
                   )} />
                 </div>
-                {/* Mobile Step Label - Optional, hidden for max compactness */}
+                {/* Step Label */}
                 <div className={cn(
-                  "absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] font-black uppercase tracking-tight transition-opacity whitespace-nowrap",
-                  isActive ? "opacity-100 text-foreground" : "opacity-0"
+                  "absolute -bottom-7 left-1/2 -translate-x-1/2 text-[9px] md:text-[10px] font-black uppercase tracking-tight transition-opacity whitespace-nowrap",
+                  isActive ? "opacity-100 text-indigo-600" : "opacity-60 text-indigo-400"
                 )}>
                   Step {index + 1}
                 </div>
@@ -107,18 +107,18 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
         </div>
 
         {/* Active View Area */}
-        <div className="relative min-h-[360px] flex flex-col items-center">
+        <div className="relative min-h-[400px] md:min-h-[320px] flex flex-col items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeStep}
-              initial={{ opacity: 0, x: 20, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: -20, scale: 0.95 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="w-full bg-primary/5 rounded-[2.5rem] p-6 border border-primary/10 shadow-sm flex flex-col items-center"
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="w-full bg-gradient-to-br from-indigo-50/50 to-indigo-100/30 rounded-3xl p-6 md:p-8 border-2 border-indigo-200 shadow-xl flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8"
             >
-              {/* Compact GIF */}
-              <div className="relative w-48 h-48 rounded-[2rem] overflow-hidden mb-6 bg-white shadow-md border-4 border-white">
+              {/* GIF Container */}
+              <div className="relative w-56 h-56 md:w-64 md:h-64 rounded-3xl overflow-hidden bg-white shadow-2xl border-4 border-indigo-100 flex-shrink-0">
                 <Image
                   src={steps[activeStep].gif}
                   alt={steps[activeStep].title}
@@ -129,24 +129,38 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
               </div>
 
               {/* Content */}
-              <div className="text-center">
-                <h3 className="font-black text-xl mb-2 uppercase tracking-tight">
+              <div className="text-center md:text-left flex-1 flex flex-col justify-center">
+                <h3 className="font-black text-2xl md:text-3xl mb-3 uppercase tracking-tight text-indigo-900">
                   {steps[activeStep].title}
                 </h3>
-                <p className="text-muted-foreground text-sm font-semibold leading-relaxed px-2">
+                <p className="text-indigo-600 text-sm md:text-base font-bold leading-relaxed">
                   {steps[activeStep].description}
                 </p>
+
+                {/* Step Progress Pills - Desktop */}
+                <div className="hidden md:flex gap-2 mt-6">
+                  {steps.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveStep(i)}
+                      className={cn(
+                        "h-2 rounded-full transition-all duration-300",
+                        activeStep === i ? "w-12 bg-indigo-600" : "w-2 bg-indigo-200"
+                      )}
+                    />
+                  ))}
+                </div>
               </div>
 
-              {/* Step Progress Pills */}
-              <div className="flex gap-1.5 mt-8">
+              {/* Step Progress Pills - Mobile */}
+              <div className="flex md:hidden gap-2 mt-4">
                 {steps.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveStep(i)}
                     className={cn(
                       "h-1.5 rounded-full transition-all duration-300",
-                      activeStep === i ? "w-8 bg-primary" : "w-1.5 bg-primary/20"
+                      activeStep === i ? "w-10 bg-indigo-600" : "w-1.5 bg-indigo-200"
                     )}
                   />
                 ))}
