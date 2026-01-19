@@ -243,8 +243,9 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           </div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/5 h-8 text-xs font-medium">
-                {t('viewAll', { defaultValue: 'View All' })}
+              <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/5 h-auto py-1 text-sm font-bold flex items-center group">
+                <span>{t('viewAll', { defaultValue: 'View All' })}</span>
+                <ChevronRight className="w-4 h-4 ml-0.5 group-hover:translate-x-0.5 transition-transform" />
               </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[90vh] flex flex-col rounded-t-3xl">
