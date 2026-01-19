@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/sheet';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowUpRight, ArrowDownLeft, IndianRupee, Loader2, Info } from 'lucide-react';
+import WalletLoader from './wallet/WalletLoader';
 import { ScrollArea } from './ui/scroll-area';
 import { format } from 'date-fns';
 
@@ -45,15 +46,9 @@ const TransactionHistorySheet = () => {
 
     return (
         <>
-            <SheetHeader>
-                <SheetTitle>All Transactions</SheetTitle>
-            </SheetHeader>
+
             <ScrollArea className="flex-grow -mx-6 px-6">
-                {loading && (
-                    <div className="flex justify-center items-center h-40">
-                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                    </div>
-                )}
+                {loading && <WalletLoader message="Loading History" />}
                 {!loading && error && (
                     <div className="flex justify-center items-center h-40">
                         <Card className="p-4 m-4 bg-destructive/10 text-destructive border-destructive/20">

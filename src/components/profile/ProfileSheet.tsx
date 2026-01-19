@@ -381,13 +381,19 @@ function ProfileContent() {
 
 /* ---------------- SHEET ---------------- */
 
-export function ProfileSheet() {
+export function ProfileSheet({ isHero }: { isHero?: boolean }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button size="icon" variant="outline" className="rounded-full">
-          <User className="w-5 h-5" />
-        </Button>
+        {isHero ? (
+          <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 cursor-pointer active:scale-90 transition-transform shadow-lg group">
+            <User className="h-5 w-5 text-white group-hover:scale-110 transition-transform" />
+          </div>
+        ) : (
+          <Button size="icon" variant="outline" className="rounded-full">
+            <User className="w-5 h-5" />
+          </Button>
+        )}
       </SheetTrigger>
       <SheetContent side="left" className="p-0 w-full max-w-sm">
         <SheetHeader className="sr-only">

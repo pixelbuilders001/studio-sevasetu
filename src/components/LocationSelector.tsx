@@ -27,7 +27,7 @@ type PostalInfo = {
   Pincode: string;
 };
 
-export default function LocationSelector() {
+export default function LocationSelector({ isHero }: { isHero?: boolean }) {
   const { location, setLocation, isServiceable, checkServiceability, dialogOpen, setDialogOpen } = useLocation();
   const { t } = useTranslation();
 
@@ -134,15 +134,30 @@ export default function LocationSelector() {
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2 bg-muted/50 border rounded-full h-10">
-          <MapPin className="h-5 w-5 text-primary" />
-          <div className="text-left hidden md:block">
-            <div className="text-xs text-muted-foreground leading-tight">SERVICE IN</div>
-            <div className="font-semibold text-sm leading-tight">{truncatedCity}</div>
+        {isHero ? (
+          <div className="flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 cursor-pointer active:scale-95 transition-all group shadow-lg">
+            <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+              <MapPin className="h-3.5 w-3.5 text-white" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-white/60 tracking-widest uppercase leading-none mb-0.5">Location</span>
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-black text-white leading-none">{truncatedCity}</span>
+                <ChevronDown className="h-3 w-3 text-white/70 group-hover:translate-y-0.5 transition-transform" />
+              </div>
+            </div>
           </div>
-          <span className='md:hidden font-semibold'>{truncatedCity}</span>
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        </Button>
+        ) : (
+          <Button variant="outline" className="flex items-center gap-2 bg-muted/50 border rounded-full h-10">
+            <MapPin className="h-5 w-5 text-primary" />
+            <div className="text-left hidden md:block">
+              <div className="text-xs text-muted-foreground leading-tight">SERVICE IN</div>
+              <div className="font-semibold text-sm leading-tight">{truncatedCity}</div>
+            </div>
+            <span className='md:hidden font-semibold'>{truncatedCity}</span>
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100vw-1.5rem)] sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-6">
         <DialogHeader>

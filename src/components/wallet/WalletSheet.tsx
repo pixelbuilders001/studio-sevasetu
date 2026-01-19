@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { History, Wallet, Sparkles, ArrowUpRight, ArrowDownLeft, Gift, Copy, Share2, IndianRupee, Loader2 } from 'lucide-react';
+import WalletLoader from './WalletLoader';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import UserAuthSheet from '@/components/UserAuthSheet';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { getWalletBalance, getReferralCode, getWalletTransactions } from '@/app/actions';
 import TransactionHistorySheet from '@/components/TransactionHistorySheet';
+import { cn } from '@/lib/utils';
 
 type Transaction = {
     type: 'credit' | 'debit';
@@ -117,139 +119,136 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
                 <SheetHeader className="px-6 pt-6 pb-2">
-                    <SheetTitle className="text-center font-bold text-xl">
-                        {session ? 'Your Wallet' : 'Login to view wallet'}
+                    <SheetTitle className="text-left font-black text-2xl text-[#1e1b4b]">
+                        My Wallet
                     </SheetTitle>
                 </SheetHeader>
 
-                <div className="flex-1 overflow-y-auto px-6 pb-6">
+                <div className="flex-1 overflow-y-auto px-6 pb-6 mt-4">
                     {!session ? (
                         <div className="h-full flex flex-col justify-center">
                             <UserAuthSheet setSheetOpen={() => { }} />
                         </div>
                     ) : isLoading ? (
-                        <div className="flex justify-center items-center h-40">
-                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                        </div>
+                        <WalletLoader message="Fetching Balance" />
                     ) : (
-                        <div className="space-y-6 mt-4 max-w-md mx-auto">
+                        <div className="space-y-6 max-w-md mx-auto">
 
-                            <header className="mb-2">
-                                <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground text-center">Use this balance for your next booking</p>
-                            </header>
-
-                            <Card className="bg-gray-900 dark:bg-gray-800 text-white border-0 rounded-3xl shadow-2xl mb-8 overflow-hidden">
-                                <CardContent className="p-6">
-                                    <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                                        <Wallet className="w-5 h-5" />
-                                        <span>TOTAL BALANCE</span>
+                            {/* Balance Card */}
+                            <Card className="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white border-0 rounded-[2rem] shadow-xl overflow-hidden relative">
+                                <CardContent className="p-8">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-medium opacity-80 uppercase tracking-tight">Total Balance</p>
+                                            <div className="flex items-center text-4xl md:text-5xl font-black">
+                                                <IndianRupee className="w-8 h-8 md:w-10 md:h-10 -ml-1" strokeWidth={3} />
+                                                <span>{balance ?? 0}</span>
+                                            </div>
+                                        </div>
+                                        <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
+                                            <Wallet className="w-6 h-6 text-white/90" />
+                                        </div>
                                     </div>
-                                    <div className="flex items-baseline mb-6">
-                                        <span className="text-5xl font-bold flex items-center"><IndianRupee className="w-9 h-9" />{balance ?? 0}</span>
-                                        <span className="text-lg font-semibold text-gray-400 ml-2">POINTS</span>
-                                    </div>
+                                    {/* Add Money Button Removed as per request */}
                                 </CardContent>
                             </Card>
 
-                            <section className="mb-8">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h2 className="font-bold text-sm uppercase flex items-center gap-2 text-muted-foreground tracking-wider"><History className="w-5 h-5" />Recent History</h2>
-
-                                    {/* We need mobile number here for TransactionHistorySheet if it requires it. */}
-                                    {/* Assuming for now we disable recent history or fix it if I can get mobile number easily */}
-                                    {/* Or use TransactionHistorySheet inside Sheet */}
-
-                                    <Sheet>
-                                        <SheetTrigger asChild>
-                                            <Button variant="link" className="text-primary font-bold h-auto p-0">VIEW ALL</Button>
-                                        </SheetTrigger>
-                                        <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-2xl">
-                                            {/* Providing dummy mobile number or handling it. Ideally actions.ts handles fetching. */}
-                                            {/* TransactionHistorySheet likely does its own fetching using mobile number. */}
-                                            {/* If I rewrite TransactionHistorySheet to use actions, that would be best, but out of scope? */}
-                                            {/* I'll leave a note or try to pass it if I fetched profile. */}
-                                            <TransactionHistorySheet />
-                                        </SheetContent>
-                                    </Sheet>
-                                </div>
-                                <Card className="rounded-2xl shadow-sm">
-                                    {recentTransaction ? (
-                                        <CardContent className="p-4">
-                                            <div className="flex items-center">
-                                                <div className={`p-3 rounded-xl mr-4 ${recentTransaction.type === 'credit' ? 'bg-green-100' : 'bg-red-100'}`}>
-                                                    {recentTransaction.type === 'credit' ? (
-                                                        <ArrowUpRight className="w-6 h-6 text-green-600" />
-                                                    ) : (
-                                                        <ArrowDownLeft className="w-6 h-6 text-red-600" />
-                                                    )}
-                                                </div>
-                                                <div className="flex-grow">
-                                                    <p className="font-bold capitalize">{recentTransaction.source}</p>
-                                                    <p className="text-sm text-muted-foreground">{format(new Date(recentTransaction.created_at), 'MMM d, yyyy')}</p>
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className={`font-bold flex items-center justify-end ${recentTransaction.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
-                                                        <span className="text-lg">{recentTransaction.type === 'credit' ? '+' : '-'}</span>
-                                                        <IndianRupee className="w-4 h-4" />{recentTransaction.amount || 0}
-                                                    </p>
-                                                    <p className="text-xs font-semibold text-green-500/80 uppercase">Success</p>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    ) : (
-                                        <CardContent className="p-4 text-center text-muted-foreground">
-                                            No recent history.
-                                        </CardContent>
-                                    )}
-                                </Card>
-                            </section>
-
+                            {/* Refer & Earn Card */}
                             {referralCode && (
-                                <Card className="bg-indigo-600 text-white border-0 rounded-3xl shadow-lg">
-                                    <CardContent className="p-6">
-                                        <div className="flex items-center gap-4 mb-4">
-                                            <div className="p-3 bg-white/20 rounded-xl">
-                                                <Gift className="w-6 h-6" />
+                                <Card className="bg-indigo-50/50 border-2 border-dashed border-indigo-200 rounded-[2rem] shadow-sm overflow-hidden group">
+                                    <CardContent className="p-5 flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-indigo-50 p-2">
+                                                <div className="text-3xl">🎁</div>
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-bold">Refer & Earn <IndianRupee className="inline w-5 h-5" />100</h3>
-                                                <p className="text-sm opacity-80">For every friend who books their first repair</p>
+                                                <h3 className="text-md font-black text-indigo-950">Refer & Earn <IndianRupee className="inline w-4 h-4 mb-1" />50</h3>
+                                                <p className="text-xs text-indigo-900/60 font-medium">For every friend who books their first service with us, you get</p>
                                             </div>
                                         </div>
-                                        <div className="bg-white/10 p-2 rounded-xl flex items-center justify-between gap-2">
-                                            <span className="font-mono font-bold text-lg ml-2 tracking-widest">{referralCode}</span>
-                                            <div className="flex items-center gap-1">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="bg-white/90 text-indigo-600 hover:bg-white rounded-lg h-9 w-9"
-                                                    onClick={() => handleCopy(referralCode)}
-                                                >
-                                                    <Copy className="w-5 h-5" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="bg-white/20 text-white hover:bg-white/30 rounded-lg h-9 w-9"
-                                                    onClick={() => {
-                                                        if (navigator.share) {
-                                                            navigator.share({
-                                                                title: 'Refer & Earn',
-                                                                text: `Use my referral code ${referralCode} to get ₹100 off!`,
-                                                                url: 'https://sevasetu.com'
-                                                            })
-                                                        } else {
-                                                            handleCopy(referralCode)
-                                                        }
-                                                    }}
-                                                >
-                                                    <Share2 className="w-5 h-5" />
-                                                </Button>
-                                            </div>
-                                        </div>
+                                        <Button
+                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-5 py-2.5 rounded-xl h-auto shadow-lg shadow-indigo-500/20 active:scale-95 transition-all"
+                                            onClick={() => {
+                                                if (navigator.share) {
+                                                    navigator.share({
+                                                        title: 'Refer & Earn',
+                                                        text: `Use my referral code ${referralCode} to get ₹50 off!`,
+                                                        url: 'https://sevasetu.com'
+                                                    })
+                                                } else {
+                                                    handleCopy(referralCode)
+                                                }
+                                            }}
+                                        >
+                                            Invite
+                                        </Button>
                                     </CardContent>
                                 </Card>
                             )}
+
+                            {/* Recent Transactions Section */}
+                            <section>
+                                <div className="flex justify-between items-center mb-4 px-1">
+                                    <h2 className="font-black text-lg text-[#1e1b4b]">Recent Transactions</h2>
+                                    <Sheet>
+                                        <SheetTrigger asChild>
+                                            <Button variant="link" className="text-indigo-600 font-bold h-auto p-0 text-sm no-underline hover:text-indigo-700">See All</Button>
+                                        </SheetTrigger>
+                                        <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-3xl p-0 overflow-hidden">
+                                            <div className="px-6 py-6 border-b flex justify-between items-center">
+                                                <h2 className="text-xl font-black text-[#1e1b4b]">Transaction History</h2>
+                                            </div>
+                                            <div className="flex-1 overflow-y-auto px-6 py-4">
+                                                <TransactionHistorySheet />
+                                            </div>
+                                        </SheetContent>
+                                    </Sheet>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {recentTransaction ? (
+                                        <Card className="rounded-3xl border border-gray-100 shadow-sm overflow-hidden hover:bg-gray-50/50 transition-colors">
+                                            <CardContent className="p-4">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={cn(
+                                                        "w-12 h-12 rounded-full flex items-center justify-center",
+                                                        recentTransaction.type === 'credit' ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
+                                                    )}>
+                                                        {recentTransaction.type === 'credit' ? (
+                                                            <ArrowDownLeft className="w-5 h-5" />
+                                                        ) : (
+                                                            <ArrowUpRight className="w-5 h-5" />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-grow">
+                                                        <p className="font-bold text-[#1e1b4b] capitalize leading-none mb-1">{recentTransaction.source}</p>
+                                                        <p className="text-[11px] text-[#1e1b4b]/40 font-bold uppercase tracking-wider">
+                                                            {format(new Date(recentTransaction.created_at), 'dd MMM, hh:mm a')}
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className={cn(
+                                                            "font-black text-lg flex items-center justify-end",
+                                                            recentTransaction.type === 'credit' ? "text-green-600" : "text-black"
+                                                        )}>
+                                                            {recentTransaction.type === 'credit' ? '+' : '-'}
+                                                            <IndianRupee className="w-4 h-4" />
+                                                            {recentTransaction.amount || 0}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ) : (
+                                        <div className="text-center py-10 text-muted-foreground bg-gray-50 rounded-3xl">
+                                            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                                                <History className="w-6 h-6 text-gray-400" />
+                                            </div>
+                                            <p className="text-sm font-bold">No transactions yet</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </section>
 
                         </div>
                     )}

@@ -18,8 +18,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <LanguageProvider>
       <LocationProvider>
         <SplashScreen />
-        <Header />
-        <main className="flex-grow pb-24 pt-16 md:pt-20">{children}</main>
+        {pathname !== '/' && <Header />}
+        <main className={`flex-grow ${pathname === '/' ? 'pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
         <Footer />
         {showBottomNav && <BottomNavBar />}
       </LocationProvider>

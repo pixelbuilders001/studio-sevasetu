@@ -25,6 +25,13 @@ import AnimatedHeroText from '@/components/AnimatedHeroText';
 import FullScreenLoader from '@/components/FullScreenLoader';
 import ReferralBanner from '@/components/ReferralBanner';
 import { Skeleton } from '@/components/ui/skeleton';
+import LocationSelector from '@/components/LocationSelector';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { ProfileSheet } from '@/components/profile/ProfileSheet';
+import UserAuthSheet from '@/components/UserAuthSheet';
+import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
+import { Session } from '@supabase/supabase-js';
+import { User, Bell } from 'lucide-react';
 
 
 function ServiceCardSkeleton() {
@@ -86,20 +93,37 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
   );
 }
 
-const HeroHouse = () => (
-  <svg width="160" height="140" viewBox="0 0 160 140" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute right-0 bottom-0 opacity-20">
-    <path d="M80 0L160 50V140H0V50L80 0Z" fill="white" fillOpacity="0.1" />
-    <path d="M105 115V95H115V115H130V85L80 55L30 85V115H45V105H55V115H70V95H95V115H105Z" fill="white" fillOpacity="0.2" />
-    <path d="M90 105H100V115H90V105Z" fill="#FF9933" />
-  </svg>
-)
 
 export default function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const { lang } = use(searchParams);
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  const supabase = createSupabaseBrowserClient();
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+    };
+    getSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session && sheetOpen) {
+        setSheetOpen(false);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [supabase.auth, sheetOpen]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -133,60 +157,85 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
   ];
 
   return (
-    <div className="min-h-screen bg-secondary/30 pb-20">
-      {/* Hero Section */}
-      <section className="relative bg-white dark:bg-card pb-8 rounded-b-[2.5rem] shadow-soft overflow-hidden">
-        <div className="container mx-auto px-4 pt-6">
+    <div className="min-h-screen bg-secondary/10 pb-10">
+      {/* Hero Section with Integrated Header */}
+      <section className="relative h-[50vh] md:h-[85vh] rounded-b-[2rem] shadow-2xl overflow-hidden group">
+        {/* Main Background Video */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/hero-video.webp"
+            alt="SevaSetu Hero"
+            fill
+            className="object-cover"
+            unoptimized
+            priority
+          />
+          {/* Enhanced gradients for readability and depth */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 z-10" />
+          <div className="absolute inset-0 bg-primary/10 mix-blend-overlay z-10" />
+        </div>
 
-
-          {/* Banner */}
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[1.6/1] sm:aspect-[2/1] md:aspect-[3/1] group transition-all duration-500 hover:shadow-primary/20">
-            {/* Animated WebP Background */}
-            <div className="absolute inset-0">
-              <Image
-                src="/hero-video.webp"
-                alt="SevaSetu Hero"
-                fill
-                className="object-cover"
-                unoptimized
-                priority
-              />
-              {/* Smart Gradient Overlays */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-transparent z-10" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 z-10" />
-              <div className="absolute inset-0 bg-primary/20 mix-blend-overlay z-10 group-hover:bg-primary/10 transition-colors duration-700" />
+        {/* Integrated Floating Header Area */}
+        <div className="absolute top-0 left-0 right-0 z-30 px-6 pt-6">
+          <div className="container mx-auto flex items-center justify-between">
+            {/* Location Pill */}
+            <div className="flex-shrink-0">
+              <LocationSelector isHero={true} />
             </div>
 
-            <div className="relative h-full flex items-center p-5 sm:p-8 md:p-12 text-white z-20">
-              <div className="max-w-[85%] sm:max-w-[70%] space-y-3 sm:space-y-5">
-                <div className="drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
-                  <AnimatedHeroText className="text-2xl sm:text-4xl md:text-6xl font-black leading-[1.1] tracking-tight" highlightColor="text-yellow-400" />
-                </div>
-                <p className="text-white/95 text-xs sm:text-base md:text-lg font-medium max-w-md leading-relaxed drop-shadow-md">
-                  Professional doorstep repairs with Bihar's most trusted technicians.
-                  <span className="hidden sm:inline"> Quality guaranteed.</span>
-                </p>
+            {/* Profile Action */}
+            <div className="flex items-center gap-3">
+              {session ? (
+                <ProfileSheet isHero={true} />
+              ) : (
+                <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                  <SheetTrigger asChild>
+                    <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 cursor-pointer active:scale-90 transition-transform shadow-lg group">
+                      <User className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
+                    </div>
+                  </SheetTrigger>
+                  <SheetContent
+                    side="bottom"
+                    className="rounded-t-3xl h-[80dvh] inset-x-0 bottom-0 border-t bg-white p-0 flex flex-col"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
+                  >
+                    <UserAuthSheet setSheetOpen={setSheetOpen} />
+                  </SheetContent>
+                </Sheet>
+              )}
+            </div>
+          </div>
+        </div>
 
-                <div className="pt-2 sm:pt-4">
-                  <HeroCTA />
-                </div>
+        {/* Hero Content */}
+        <div className="relative h-full container mx-auto px-6 flex flex-col justify-end pb-12 z-20">
+          <div className="max-w-2xl space-y-5">
+
+
+            {/* Headline */}
+            <div className="space-y-4">
+              <div className="drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+                <AnimatedHeroText
+                  className="text-4xl sm:text-5xl md:text-7xl"
+                  highlightColor="text-cyan-400"
+                />
               </div>
 
-              {/* Decorative side element */}
-              <div className="absolute right-0 bottom-0 top-0 w-1/3 pointer-events-none overflow-hidden hidden md:block">
-                <div className="absolute right-[-10%] bottom-[-20%] w-[120%] h-[120%] bg-primary/20 blur-[100px] rounded-full" />
-              </div>
+              <p className="text-white/80 text-sm md:text-lg font-medium max-w-sm leading-relaxed drop-shadow-md">
+                Premium doorstep repairs with Bihar&apos;s most trusted certified technicians.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-2">
+              <HeroCTA />
             </div>
           </div>
         </div>
       </section>
 
-
-
-
-
       {/* Services Grid */}
-      <section id="services" className="container mx-auto px-4 mb-8">
+      <section id="services" className="container mx-auto px-4 mt-12 mb-8">
         <div className="flex justify-between items-end mb-4 px-1">
           <div>
             <h2 className="text-xl font-bold text-foreground">Our Services</h2>
@@ -213,11 +262,11 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         </div>
       </section>
 
-
       {/* Referral Banner */}
       <section className="container mx-auto px-4 mb-8">
         <ReferralBanner />
       </section>
+
       {/* Quick Features - Grid Layout */}
       <section className="py-4 -mt-2 mb-4">
         <div className="container mx-auto px-4">
@@ -236,10 +285,12 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           </div>
         </div>
       </section>
+
       <div className="bg-white dark:bg-card rounded-t-3xl shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-8 pb-12">
         <div id="how-it-works">
           <HowItWorks t={t} />
         </div>
+
         {/* Live Tracking Card */}
         <section className="container mx-auto px-4 mb-8">
           <BookingTrackerModal asChild={true}>
@@ -266,7 +317,6 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
             </div>
           </BookingTrackerModal>
         </section>
-
 
         <VerifiedTechnicians t={t} />
 

@@ -10,10 +10,12 @@ export default function HeroCTA() {
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          size="lg"
-          className="bg-white hover:bg-primary/90 hover:text-white text-black font-bold text-sm sm:text-lg px-4 sm:px-8 h-10 sm:h-14 rounded-full shadow-lg hover:shadow-xl transition-all"
+          className="bg-white hover:bg-white/90 text-[#1e1b4b] font-black text-sm md:text-md px-6 py-2.5 h-auto rounded-full shadow-2xl transition-all flex items-center gap-4 group active:scale-95"
         >
-          BOOK REPAIR NOW <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+          <span className="ml-2 uppercase tracking-tight">BOOK REPAIR NOW</span>
+          <span className="w-10 h-10 bg-[#6366f1] rounded-full flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+          </span>
         </Button>
       </SheetTrigger>
       <SheetContent side="bottom" className="h-full max-h-[90vh] flex flex-col rounded-t-3xl border-none shadow-2xl overflow-hidden p-0">
