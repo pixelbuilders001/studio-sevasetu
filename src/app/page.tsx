@@ -10,7 +10,7 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { getTranslations } from '@/lib/get-translation';
 import VerifiedTechnicians from '@/components/VerifiedTechnicians';
-import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase, ChevronRight, Search, IndianRupee } from 'lucide-react';
+import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase, ChevronRight, Search, IndianRupee, Star } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import BecomePartner from '@/components/BecomePartner';
 import HeroCTA from '@/components/HeroCTA';

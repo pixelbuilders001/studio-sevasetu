@@ -41,9 +41,9 @@ export default function SplashScreen() {
                         <motion.div
                             initial={{ y: 20 }}
                             animate={{ y: 0 }}
-                            className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/30 mb-6"
+                            className="w-20 h-20 bg-[#6366F1] rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/30 mb-6"
                         >
-                            <span className="text-5xl font-black text-white italic">F</span>
+                            <span className="text-5xl font-black text-white italic">H</span>
                         </motion.div>
 
                         {/* Brand Text */}

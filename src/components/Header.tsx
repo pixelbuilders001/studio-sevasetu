@@ -21,16 +21,16 @@ const Logo = () => (
           //  className="text-xl md:text-2xl font-[1000] text-[#1E293B] dark:text-white tracking-tighter italic leading-none"
           className="text-[11px] md:text-[13px] font-[1000] text-white italic tracking-tighter leading-none whitespace-nowrap uppercase"
         >
-          FIX on Click
+          hello
         </span>
       </div>
       {/* <div className="bg-[#6366F1] px-2.5 py-1.2 rounded-xl md:rounded-2xl shadow-[0_4px_10px_rgba(99,102,241,0.25)] group-hover:shadow-[0_6px_15px_rgba(99,102,241,0.35)] transition-all duration-300"> */}
-      {/* <span
-        className="text-md md:text-2xl font-[1000] text-[#1E293B] dark:text-white tracking-tighter italic leading-none -ml-1"
+      <span
+        className="text-md md:text-2xl font-[1000] text-[#1E293B] dark:text-white tracking-tighter leading-none -ml-1"
       // className="text-[11px] md:text-[13px] font-[1000] text-white italic tracking-tighter leading-none whitespace-nowrap uppercase"
       >
-        CLICK
-      </span> */}
+        fixo
+      </span>
       {/* </div> */}
     </div>
     <div className=" flex items-center gap-1 mt-1 px-0.5">
