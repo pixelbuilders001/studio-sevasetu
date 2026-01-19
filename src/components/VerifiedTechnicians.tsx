@@ -60,56 +60,56 @@ function TechnicianCard({ technician, index }: { technician: typeof technicians[
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      className="inline-block w-[240px] md:w-[280px]"
+      className="inline-block w-[200px] md:w-[220px]"
     >
-      <div className="bg-white dark:bg-card border border-border/50 rounded-[2rem] p-4 shadow-soft hover:shadow-xl transition-all duration-300 group">
+      <div className="bg-white dark:bg-card border-2 border-indigo-100 rounded-3xl p-3 shadow-lg hover:shadow-xl hover:border-indigo-200 transition-all duration-300 group">
         {/* Header / Image Section */}
-        <div className="relative mb-4">
-          <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-3">
+        <div className="relative mb-3">
+          <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-2 bg-indigo-50">
             <Image
               src={technician.imageUrl}
               alt={technician.name}
               fill
-              className="object-cover group-hover:scale-110 transition-transform duration-500"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
+            <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm px-2 py-0.5 rounded-full flex items-center gap-1 shadow-md">
               <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
               <span className="text-[10px] font-black">{technician.ratingValue}</span>
             </div>
           </div>
 
-          <div className="absolute -bottom-2 -right-2 bg-primary text-white p-2 rounded-xl shadow-lg border-2 border-white">
-            <CheckCircle2 className="w-4 h-4" />
+          <div className="absolute -bottom-1 -right-1 bg-indigo-600 text-white p-1.5 rounded-xl shadow-lg border-2 border-white">
+            <CheckCircle2 className="w-3.5 h-3.5" />
           </div>
         </div>
 
         {/* Content Section */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div>
-            <h3 className="font-black text-lg font-headline leading-tight text-foreground truncate">{technician.name}</h3>
-            <p className="text-[10px] font-black text-primary uppercase tracking-widest">{technician.expertise}</p>
+            <h3 className="font-black text-base leading-tight text-indigo-900 truncate">{technician.name}</h3>
+            <p className="text-[9px] font-black text-indigo-600 uppercase tracking-wider">{technician.expertise}</p>
           </div>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1">
             {technician.tags.map((tag, idx) => (
-              <span key={idx} className="text-[8px] font-black px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full border border-border/40 uppercase tracking-tighter">
+              <span key={idx} className="text-[7px] font-black px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded-full border border-indigo-200 uppercase tracking-tight">
                 {tag}
               </span>
             ))}
           </div>
 
-          <div className="h-px bg-border/40 w-full" />
+          <div className="h-px bg-indigo-100 w-full" />
 
           {/* Footer Info */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-muted-foreground">
+          <div className="flex items-center justify-between text-indigo-600">
+            <div className="flex items-center gap-1">
               <Briefcase className="w-3 h-3" />
-              <span className="text-[10px] font-bold">{technician.jobs} Jobs</span>
+              <span className="text-[9px] font-bold">{technician.jobs}</span>
             </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
+            <div className="flex items-center gap-1">
               <MapPin className="w-3 h-3" />
-              <span className="text-[10px] font-bold">{technician.location}</span>
+              <span className="text-[9px] font-bold truncate max-w-[60px]">{technician.location}</span>
             </div>
           </div>
         </div>
@@ -123,22 +123,22 @@ export default function VerifiedTechnicians({ t }: { t: TranslationFunc }) {
     <section className="py-12 md:py-20 bg-slate-50/50 dark:bg-slate-900/20">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="flex items-end justify-between mb-8 md:mb-12 px-2">
+        <div className="flex items-end justify-between mb-8 md:mb-10 px-2">
           <div className="space-y-1">
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="text-primary font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2"
+              className="text-indigo-600 font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2"
             >
-              <div className="w-6 h-px bg-primary" />
+              <div className="w-6 h-px bg-indigo-600" />
               Premium Service
-            </motion.div>
-            <h2 className="text-3xl md:text-4xl font-black font-headline tracking-tight text-foreground">
-              Top Experts <span className="text-primary">Near You</span>
+            </motion.div> */}
+            <h2 className="text-2xl md:text-4xl font-black tracking-tight text-[#1e1b4b]">
+              Top Experts <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">Near You</span>
             </h2>
           </div>
-          <button className="hidden md:flex items-center gap-2 text-sm font-black text-primary hover:gap-3 transition-all">
+          <button className="hidden md:flex items-center gap-2 text-sm font-black text-indigo-600 hover:gap-3 transition-all">
             VIEW ALL <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -155,11 +155,11 @@ export default function VerifiedTechnicians({ t }: { t: TranslationFunc }) {
         </div>
 
         {/* Mobile View All */}
-        <div className="md:hidden text-center mt-2">
-          <button className="inline-flex items-center gap-2 text-xs font-black text-primary bg-primary/5 px-6 py-3 rounded-full border border-primary/10 active:scale-95 transition-all">
+        {/* <div className="md:hidden text-center mt-2">
+          <button className="inline-flex items-center gap-2 text-xs font-black text-indigo-600 bg-indigo-50 px-6 py-3 rounded-full border-2 border-indigo-200 active:scale-95 transition-all">
             SEE ALL TECHNICIANS <ChevronRight className="w-3.5 h-3.5" />
           </button>
-        </div>
+        </div> */}
       </div>
     </section>
   );

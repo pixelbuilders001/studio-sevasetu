@@ -32,6 +32,7 @@ export type Booking = {
     net_inspection_fee?: number;
     user_name?: string;
     full_address?: string;
+    technician_id?: string | null;
     technicians?: {
         full_name: string;
     };

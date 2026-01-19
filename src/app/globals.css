@@ -33,6 +33,34 @@
     --ring: 221.2 83.2% 53.3%;
 
     --radius: 1rem;
+
+    /* Brand Color System - Change these to update entire theme */
+    --brand-50: 238 94% 97%;
+    /* indigo-50 */
+    --brand-100: 238 94% 95%;
+    /* indigo-100 */
+    --brand-200: 238 94% 87%;
+    /* indigo-200 */
+    --brand-300: 238 94% 77%;
+    /* indigo-300 */
+    --brand-400: 238 82% 67%;
+    /* indigo-400 */
+    --brand-500: 239 84% 67%;
+    /* indigo-500 */
+    --brand-600: 239 84% 60%;
+    /* indigo-600 */
+    --brand-700: 243 75% 59%;
+    /* indigo-700 */
+    --brand-800: 243 58% 51%;
+    /* indigo-800 */
+    --brand-900: 238 56% 13%;
+    /* indigo-900 - dark text */
+
+    /* Brand Gradient Colors */
+    --brand-gradient-from: 239 84% 60%;
+    /* indigo-600 */
+    --brand-gradient-to: 239 84% 67%;
+    /* indigo-500 */
   }
 
   .dark {

@@ -11,39 +11,31 @@ export default function BecomePartner() {
       icon: Wallet,
       value: '₹40k+',
       label: 'Monthly Earnings',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
     },
     {
       icon: Zap,
       value: 'Daily',
       label: 'Payouts',
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-50'
     },
     {
       icon: Clock,
       value: 'Flexible',
       label: 'Timings',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
     },
     {
       icon: TrendingUp,
       value: 'Zero',
       label: 'Joining Fee',
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
     }
   ];
 
   return (
     <section className="py-8 md:py-20">
       <div className="container mx-auto px-4 max-w-5xl">
-        <div className="relative bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl">
+        <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-3xl overflow-hidden shadow-2xl">
           {/* Decorative Backdrops */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/20 rounded-full -ml-32 -mb-32 blur-3xl opacity-50" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-400/20 rounded-full -ml-32 -mb-32 blur-3xl opacity-50" />
 
           <div className="relative z-10 flex flex-col lg:flex-row items-center">
             {/* Visual Part - Left on Desktop */}
@@ -54,8 +46,8 @@ export default function BecomePartner() {
                 fill
                 className="object-cover object-top scale-110 lg:scale-100"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-600/10 to-blue-600 lg:hidden" />
-              <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-blue-600 to-transparent hidden lg:block" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-600/10 to-indigo-600 lg:hidden" />
+              <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-indigo-600 to-transparent hidden lg:block" />
             </div>
 
             {/* Content Part - Right on Desktop */}
@@ -86,7 +78,7 @@ export default function BecomePartner() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="text-blue-50/80 mb-6 max-w-lg text-xs md:text-lg font-medium leading-relaxed"
+                className="text-indigo-50/80 mb-6 max-w-lg text-xs md:text-lg font-medium leading-relaxed"
               >
                 Join the fastest growing service network in Bihar. Start earning from day one.
               </motion.p>
@@ -116,7 +108,7 @@ export default function BecomePartner() {
               >
                 <Button
                   size="lg"
-                  className="w-full md:w-auto bg-white text-blue-700 hover:bg-blue-50 font-black text-sm md:text-lg h-12 md:h-16 rounded-xl md:rounded-[1.25rem] px-8 md:px-10 shadow-xl transition-all group active:scale-95"
+                  className="w-full md:w-auto bg-white text-indigo-700 hover:bg-indigo-50 font-black text-sm md:text-lg h-12 md:h-16 rounded-2xl px-8 md:px-10 shadow-xl transition-all group active:scale-95"
                   onClick={() => {
                     window.open('https://studio-technician.vercel.app/signup', '_blank');
                   }}

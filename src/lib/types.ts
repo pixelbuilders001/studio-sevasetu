@@ -12,3 +12,13 @@ export type FormState = {
   };
   success: boolean;
 };
+
+export interface Technician {
+  id: string;
+  full_name: string;
+  mobile: string;
+  selfie_url: string | null;
+  primary_skill: string;
+  total_experience: number;
+  service_area: string | null;
+}

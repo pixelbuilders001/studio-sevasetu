@@ -4,8 +4,7 @@ import { getServiceCategoryAction } from '@/app/actions';
 import { notFound, useParams, useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { Wrench, Hammer, ArrowLeft, ArrowRight, CheckCircle, ShieldCheck, Wallet, Package, IndianRupee, Info } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, ShieldCheck, Wallet, Package, IndianRupee, Info, FileText, ClipboardList, Receipt, Star } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useState, useEffect, useMemo } from 'react';
 import type { ServiceCategory, Problem } from '@/lib/data';
@@ -13,7 +12,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import { useLocation } from '@/context/LocationContext';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import FullScreenLoader from '@/components/FullScreenLoader';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -22,24 +20,12 @@ import { Session } from '@supabase/supabase-js';
 
 function PriceEstimationSkeleton() {
   return (
-    <div className="min-h-screen bg-background pb-28">
-      <div className="bg-primary/5 pt-6 pb-8 rounded-b-[2rem]">
-        <div className="container mx-auto px-6">
-          <div className="w-10 h-10 rounded-full bg-muted mb-4" />
-          <Skeleton className="h-7 w-1/2 mb-2" />
+    <div className="min-h-screen bg-gray-50 pb-28">
+      <div className="container mx-auto px-6 pt-6">
+        <Skeleton className="h-10 w-10 rounded-full mb-6" />
+        <div className="max-w-md mx-auto">
+          <Skeleton className="h-[500px] w-full rounded-3xl" />
         </div>
-      </div>
-
-      <div className="container mx-auto px-6 -mt-6">
-        <div className="max-w-xl mx-auto space-y-4">
-          <Skeleton className="h-20 w-full rounded-2xl" />
-          <Skeleton className="h-20 w-full rounded-2xl" />
-          <Skeleton className="h-40 w-full rounded-2xl mt-8" />
-        </div>
-      </div>
-
-      <div className="fixed bottom-4 left-0 right-0 px-6">
-        <Skeleton className="h-12 w-full max-w-xl mx-auto rounded-full" />
       </div>
     </div>
   )
@@ -140,139 +126,142 @@ export default function PriceEstimationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-28">
-      {/* Header with Background Accent */}
-      <div className="bg-primary/5 pt-6 pb-10 rounded-b-[2rem]">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center gap-4 mb-4">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => router.back()}
-              className="w-9 h-9 rounded-full bg-background/50 backdrop-blur-sm border-primary/10 hover:bg-primary/10 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-            <div className="space-y-0.5">
-              <h1 className="text-xl md:text-2xl font-bold font-headline tracking-tight">
-                Order Summary
-              </h1>
-              <p className="text-muted-foreground text-[10px] uppercase tracking-widest font-bold">
-                {category.name} Repair Service
-              </p>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50 pb-32">
+      {/* Navigation Header */}
+      <div className="container mx-auto px-6 pt-6 mb-4">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => router.back()}
+          className="w-9 h-9 rounded-full bg-background/50 backdrop-blur-sm border-primary/10 hover:bg-primary/10 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </Button>
+        <span className="text-xl ml-2 md:text-2xl font-bold font-headline tracking-tight">Booking Estimate</span>
       </div>
 
-      <div className="container mx-auto px-6 -mt-6">
-        <div className="max-w-xl mx-auto space-y-6">
-          {/* Selected Problems Section */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 px-1">
-              <Package className="w-4 h-4 text-primary" />
-              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Problems Selected</h2>
-            </div>
-            <div className="grid gap-3">
-              {selectedProblems.map((problem, index) => (
-                <div
-                  key={problem.id}
-                  className="bg-card border border-border rounded-2xl p-3 flex items-center gap-4 animate-fade-in-up"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <div className="relative w-12 h-12 bg-muted/40 rounded-xl flex items-center justify-center p-2">
-                    <Image
-                      src={problem.image.imageUrl}
-                      alt={problem.name}
-                      width={32}
-                      height={32}
-                      className="object-contain"
-                    />
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="font-semibold text-sm">{problem.name}</h3>
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-green-500/10 flex items-center justify-center">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div className="container mx-auto px-6">
+        <div className="max-w-md mx-auto">
+          {/* Main Ticket Card */}
+          <div className="bg-white rounded-3xl overflow-hidden shadow-2xl shadow-indigo-100/50 mb-6">
 
-          {/* Pricing Details Card */}
-          <div className="animate-fade-in-up" style={{ animationDelay: '150ms' }}>
-            <div
-              className="bg-gray-900 dark:bg-gray-950 text-white rounded-3xl overflow-hidden shadow-2xl shadow-primary/10"
-            >
-              <div className="p-6 space-y-6">
-                <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                  <h2 className="font-bold uppercase tracking-[0.2em] text-[10px] text-white/50">Price Estimate</h2>
-                  <span className="text-[10px] font-bold uppercase px-3 py-1 rounded-full bg-primary/20 text-primary border border-primary/20 backdrop-blur-md">
-                    Pay after service
-                  </span>
-                </div>
+            {/* Header */}
+            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 p-8 text-center relative overflow-hidden">
+              {/* Decorative Elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-indigo-600/10 rounded-full -ml-12 -mb-12 blur-xl"></div>
 
-                <div className="space-y-4">
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-white font-bold text-lg md:text-xl">Total Estimated Price</p>
-                      <p className="text-white/40 text-[10px] uppercase tracking-wider mt-1">Includes visit charges</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center text-primary font-black text-2xl md:text-3xl">
-                        <IndianRupee className="w-6 h-6 mr-1" strokeWidth={3} />
-                        <span>{totalEstimatedPrice}</span>
+              <div className="relative z-10 flex flex-col items-center">
+                {/* <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-4 border border-white/20 shadow-inner">
+                  <Receipt className="w-6 h-6 text-white" />
+                </div> */}
+
+                <p className="text-indigo-100 font-medium text-xs opacity-90 uppercase tracking-widest">{category.name} Repair Service</p>
+              </div>
+            </div>
+
+            <div className="p-6 relative">
+              {/* Decorative punch holes for ticket look */}
+              <div className="absolute -left-3 top-0 w-6 h-6 bg-gray-50 rounded-full z-[1]"></div>
+              <div className="absolute -right-3 top-0 w-6 h-6 bg-gray-50 rounded-full z-[1]"></div>
+
+              {/* Problems Section */}
+              <div className="mb-6">
+                <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <Package className="w-3.5 h-3.5" />
+                  Selected Issues
+                </h2>
+                <div className="space-y-3">
+                  {selectedProblems.map((problem) => (
+                    <div key={problem.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                      <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <Image
+                          src={problem.image.imageUrl}
+                          alt={problem.name}
+                          width={24}
+                          height={24}
+                          className="object-contain"
+                        />
                       </div>
+                      <span className="font-bold text-sm text-gray-700">{problem.name}</span>
+                      <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
                     </div>
-                  </div>
-
-                  <div className="bg-white/5 rounded-2xl p-3 border border-white/5 flex items-start gap-3">
-                    <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <p className="text-[10px] text-white/60 leading-relaxed italic">
-                      Includes a minimum visiting fee of ₹{inspectionFee} payable after inspection, even if no repair is done.
-                    </p>
-                  </div>
+                  ))}
                 </div>
               </div>
+
+              {/* Dotted Divider */}
+              <div className="border-b-2 border-dashed border-gray-100 my-6 relative">
+                <div className="absolute -left-9 -top-3 w-6 h-6 bg-gray-50 rounded-full"></div>
+                <div className="absolute -right-9 -top-3 w-6 h-6 bg-gray-50 rounded-full"></div>
+              </div>
+
+              {/* Price Breakdown */}
+              <div className="mb-6">
+                <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <Wallet className="w-3.5 h-3.5" />
+                  Price Breakdown
+                </h2>
+
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500 font-medium">Visiting Charges</span>
+                    <span className="font-bold text-gray-900 flex items-center bg-gray-50 px-2 py-0.5 rounded-lg">
+                      <IndianRupee className="w-3 h-3 mr-0.5" />
+                      {inspectionFee}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500 font-medium">Est. Repair Cost</span>
+                    <span className="font-bold text-gray-900 flex items-center bg-gray-50 px-2 py-0.5 rounded-lg">
+                      <IndianRupee className="w-3 h-3 mr-0.5" />
+                      {totalRepairCost}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-black text-indigo-900 text-base">Total Estimate</span>
+                    <div className="flex items-center text-2xl font-black text-indigo-600">
+                      <IndianRupee className="w-5 h-5 mr-0.5 stroke-[3px]" />
+                      {totalEstimatedPrice}
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider text-right">Pay After Service</p>
+                </div>
+              </div>
+
+              {/* Note */}
+              <div className="flex items-start gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100/50">
+                <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-blue-700/80 leading-relaxed font-medium">
+                  Final amount depends on diagnosis and parts required. Visting charges apply even if no repair is done.
+                </p>
+              </div>
+
             </div>
           </div>
 
-          {/* Guarantee & Disclaimer Pins */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
-            <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-4 flex items-start gap-3">
-              <Info className="w-4 h-4 text-blue-500 shrink-0 mt-1" />
-              <div className="space-y-0.5">
-                <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Disclaimer</p>
-                <p className="text-[10px] text-muted-foreground leading-normal">
-                  Final cost depends on inspection and parts required.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-green-500/5 border border-green-500/10 rounded-2xl p-4 flex items-start gap-3">
-              <ShieldCheck className="w-4 h-4 text-green-500 shrink-0 mt-1" />
-              <div className="space-y-0.5">
-                <p className="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-widest">30-Day Guarantee</p>
-                <p className="text-[10px] text-muted-foreground leading-normal">
-                  Full protection on all repairs performed.
-                </p>
-              </div>
-            </div>
+          {/* Guarantee Badge */}
+          <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50/50 p-3 rounded-2xl border border-green-100/50 mb-8 mx-4">
+            <ShieldCheck className="w-5 h-5 fill-green-100" />
+            <span className="text-xs font-black uppercase tracking-wider">30-Day Service Guarantee</span>
           </div>
+
         </div>
       </div>
 
-      {/* Floating Action Button (FAB) Style Footer */}
-      <div className="fixed bottom-4 left-0 right-0 px-6 z-50 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="max-w-xl mx-auto">
+      {/* Floating Action Bar */}
+      <div className="fixed bottom-6 left-0 right-0 px-6 z-50">
+        <div className="max-w-md mx-auto">
           <Button
             onClick={handleConfirmVisit}
             size="lg"
-            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full shadow-lg shadow-primary/25 flex items-center justify-center gap-2 group transition-all"
+            className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm tracking-wide rounded-2xl shadow-xl shadow-indigo-200 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
-            <span>Confirm Visit</span>
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            CONFIRM BOOKING
+            <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </div>

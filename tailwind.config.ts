@@ -56,6 +56,21 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        // Brand Color System - Use these instead of hardcoded indigo colors
+        brand: {
+          50: 'hsl(var(--brand-50))',
+          100: 'hsl(var(--brand-100))',
+          200: 'hsl(var(--brand-200))',
+          300: 'hsl(var(--brand-300))',
+          400: 'hsl(var(--brand-400))',
+          500: 'hsl(var(--brand-500))',
+          600: 'hsl(var(--brand-600))',
+          700: 'hsl(var(--brand-700))',
+          800: 'hsl(var(--brand-800))',
+          900: 'hsl(var(--brand-900))',
+          'gradient-from': 'hsl(var(--brand-gradient-from))',
+          'gradient-to': 'hsl(var(--brand-gradient-to))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

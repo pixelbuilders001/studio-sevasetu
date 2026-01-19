@@ -954,7 +954,7 @@ export async function getBookingHistory() {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError || !session) return [];
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking?select=id,order_id,status,created_at,media_url,completion_code,final_amount_to_be_paid,final_amount_paid,payment_method,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking?select=id,order_id,status,technician_id,created_at,media_url,completion_code,final_amount_to_be_paid,final_amount_paid,payment_method,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
@@ -973,5 +973,59 @@ export async function getBookingHistory() {
   } catch (error) {
     console.error('Booking history fetch failed:', error);
     return [];
+  }
+}
+
+export async function getTechnicianById(technicianId: string) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      console.error('Authentication Error:', sessionError?.message);
+      return null;
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/technicians?id=eq.${technicianId}&select=id,full_name,mobile,selfie_url,primary_skill,total_experience,service_area&limit=1`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      console.error('Technician fetch error:', await response.text());
+      return null;
+    }
+
+    const data = await response.json();
+    return data && data.length > 0 ? data[0] : null;
+
+  } catch (error) {
+    console.error('Technician fetch failed:', error);
+    return null;
   }
 }

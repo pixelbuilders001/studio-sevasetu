@@ -47,14 +47,14 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
   ];
 
   return (
-    <section className="py-12 md:py-20 bg-white dark:bg-card overflow-hidden">
+    <section className="py-5 md:py-20 bg-white dark:bg-card overflow-hidden">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
           <motion.h2
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-3xl md:text-4xl font-black tracking-tight text-[#1e1b4b]"
+            className="text-2xl md:text-4xl font-black tracking-tight text-[#1e1b4b]"
           >
             How it <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent italic">Works</span>
           </motion.h2>

@@ -39,11 +39,11 @@ export default function BottomNavBar() {
       isActive: false,
       component: (
         <Sheet>
-          <SheetTrigger className={cn("flex flex-col items-center justify-center text-center transition-all w-full h-full active:scale-95 duration-200", 'text-muted-foreground')}>
+          <SheetTrigger className={cn("flex flex-col items-center justify-center text-center transition-all w-full h-full active:scale-95 duration-200", 'text-indigo-400 hover:text-indigo-600')}>
             <div className="relative">
               <LayoutGrid className="w-6 h-6 mb-1" />
             </div>
-            <span className="text-[10px] font-medium leading-none">Services</span>
+            <span className="text-[10px] font-bold leading-none">Services</span>
           </SheetTrigger>
           <SheetContent side="bottom" className="h-[85vh] flex flex-col rounded-t-3xl">
             <AllServicesSheet />
@@ -59,13 +59,13 @@ export default function BottomNavBar() {
       isActive: false,
       component: (
         <BookingHistorySheet>
-          <button className={cn("flex flex-col items-center justify-center text-center transition-all w-full h-full active:scale-95 duration-200", 'text-muted-foreground')}>
+          <button className={cn("flex flex-col items-center justify-center text-center transition-all w-full h-full active:scale-95 duration-200", 'text-indigo-400 hover:text-indigo-600')}>
             <div className="relative">
               <Activity className="w-6 h-6 mb-1" />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-blink border-2 border-white dark:border-black shadow-sm" />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-ping opacity-75" />
             </div>
-            <span className="text-[10px] font-medium leading-none">Ongoing</span>
+            <span className="text-[10px] font-bold leading-none">Ongoing</span>
           </button>
         </BookingHistorySheet>
       ),
@@ -78,11 +78,11 @@ export default function BottomNavBar() {
       isActive: false,
       component: (
         <WalletSheet>
-          <button className={cn("flex flex-col items-center justify-center text-center transition-all w-full h-full active:scale-95 duration-200", 'text-muted-foreground')}>
+          <button className={cn("flex flex-col items-center justify-center text-center transition-all w-full h-full active:scale-95 duration-200", 'text-indigo-400 hover:text-indigo-600')}>
             <div className="relative">
               <Wallet className="w-6 h-6 mb-1" />
             </div>
-            <span className="text-[10px] font-medium leading-none">Wallet</span>
+            <span className="text-[10px] font-bold leading-none">Wallet</span>
           </button>
         </WalletSheet>
       ),
@@ -92,26 +92,26 @@ export default function BottomNavBar() {
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none md:hidden pb-4">
-      <div className="mx-4 mb-2 pointer-events-auto bg-white/90 dark:bg-black/90 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl rounded-full">
+      <div className="mx-4 mb-2 pointer-events-auto bg-white/95 dark:bg-black/90 backdrop-blur-xl border-2 border-indigo-100 dark:border-white/10 shadow-2xl rounded-3xl">
         <nav className="h-16 relative">
           <ul className="flex justify-around items-center h-full px-2">
             {navItems.map((item) => (
               <li key={item.label} className="flex-1 h-full flex items-center justify-center group">
                 {item.component ? item.component : (
                   item.isExternal ? (
-                    <a href={item.href} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center text-center text-muted-foreground hover:text-primary transition-colors h-full w-full active:scale-95 duration-200">
+                    <a href={item.href} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center text-center text-indigo-400 hover:text-indigo-600 transition-colors h-full w-full active:scale-95 duration-200">
                       <item.icon className="w-6 h-6 mb-1" />
-                      <span className="text-[10px] font-medium leading-none">{item.label}</span>
+                      <span className="text-[10px] font-bold leading-none">{item.label}</span>
                     </a>
                   ) : (
-                    <Link href={item.href} className={cn("flex flex-col items-center justify-center text-center transition-all h-full w-full active:scale-95 duration-200 relative", item.isActive ? 'text-primary' : 'text-muted-foreground')}>
+                    <Link href={item.href} className={cn("flex flex-col items-center justify-center text-center transition-all h-full w-full active:scale-95 duration-200 relative", item.isActive ? 'text-indigo-600' : 'text-indigo-400 hover:text-indigo-600')}>
                       <div className={cn("relative transition-all duration-300", item.isActive && "-translate-y-1")}>
                         <item.icon className={cn("w-6 h-6 mb-1 transition-all", item.isActive && "transform scale-110")} />
                         {item.isActive && (
-                          <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-current rounded-full animate-fade-in" />
+                          <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-indigo-600 rounded-full animate-fade-in shadow-lg" />
                         )}
                       </div>
-                      <span className={cn("text-[10px] font-medium leading-none transition-all", item.isActive ? "font-bold" : "font-medium")}>{item.label}</span>
+                      <span className={cn("text-[10px] leading-none transition-all", item.isActive ? "font-black" : "font-bold")}>{item.label}</span>
                     </Link>
                   )
                 )}

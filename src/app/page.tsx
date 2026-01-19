@@ -243,14 +243,16 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
 
       {/* Services Grid */}
       <section id="services" className="container mx-auto px-4 mt-12 mb-8">
-        <div className="flex justify-between items-end mb-4 px-1">
+        <div className="flex justify-between items-end mb-6 px-1">
           <div>
-            <h2 className="text-xl font-bold text-foreground">Our Services</h2>
-            <p className="text-xs text-muted-foreground">Select a category to book</p>
+            <h2 className="text-2xl md:text-4xl font-black tracking-tight text-[#1e1b4b]">
+              Our <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">Services</span>
+            </h2>
+            <p className="text-xs md:text-sm text-indigo-600 font-bold mt-1">Select a category to book</p>
           </div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/5 h-auto py-1 text-sm font-bold flex items-center group">
+              <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 h-auto py-2 px-3 text-sm font-black flex items-center group">
                 <span>{t('viewAll', { defaultValue: 'View All' })}</span>
                 <ChevronRight className="w-4 h-4 ml-0.5 group-hover:translate-x-0.5 transition-transform" />
               </Button>
@@ -271,22 +273,22 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
       </section>
 
       {/* Referral Banner */}
-      <section className="container mx-auto px-4 mb-8">
+      <section className="container mx-auto px-4 mb-8 mt-12">
         <ReferralBanner />
       </section>
 
       {/* Quick Features - Grid Layout */}
-      <section className="py-4 -mt-2 mb-4">
+      <section className="py-6 mb-6">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-3 gap-2 md:gap-4">
+          <div className="grid grid-cols-3 gap-3 md:gap-4">
             {featureCards.map((card, index) => (
-              <div key={index} className="flex flex-col items-center justify-center bg-white dark:bg-card py-4 px-2 rounded-2xl shadow-soft border border-border/40 text-center transition-all hover:shadow-md active:scale-95">
-                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2 shadow-inner">
-                  <card.icon className="w-4 h-4" />
+              <div key={index} className="flex flex-col items-center justify-center bg-gradient-to-br from-indigo-50 to-white py-5 px-2 rounded-3xl shadow-lg border-2 border-indigo-100 text-center transition-all hover:shadow-xl hover:border-indigo-200 active:scale-95">
+                <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white mb-3 shadow-lg">
+                  <card.icon className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] md:text-xs font-black uppercase tracking-tight text-foreground leading-none">{card.title}</span>
-                  <span className="text-[7px] md:text-[9px] text-muted-foreground font-black uppercase tracking-[0.1em] leading-none">{card.description}</span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] md:text-xs font-black uppercase tracking-tight text-indigo-900 leading-tight">{card.title}</span>
+                  <span className="text-[8px] md:text-[9px] text-indigo-600 font-bold uppercase tracking-wide leading-tight">{card.description}</span>
                 </div>
               </div>
             ))}
@@ -300,26 +302,26 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         </div>
 
         {/* Live Tracking Card */}
-        <section className="container mx-auto px-4 mb-8">
+        <section className="container mx-auto px-4 mb-8 mt-12">
           <BookingTrackerModal asChild={true}>
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-5 text-white shadow-lg active:scale-98 transition-transform cursor-pointer relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-20">
-                <Search className="w-24 h-24 -mr-8 -mt-8" />
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-3xl p-6 shadow-lg border-2 border-dashed border-indigo-300 active:scale-98 transition-transform cursor-pointer relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Search className="w-24 h-24 -mr-8 -mt-8 text-indigo-600" />
               </div>
               <div className="relative z-10 flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="flex h-2 w-2 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-600 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
                     </span>
-                    <p className="text-xs font-bold uppercase tracking-wider text-white/90">Live Status</p>
+                    <p className="text-xs font-black uppercase tracking-wider text-indigo-600">Live Status</p>
                   </div>
-                  <h3 className="text-xl font-bold mb-1">Track Your Repair</h3>
-                  <p className="text-white/80 text-xs">Check current status of your booking</p>
+                  <h3 className="text-2xl font-black mb-1 text-indigo-900">Track Your Repair</h3>
+                  <p className="text-indigo-600 text-sm font-bold">Check current status of your booking</p>
                 </div>
-                <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
-                  <ChevronRight className="w-5 h-5" />
+                <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg">
+                  <ChevronRight className="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>

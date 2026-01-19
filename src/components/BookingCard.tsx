@@ -7,16 +7,20 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AirVent, Laptop, Clock, Calendar, Download, Tag, CheckCircle, XCircle, Image as ImageIcon, KeyRound, IndianRupee, Gift, CreditCard } from 'lucide-react';
+import { AirVent, Laptop, Clock, Calendar, Download, Tag, CheckCircle, XCircle, Image as ImageIcon, KeyRound, IndianRupee, Gift, CreditCard, User, Phone, MessageSquare, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogContent,
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Booking, RepairQuote } from '@/lib/types/booking';
+import { getTechnicianById } from '@/app/actions';
+import { Technician } from '@/lib/types';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const iconMap: { [key: string]: React.ElementType } = {
     'MOBILE PHONES': Laptop,
@@ -90,6 +94,17 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare 
     const quote = booking.repair_quotes?.[0];
     const isCancelable = ['pending', 'confirmed', 'assigned'].includes(booking.status.toLowerCase());
     const isRepairCompleted = booking.status.toLowerCase() === 'repair_completed';
+    const showTechnicianDetails = ['assigned', 'accepted', 'on_the_way'].includes(booking.status.toLowerCase());
+
+    const [technician, setTechnician] = useState<Technician | null>(null);
+
+    useEffect(() => {
+        if (showTechnicianDetails && booking.technician_id && !technician) {
+            getTechnicianById(booking.technician_id).then(data => {
+                if (data) setTechnician(data);
+            });
+        }
+    }, [showTechnicianDetails, booking.technician_id, technician]);
 
     return (
         <Card className={cn(
@@ -163,6 +178,62 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare 
                         </Dialog>
                     )}
                 </div>
+
+                {/* Technician Info - Inline Display */}
+                {showTechnicianDetails && technician && (
+                    <div className="mb-4 pt-2">
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className={cn(
+                                "h-2 w-2 rounded-full animate-pulse",
+                                booking.status === 'on_the_way' ? "bg-green-500" : "bg-indigo-500"
+                            )} />
+                            <p className={cn(
+                                "text-xs font-black uppercase tracking-widest",
+                                booking.status === 'on_the_way' ? "text-green-600" : "text-indigo-600"
+                            )}>
+                                {booking.status === 'on_the_way' ? 'Technician On The Way' :
+                                    booking.status === 'accepted' ? 'Technician Accepted' :
+                                        'Technician Assigned'}
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-4 mb-4">
+                            <Avatar className="h-14 w-14 border-2 border-indigo-100 shadow-md">
+                                <AvatarImage src={technician.selfie_url || undefined} alt={technician.full_name} className="object-cover" />
+                                <AvatarFallback className="bg-indigo-600 text-white font-black text-lg">
+                                    {technician.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <h3 className="text-lg font-black text-[#1e1b4b] leading-tight">{technician.full_name}</h3>
+                                <p className="text-xs font-bold text-indigo-600 mb-0.5 capitalize">{technician.primary_skill} Specialist</p>
+                                <div className="flex items-center gap-1.5">
+                                    <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                                    <span className="text-[10px] font-bold text-gray-500">4.8 • Verified PRO</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <a href={`tel:${technician.mobile}`} className="w-full">
+                                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-11 shadow-lg shadow-indigo-100">
+                                    <Phone className="w-4 h-4 mr-2" />
+                                    <span className="font-extrabold text-xs">Call Tech</span>
+                                </Button>
+                            </a>
+                            <Button variant="outline" className="w-full bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 rounded-xl h-11">
+                                <MessageSquare className="w-4 h-4 mr-2" />
+                                <span className="font-extrabold text-xs">Chat</span>
+                            </Button>
+                        </div>
+                    </div>
+                )}
+                {/* Loading state for technician */}
+                {showTechnicianDetails && booking.technician_id && !technician && (
+                    <div className="mb-4 pt-2 flex items-center justify-center p-4">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+                    </div>
+                )}
 
                 <Separator className="my-4 bg-gray-50" />
 
