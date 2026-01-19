@@ -16,6 +16,7 @@ import {
   Gift,
   Copy,
 } from 'lucide-react';
+import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -62,16 +63,15 @@ const MenuItem = ({
 }) => (
   <button
     onClick={onClick}
-    className="flex items-center justify-between w-full px-4 py-3 bg-white rounded-xl shadow-sm border hover:bg-gray-50"
-
+    className="flex items-center justify-between w-full px-4 py-3.5 bg-indigo-50/30 rounded-2xl border border-indigo-100/50 hover:bg-indigo-50 transition-colors group"
   >
-    <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-        <Icon className="w-5 h-5 text-primary" />
+    <div className="flex items-center gap-4">
+      <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center border border-indigo-50">
+        <Icon className="w-5 h-5 text-indigo-600" />
       </div>
-      <span className="font-medium text-sm">{label}</span>
+      <span className="font-bold text-sm text-[#1e1b4b]">{label}</span>
     </div>
-    <ChevronRight className="w-5 h-5 text-gray-400" />
+    <ChevronRight className="w-5 h-5 text-indigo-300 group-hover:translate-x-1 transition-transform" />
   </button>
 );
 
@@ -85,30 +85,27 @@ const ReferEarnCard = ({ code }: { code: string }) => {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl p-4 text-white 
-      bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 
-      shadow-md">
-
-      {/* subtle glow */}
-      <div className="absolute inset-0 bg-white/10 opacity-30 animate-soft-glow" />
-
-      <div className="relative z-10 flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-          <Gift className="w-6 h-6" />
+    <div className="bg-indigo-50/50 border-2 border-dashed border-indigo-200 rounded-[2rem] p-5 relative overflow-hidden group">
+      <div className="flex items-center gap-4 mb-4">
+        <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-indigo-50">
+          <Gift className="w-7 h-7 text-indigo-600" />
         </div>
         <div>
-          <h3 className="font-semibold text-base">Refer & Earn ₹50</h3>
-          <p className="text-sm opacity-90">
-            You & your friend both get ₹50 off
+          <h3 className="text-lg font-black text-indigo-950">Refer & Earn ₹50</h3>
+          <p className="text-xs text-indigo-900/60 font-medium leading-tight">
+            Invite friends and you both get ₹50 off on next service
           </p>
         </div>
       </div>
 
-      <div className="relative z-10 mt-4 flex items-center justify-between 
-        bg-white/15 rounded-xl px-4 py-3 backdrop-blur-sm">
-        <span className="font-mono tracking-wider text-sm">{code}</span>
-        <Button size="icon" variant="ghost" onClick={copyCode}>
-          <Copy className="w-4 h-4 text-white" />
+      <div className="flex items-center justify-between bg-white rounded-xl p-2 border border-indigo-50">
+        <span className="font-black tracking-[0.2em] text-indigo-900 font-mono text-sm ml-3">{code}</span>
+        <Button
+          size="sm"
+          onClick={copyCode}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-5 h-9 rounded-lg shadow-lg shadow-indigo-200"
+        >
+          COPY
         </Button>
       </div>
     </div>
@@ -117,21 +114,26 @@ const ReferEarnCard = ({ code }: { code: string }) => {
 
 /* ---------------- USER DETAILS CARD ---------------- */
 
-const UserDetailsCard = ({ profile }: { profile: UserProfile }) => {
+const UserDetailsCard = ({ profile, onEdit }: { profile: UserProfile, onEdit: () => void }) => {
   const details = [
     profile.full_name && {
-      label: 'Name',
+      label: 'Full Name',
       value: profile.full_name,
       icon: User,
     },
     profile.phone && {
-      label: 'Phone',
+      label: 'Phone Number',
       value: profile.phone,
       icon: Phone,
     },
     {
-      label: 'User ID',
-      value: `UID-${profile.id.slice(0, 8)}`,
+      label: 'Email ID',
+      value: profile.email,
+      icon: Mail,
+    },
+    {
+      label: 'Account Created',
+      value: format(new Date(profile.created_at), 'dd MMM yyyy'),
       icon: Calendar,
     },
   ].filter(Boolean) as {
@@ -141,28 +143,37 @@ const UserDetailsCard = ({ profile }: { profile: UserProfile }) => {
   }[];
 
   return (
-    <div className="bg-white rounded-2xl border shadow-sm">
-      <div className="px-4 py-3 border-b">
-        <h3 className="text-sm font-semibold text-blue-700">
-          User Details
+    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
+        <h3 className="text-xs font-black text-indigo-900 uppercase tracking-widest">
+          Personal Details
         </h3>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-8 text-[11px] font-black text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg px-3"
+          onClick={onEdit}
+        >
+          <Edit className="w-3.5 h-3.5 mr-1" />
+          EDIT
+        </Button>
       </div>
 
-      <div className="divide-y">
+      <div className="divide-y divide-gray-50">
         {details.map((item, index) => (
           <div
             key={index}
-            className="flex items-center gap-4 px-4 py-3"
+            className="flex items-center gap-4 px-5 py-3.5"
           >
-            <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
-              <item.icon className="w-4 h-4 text-blue-700" />
+            <div className="w-10 h-10 rounded-xl bg-indigo-50/50 flex items-center justify-center flex-shrink-0">
+              <item.icon className="w-4 h-4 text-indigo-600" />
             </div>
 
-            <div className="flex-1">
-              <p className="text-xs text-muted-foreground">
+            <div className="flex-1 overflow-hidden">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                 {item.label}
               </p>
-              <p className="text-sm font-medium truncate">
+              <p className="text-sm font-bold text-[#1e1b4b] truncate">
                 {item.value}
               </p>
             </div>
@@ -273,13 +284,13 @@ function ProfileContent() {
       <div className="flex-1 overflow-y-auto">
         {/* HEADER */}
         <div
-          className="relative bg-gradient-to-br from-blue-600 to-indigo-600 h-32 rounded-b-[32px]"
+          className="relative bg-gradient-to-br from-indigo-600 to-[#1e1b4b] h-32 rounded-b-[3rem] shadow-xl"
           style={{
             backgroundImage: `
               linear-gradient(
                 to bottom right,
-                rgba(37, 99, 235, 0.85),
-                rgba(67, 56, 202, 0.85)
+                rgba(79, 70, 229, 0.9),
+                rgba(30, 27, 75, 0.95)
               ),
               url('https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/ChatGPT%20Image%20Jan%205%2C%202026%2C%2002_26_24%20PM.png')
             `,
@@ -287,34 +298,23 @@ function ProfileContent() {
             backgroundPosition: 'center',
           }}
         >
-          <div className="absolute top-4 right-4 flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="secondary"
-              className="rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
-              onClick={() => setIsEditModalOpen(true)}
-            >
-              <Edit className="w-4 h-4 mr-1" />
-              Edit
-            </Button>
-          </div>
           <div className="absolute top-4 left-4 flex items-center gap-2">
             <Button
               size="sm"
               variant="secondary"
-              className="rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
+              className="rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-md border border-white/10"
               onClick={() => router.push('/wallet')}
             >
-              <Wallet className="w-4 h-4 mr-1" />
-              ₹{walletBalance}
+              <Wallet className="w-4 h-4 mr-2" />
+              <span className="font-black">₹{walletBalance}</span>
             </Button>
           </div>
         </div>
 
         {/* AVATAR */}
-        <div className="flex justify-center -mt-10">
-          <Avatar className="w-20 h-20 border-4 border-white shadow-lg">
-            <AvatarFallback className="text-xl font-bold bg-blue-100 text-blue-700">
+        <div className="flex justify-center -mt-12">
+          <Avatar className="w-24 h-24 border-4 border-white shadow-xl">
+            <AvatarFallback className="text-2xl font-black bg-indigo-50 text-indigo-600">
               {initials(profile.full_name || profile.email)}
             </AvatarFallback>
           </Avatar>
@@ -322,7 +322,8 @@ function ProfileContent() {
 
         {/* NAME */}
         <div className="text-center mt-3">
-          <p className="text-sm text-muted-foreground">{profile.email}</p>
+          <h2 className="text-xl font-black text-[#1e1b4b]">{profile.full_name || 'Guest User'}</h2>
+          <p className="text-xs font-bold text-gray-400 mt-0.5 uppercase tracking-widest">{profile.email}</p>
         </div>
 
         {/* REFER & EARN */}
@@ -330,8 +331,8 @@ function ProfileContent() {
           <ReferEarnCard code={profile.referral_code!} />
         </div>
 
-        <div className="px-4 mt-4">
-          <UserDetailsCard profile={profile} />
+        <div className="px-4 mt-6">
+          <UserDetailsCard profile={profile} onEdit={() => setIsEditModalOpen(true)} />
         </div>
 
         {/* MENU */}

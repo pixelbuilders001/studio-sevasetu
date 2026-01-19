@@ -217,7 +217,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
               <div className="drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
                 <AnimatedHeroText
                   className="text-4xl sm:text-5xl md:text-7xl"
-                  highlightColor="text-cyan-400"
+                  highlightColor="text-primary"
                 />
               </div>
 

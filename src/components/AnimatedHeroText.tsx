@@ -15,7 +15,7 @@ interface AnimatedHeroTextProps {
   highlightColor?: string;
 }
 
-const AnimatedHeroText = ({ className, highlightColor = "text-cyan-400" }: AnimatedHeroTextProps) => {
+const AnimatedHeroText = ({ className, highlightColor = "text-primary" }: AnimatedHeroTextProps) => {
   const [wordIndex, setWordIndex] = useState(0);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const AnimatedHeroText = ({ className, highlightColor = "text-cyan-400" }: Anima
         <div className="relative h-[1.1em] w-40 md:w-80 overflow-hidden">
           <div
             key={services[wordIndex]}
-            className={cn("animate-fade-in-up absolute left-0 whitespace-nowrap drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]", highlightColor)}
+            className={cn("animate-fade-in-up absolute left-0 whitespace-nowrap drop-shadow-[0_0_8px_rgba(79,70,229,0.3)]", highlightColor)}
           >
             {services[wordIndex]}
           </div>

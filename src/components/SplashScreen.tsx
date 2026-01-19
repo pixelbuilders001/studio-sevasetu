@@ -9,7 +9,7 @@ export default function SplashScreen() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsVisible(false);
-        }, 2500);
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, []);
@@ -21,79 +21,91 @@ export default function SplashScreen() {
                     initial={{ opacity: 1 }}
                     exit={{
                         opacity: 0,
-                        transition: { duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }
+                        transition: { duration: 1, ease: [0.43, 0.13, 0.23, 0.96] }
                     }}
                     className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white"
                 >
+                    {/* Background Layer with soft gradient */}
+                    <div className="absolute inset-0 bg-[#f8fafc]" />
+
                     <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
+                        initial={{ scale: 0.9, opacity: 0 }}
                         animate={{
                             scale: 1,
                             opacity: 1,
                             transition: {
-                                duration: 0.8,
+                                duration: 1.2,
                                 ease: [0.16, 1, 0.3, 1]
                             }
                         }}
-                        className="flex flex-col items-center"
+                        className="flex flex-col items-center relative z-10"
                     >
-                        {/* Logo Icon */}
+                        {/* Logo Icon Container */}
                         <motion.div
-                            initial={{ y: 20 }}
-                            animate={{ y: 0 }}
-                            className="w-20 h-20 bg-[#6366F1] rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/30 mb-6"
+                            initial={{ y: 30, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.8 }}
+                            className="relative mb-8"
                         >
-                            <span className="text-5xl font-black text-white italic">H</span>
+                            {/* Outer Glow */}
+                            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150" />
+
+                            <div className="w-24 h-24 bg-primary rounded-[2rem] flex items-center justify-center shadow-2xl shadow-primary/20 relative z-10">
+                                <span className="text-6xl font-[1000] text-white italic tracking-tighter">H</span>
+                            </div>
                         </motion.div>
 
-                        {/* Brand Text */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{
-                                opacity: 1,
-                                y: 0,
-                                transition: { delay: 0.4, duration: 0.6 }
-                            }}
-                            className="text-center"
-                        >
-                            {/* <div className="bg-primary px-2 py-2 rounded md:rounded shadow-[0_4px_10px_rgba(99,102,241,0.25)] group-hover:shadow-[0_6px_15px_rgba(99,102,241,0.35)] transition-all duration-300">
-                                <h1
-                                    //  className="text-xl md:text-2xl font-[1000] text-[#1E293B] dark:text-white tracking-tighter italic leading-none"
-                                    className="text-4xl md:text-[13px] font-[1000] text-white italic tracking-tighter leading-none whitespace-nowrap uppercase"
-                                >
-                                    FIX on Click
-                                </h1>
-                            </div> */}
+                        {/* Brand Text Stack */}
+                        <div className="text-center">
+                            <motion.h1
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{
+                                    opacity: 1,
+                                    y: 0,
+                                    transition: { delay: 0.5, duration: 0.8 }
+                                }}
+                                className="text-4xl font-black text-[#1e1b4b] tracking-tighter mb-1"
+                            >
+                                Hellofixo
+                            </motion.h1>
 
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] opacity-60">
-                                Repair & Solutions
-                            </p>
-                        </motion.div>
+                            <motion.p
+                                initial={{ opacity: 0 }}
+                                animate={{
+                                    opacity: 1,
+                                    transition: { delay: 0.8, duration: 0.8 }
+                                }}
+                                className="text-[11px] font-bold text-primary/60 uppercase tracking-[0.4em]"
+                            >
+                                Bihar's Trusted Repair
+                            </motion.p>
+                        </div>
                     </motion.div>
 
-                    {/* Bottom Indicator */}
+                    {/* Bottom Progress/Loading Indicator */}
                     <motion.div
-                        initial={{ opacity: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{
                             opacity: 1,
-                            transition: { delay: 1, duration: 1 }
+                            y: 0,
+                            transition: { delay: 1.2, duration: 0.8 }
                         }}
-                        className="absolute bottom-12 flex flex-col items-center gap-4"
+                        className="absolute bottom-16 flex flex-col items-center gap-4"
                     >
-                        <div className="w-12 h-1 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden relative">
                             <motion.div
-                                initial={{ x: '-100%' }}
-                                animate={{ x: '100%' }}
+                                initial={{ left: '-100%' }}
+                                animate={{ left: '100%' }}
                                 transition={{
                                     repeat: Infinity,
-                                    duration: 1.5,
-                                    ease: "linear"
+                                    duration: 2,
+                                    ease: "easeInOut"
                                 }}
-                                className="w-full h-full bg-primary/40"
+                                className="absolute w-1/2 h-full bg-primary rounded-full shadow-[0_0_8px_rgba(79,70,229,0.3)]"
                             />
                         </div>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-40">
-                            Loading your experience
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">
+                            PREPARING YOUR SERVICE
                         </p>
                     </motion.div>
                 </motion.div>
