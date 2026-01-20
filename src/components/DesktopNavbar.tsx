@@ -19,12 +19,17 @@ import {
 } from '@/components/ui/dialog';
 
 import UserAuthSheet from '@/components/UserAuthSheet';
-import { User } from 'lucide-react';
+import { User, ChevronDown } from 'lucide-react';
+import { getServiceCategoriesAction } from '@/app/actions';
+import { ServiceCategory } from '@/lib/data';
+import ServicesMegaMenu from './ServicesMegaMenu';
 
 export function DesktopNavbar() {
     const pathname = usePathname();
     const [session, setSession] = useState<Session | null>(null);
     const [authOpen, setAuthOpen] = useState(false);
+    const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+    const [categories, setCategories] = useState<ServiceCategory[]>([]);
     const supabase = createSupabaseBrowserClient();
 
     useEffect(() => {
@@ -33,6 +38,12 @@ export function DesktopNavbar() {
             setSession(data.session);
         };
         getSession();
+
+        const fetchCategories = async () => {
+            const cats = await getServiceCategoriesAction();
+            setCategories(cats);
+        };
+        fetchCategories();
 
         const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
             setSession(session);
@@ -46,6 +57,11 @@ export function DesktopNavbar() {
         };
     }, [supabase.auth, authOpen]);
 
+    const toggleServices = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setMegaMenuOpen(!megaMenuOpen);
+    };
+
     const navLinks = [
         { href: '/', label: 'Home' },
         { href: '#services', label: 'Services' },
@@ -55,7 +71,7 @@ export function DesktopNavbar() {
 
     return (
         <header className="hidden md:flex fixed top-6 left-0 right-0 z-50 justify-center">
-            <div className="flex items-center gap-10 px-8 py-3 bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] rounded-full transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] hover:bg-white/80">
+            <div className="relative z-[60] flex items-center gap-10 px-8 py-3 bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] rounded-full transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] hover:bg-white/80">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
                     <span className="text-xl font-black tracking-tighter text-[#1e1b4b]">
@@ -65,20 +81,32 @@ export function DesktopNavbar() {
 
                 {/* Navigation */}
                 <nav className="flex items-center gap-8">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={cn(
-                                "text-xs font-black uppercase tracking-widest transition-all hover:text-primary active:scale-95",
-                                pathname === link.href || (pathname === '/' && link.href === '/')
-                                    ? "text-primary"
-                                    : "text-[#1e1b4b]/60"
-                            )}
-                        >
-                            {link.label}
-                        </Link>
-                    ))}
+                    {navLinks.map((link) => {
+                        const isServices = link.label === 'Services';
+                        return (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                onClick={isServices ? toggleServices : undefined}
+                                className={cn(
+                                    "text-xs font-black uppercase tracking-widest transition-all hover:text-primary active:scale-95 py-2 flex items-center gap-1.5",
+                                    pathname === link.href || (pathname === '/' && link.href === '/') || (isServices && megaMenuOpen)
+                                        ? "text-primary"
+                                        : "text-[#1e1b4b]/60"
+                                )}
+                            >
+                                {link.label}
+                                {isServices && (
+                                    <ChevronDown
+                                        className={cn(
+                                            "w-3.5 h-3.5 transition-transform duration-300",
+                                            megaMenuOpen ? "rotate-180 text-primary" : "opacity-40"
+                                        )}
+                                    />
+                                )}
+                            </Link>
+                        );
+                    })}
                 </nav>
 
                 <div className="w-px h-6 bg-[#1e1b4b]/10" />
@@ -110,6 +138,12 @@ export function DesktopNavbar() {
                     )}
                 </div>
             </div>
+
+            <ServicesMegaMenu
+                isOpen={megaMenuOpen}
+                categories={categories}
+                onClose={() => setMegaMenuOpen(false)}
+            />
         </header>
     );
 }
