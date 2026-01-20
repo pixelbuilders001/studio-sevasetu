@@ -36,9 +36,20 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
     const [referralCode, setReferralCode] = useState<string | null>(null);
     const [recentTransaction, setRecentTransaction] = useState<Transaction | null>(null);
     const [mobileNumber, setMobileNumber] = useState<string>(''); // Needed for distinct TransactionHistorySheet if it requires it
+    const [isMobile, setIsMobile] = useState(false);
 
     const supabase = createSupabaseBrowserClient();
     const { toast } = useToast();
+
+    // Check Mobile
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Auth State Listener
     useEffect(() => {
@@ -114,8 +125,11 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
                 {children}
             </SheetTrigger>
             <SheetContent
-                side="bottom"
-                className="h-[85vh] flex flex-col rounded-t-3xl p-0 overflow-hidden bg-white dark:bg-card"
+                side={isMobile ? "bottom" : "right"}
+                className={cn(
+                    "flex flex-col p-0 overflow-hidden bg-white dark:bg-card",
+                    isMobile ? "h-[90vh] rounded-t-[2.5rem] animate-in slide-in-from-bottom duration-500" : "w-full md:max-w-md h-full animate-in slide-in-from-right duration-300"
+                )}
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
                 <SheetHeader className="px-6 pt-6 pb-2">

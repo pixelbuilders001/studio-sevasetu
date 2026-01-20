@@ -18,7 +18,10 @@ export default function HeroCTA() {
           </span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-full max-h-[90vh] flex flex-col rounded-t-3xl border-none shadow-2xl overflow-hidden p-0">
+      <SheetContent
+        side="bottom"
+        className="h-[90vh] flex flex-col rounded-t-3xl md:h-[80vh] md:max-w-3xl md:mx-auto md:rounded-3xl md:bottom-10 md:inset-x-10 border-none shadow-2xl overflow-hidden p-0"
+      >
         <AllServicesSheet />
       </SheetContent>
     </Sheet>

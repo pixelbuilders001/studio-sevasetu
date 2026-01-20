@@ -384,7 +384,7 @@ export async function getUserProfile() {
     }
 
     const accessToken = session.access_token;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?id=eq.${session.user.id}&limit=1`, {
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/profiles?id=eq.${session.user.id}&limit=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -401,8 +401,14 @@ export async function getUserProfile() {
     }
 
     const profileData = await response.json();
-    // console.log(profileData);
-    return profileData[0]; // Return the first (and only) profile object
+    console.log("Profile data fetched from DB:", profileData);
+
+    if (!profileData || profileData.length === 0) {
+      console.warn("No profile found for user ID:", session.user.id);
+      return null;
+    }
+
+    return profileData[0];
 
   } catch (error) {
     console.error('Profile fetch failed:', error);
@@ -442,7 +448,7 @@ export async function updateUserProfile(data: { full_name: string; phone: string
     const accessToken = session.access_token;
     const userId = session.user.id;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}`, {
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/profiles?id=eq.${userId}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -508,7 +514,7 @@ export async function getWalletBalance() {
     const userId = session.user.id;
 
     // Direct REST API call as requested
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallets`, {
+    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallets?user_id=eq.${userId}&limit=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,

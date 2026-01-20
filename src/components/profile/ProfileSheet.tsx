@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   User,
@@ -29,6 +29,7 @@ import { getUserProfile, getWalletBalance, getReferralCode } from '@/app/actions
 import { EditProfileModal } from './EditProfileModal';
 import { AddressManagementModal } from './AddressManagementModal';
 import { BookingHistoryModal } from './BookingHistoryModal';
+import { WalletModal } from './WalletModal';
 
 import {
   Sheet,
@@ -39,6 +40,7 @@ import {
 } from '@/components/ui/sheet';
 
 import FullScreenLoader from '@/components/FullScreenLoader';
+import { cn } from '@/lib/utils';
 
 /* ---------------- TYPES ---------------- */
 
@@ -206,10 +208,10 @@ const ProfileSkeleton = () => (
 
 /* ---------------- MAIN CONTENT ---------------- */
 
-function ProfileContent() {
+function ProfileContent({ isOpen }: { isOpen: boolean }) {
   const router = useRouter();
   const { toast } = useToast();
-  const supabase = createSupabaseBrowserClient();
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -219,33 +221,61 @@ function ProfileContent() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   console.log(profile);
   useEffect(() => {
     const init = async () => {
-      setLoading(true);
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
+      if (!isOpen) return;
+      try {
+        setLoading(true);
+        const { data } = await supabase.auth.getSession();
+
+        if (!data.session) {
+          setLoading(false);
+          return;
+        }
+
+        setSession(data.session);
+
+        const [p, balance, refCode] = await Promise.all([
+          getUserProfile(),
+          getWalletBalance(),
+          getReferralCode()
+        ]);
+
+        if (p && !p.error) {
+          setProfile({
+            ...p,
+            referral_code: refCode || p.referral_code || '',
+          });
+          setWalletBalance(balance);
+        } else {
+          console.error("Profile data error or missing:", p);
+          // Fallback to basic session info
+          setProfile({
+            id: data.session.user.id,
+            email: data.session.user.email || '',
+            full_name: data.session.user.user_metadata?.full_name || '',
+            role: 'user', // Default role
+            phone: data.session.user.phone || '',
+            created_at: data.session.user.created_at || new Date().toISOString(),
+            referral_code: refCode || '',
+          } as UserProfile);
+          setWalletBalance(balance); // Still set wallet balance if available
+          toast({
+            title: "Error",
+            description: "Failed to load full profile data, showing basic info.",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error("Failed to initialize profile:", error);
+      } finally {
         setLoading(false);
-        return;
       }
-      setSession(data.session);
-      setSession(data.session);
-
-      const [p, balance, refCode] = await Promise.all([
-        getUserProfile(),
-        getWalletBalance(),
-        getReferralCode()
-      ]);
-      setProfile({
-        ...p,
-        referral_code: refCode || p.referral_code || 0,
-      });
-      setWalletBalance(balance);
-
-      setLoading(false);
     };
     init();
-  }, []);
+  }, [isOpen, supabase, toast]);
 
   const refreshProfile = async () => {
     const p = await getUserProfile();
@@ -311,7 +341,14 @@ function ProfileContent() {
               size="sm"
               variant="secondary"
               className="rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-md border border-white/10"
-              onClick={() => router.push('/wallet')}
+              onClick={() => {
+                // Open modal on desktop, navigate on mobile for consistency
+                if (window.innerWidth >= 768) {
+                  setIsWalletModalOpen(true);
+                } else {
+                  router.push('/wallet');
+                }
+              }}
             >
               <Wallet className="w-4 h-4 mr-2" />
               <span className="font-black">₹{walletBalance}</span>
@@ -351,6 +388,11 @@ function ProfileContent() {
             onClick={() => setIsBookingModalOpen(true)}
           />
           <MenuItem
+            icon={Wallet}
+            label="My Wallet"
+            onClick={() => setIsWalletModalOpen(true)}
+          />
+          <MenuItem
             icon={MapPin}
             label="Saved Addresses"
             onClick={() => setIsAddressModalOpen(true)}
@@ -384,6 +426,10 @@ function ProfileContent() {
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
       />
+      <WalletModal
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+      />
     </div>
   );
 }
@@ -391,8 +437,20 @@ function ProfileContent() {
 /* ---------------- SHEET ---------------- */
 
 export function ProfileSheet({ isHero }: { isHero?: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {isHero ? (
           <div className="w-10 h-10 bg-primary/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 cursor-pointer active:scale-90 transition-transform shadow-lg group">
@@ -404,11 +462,17 @@ export function ProfileSheet({ isHero }: { isHero?: boolean }) {
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent side="left" className="p-0 w-full max-w-sm">
+      <SheetContent
+        side={isMobile ? "left" : "right"}
+        className={cn(
+          "p-0 flex flex-col overflow-hidden bg-white dark:bg-card",
+          isMobile ? "w-[85vw] h-full animate-in slide-in-from-left duration-500" : "w-full md:max-w-md h-full duration-300 animate-in slide-in-from-right"
+        )}
+      >
         <SheetHeader className="sr-only">
           <SheetTitle>Profile</SheetTitle>
         </SheetHeader>
-        <ProfileContent />
+        <ProfileContent isOpen={open} />
       </SheetContent>
     </Sheet>
   );

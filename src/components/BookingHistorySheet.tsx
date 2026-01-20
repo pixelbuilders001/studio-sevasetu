@@ -18,6 +18,7 @@ import QuotationModal from '@/components/QuotationModal';
 import { CancelBookingModal } from '@/components/CancelBookingModal';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 export default function BookingHistorySheet({ children }: { children: React.ReactNode }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -27,8 +28,19 @@ export default function BookingHistorySheet({ children }: { children: React.Reac
     const [selectedQuote, setSelectedQuote] = useState<(RepairQuote & { booking_id: string }) | null>(null);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [bookingToCancelId, setBookingToCancelId] = useState<string | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
     const supabase = createSupabaseBrowserClient();
     const { toast } = useToast();
+
+    // Check Mobile
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Auth State Listener
     useEffect(() => {
@@ -150,8 +162,11 @@ export default function BookingHistorySheet({ children }: { children: React.Reac
                 {children}
             </SheetTrigger>
             <SheetContent
-                side="bottom"
-                className="h-[85vh] flex flex-col rounded-t-3xl p-0 overflow-hidden"
+                side={isMobile ? "bottom" : "right"}
+                className={cn(
+                    "flex flex-col p-0 overflow-hidden bg-white dark:bg-card",
+                    isMobile ? "h-[90vh] rounded-t-[2.5rem] animate-in slide-in-from-bottom duration-500" : "w-full md:max-w-xl h-full animate-in slide-in-from-right duration-300"
+                )}
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
                 <SheetHeader className="px-6 pt-6 pb-2">

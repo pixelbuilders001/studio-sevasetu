@@ -30,7 +30,7 @@ export default function BecomePartner() {
   ];
 
   return (
-    <section className="py-8 md:py-20">
+    <section className="py-8 md:py-16">
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="relative bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-3xl overflow-hidden shadow-2xl">
           {/* Decorative Backdrops */}

@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { LocationProvider } from '@/context/LocationContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import SplashScreen from '@/components/SplashScreen';
+import { DesktopNavbar } from '@/components/DesktopNavbar';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -18,8 +19,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <LanguageProvider>
       <LocationProvider>
         <SplashScreen />
+        {/* Desktop Navigation */}
+        <DesktopNavbar />
+
         {pathname !== '/' && <Header />}
-        <main className={`flex-grow ${pathname === '/' ? 'pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
+        <main className={`flex-grow ${pathname === '/' ? 'pt-0 md:pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
         <Footer />
         {showBottomNav && <BottomNavBar />}
       </LocationProvider>

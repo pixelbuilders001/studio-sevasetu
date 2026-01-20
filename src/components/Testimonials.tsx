@@ -39,7 +39,7 @@ export default function Testimonials({ t }: { t: TranslationFunc }) {
   ];
 
   return (
-    <section className="py-12 md:py-24 bg-white dark:bg-card overflow-hidden">
+    <section className="py-12 md:py-20 bg-white dark:bg-card overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">

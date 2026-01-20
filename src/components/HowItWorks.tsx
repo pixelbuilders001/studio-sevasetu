@@ -47,14 +47,14 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
   ];
 
   return (
-    <section className="py-5 md:py-20 bg-white dark:bg-card overflow-hidden">
+    <section className="py-5 md:py-12 bg-white dark:bg-card overflow-hidden">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
           <motion.h2
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-2xl md:text-4xl font-black tracking-tight text-[#1e1b4b]"
+            className="text-2xl md:text-3xl font-black tracking-tight text-[#1e1b4b]"
           >
             How it <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent italic">Works</span>
           </motion.h2>
@@ -107,7 +107,7 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
         </div>
 
         {/* Active View Area */}
-        <div className="relative min-h-[400px] md:min-h-[320px] flex flex-col items-center">
+        <div className="relative min-h-[400px] md:min-h-[280px] flex flex-col items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeStep}
@@ -115,10 +115,10 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
-              className="w-full bg-gradient-to-br from-indigo-50/50 to-indigo-100/30 rounded-3xl p-6 md:p-8 border-2 border-indigo-200 shadow-xl flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8"
+              className="w-full bg-gradient-to-br from-indigo-50/50 to-indigo-100/30 rounded-3xl p-6 md:p-6 border-2 border-indigo-200 shadow-xl flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8"
             >
               {/* GIF Container */}
-              <div className="relative w-56 h-56 md:w-64 md:h-64 rounded-3xl overflow-hidden bg-white shadow-2xl border-4 border-indigo-100 flex-shrink-0">
+              <div className="relative w-56 h-56 md:w-56 md:h-56 rounded-3xl overflow-hidden bg-white shadow-2xl border-4 border-indigo-100 flex-shrink-0">
                 <Image
                   src={steps[activeStep].gif}
                   alt={steps[activeStep].title}
@@ -130,10 +130,10 @@ export default function HowItWorks({ t }: { t: TranslationFunc }) {
 
               {/* Content */}
               <div className="text-center md:text-left flex-1 flex flex-col justify-center">
-                <h3 className="font-black text-2xl md:text-3xl mb-3 uppercase tracking-tight text-indigo-900">
+                <h3 className="font-black text-2xl md:text-2xl mb-3 uppercase tracking-tight text-indigo-900">
                   {steps[activeStep].title}
                 </h3>
-                <p className="text-indigo-600 text-sm md:text-base font-bold leading-relaxed">
+                <p className="text-indigo-600 text-sm md:text-sm font-bold leading-relaxed">
                   {steps[activeStep].description}
                 </p>
 

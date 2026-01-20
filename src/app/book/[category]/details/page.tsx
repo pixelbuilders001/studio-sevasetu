@@ -22,6 +22,8 @@ type BookingDetailsData = {
 }
 
 
+import DesktopBookingDetailsView from './DesktopBookingDetailsView';
+
 function BookingDetailsContent() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -103,42 +105,58 @@ function BookingDetailsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header with Background Accent */}
-      <div className="bg-primary/5 pt-6 pb-10 rounded-b-[2rem]">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center gap-4 mb-4">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => router.back()}
-              className="w-9 h-9 rounded-full bg-background/50 backdrop-blur-sm border-primary/10 hover:bg-primary/10 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-            <div className="space-y-0.5">
-              <h1 className="text-xl md:text-2xl font-bold font-headline tracking-tight">
-                Final Details
-              </h1>
-              <p className="text-muted-foreground text-[10px] uppercase tracking-widest font-bold">
-                Complete your booking for {details.category.name}
-              </p>
+    <>
+      {/* Mobile View */}
+      <div className="md:hidden min-h-screen bg-background">
+        {/* Header with Background Accent */}
+        <div className="bg-primary/5 pt-6 pb-10 rounded-b-[2rem]">
+          <div className="container mx-auto px-6">
+            <div className="flex items-center gap-4 mb-4">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => router.back()}
+                className="w-9 h-9 rounded-full bg-background/50 backdrop-blur-sm border-primary/10 hover:bg-primary/10 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <div className="space-y-0.5">
+                <h1 className="text-xl md:text-2xl font-bold font-headline tracking-tight">
+                  Final Details
+                </h1>
+                <p className="text-muted-foreground text-[10px] uppercase tracking-widest font-bold">
+                  Complete your booking for {details.category.name}
+                </p>
+              </div>
             </div>
+          </div>
+        </div>
+
+        <div className="container mx-auto px-6 -mt-6">
+          <div className="max-w-xl mx-auto">
+            <BookingForm
+              categoryId={details.category.id}
+              problemIds={problemIds!}
+              inspectionFee={details.inspectionFee}
+              totalEstimatedPrice={details.totalEstimatedPrice}
+            />
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 -mt-6">
-        <div className="max-w-xl mx-auto">
-          <BookingForm
-            categoryId={details.category.id}
-            problemIds={problemIds!}
-            inspectionFee={details.inspectionFee}
-            totalEstimatedPrice={details.totalEstimatedPrice}
-          />
-        </div>
+      {/* Desktop View */}
+      <div className="hidden md:block">
+        <DesktopBookingDetailsView
+          category={details.category}
+          problemIds={problemIds!}
+          inspectionFee={details.inspectionFee}
+          totalRepairCost={details.totalRepairCost}
+          totalEstimatedPrice={details.totalEstimatedPrice}
+          selectedProblems={details.selectedProblems}
+          router={router}
+        />
       </div>
-    </div>
+    </>
   );
 }
 

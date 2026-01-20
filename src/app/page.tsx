@@ -28,6 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import LocationSelector from '@/components/LocationSelector';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { ProfileSheet } from '@/components/profile/ProfileSheet';
+import DesktopHero from '@/components/DesktopHero';
 import UserAuthSheet from '@/components/UserAuthSheet';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
@@ -184,104 +185,112 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
 
   return (
     <div className="min-h-screen bg-secondary/10 pb-10">
-      {/* Hero Section with Integrated Header */}
-      <section className="relative h-[50vh] md:h-[85vh] rounded-b-[2rem] shadow-2xl overflow-hidden group">
-        {/* Main Background Video */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/hero-video.webp"
-            alt="Hellofixo Hero"
-            fill
-            className="object-cover"
-            unoptimized
-            priority
-          />
-          {/* Enhanced gradients for readability and depth */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 z-10" />
-          <div className="absolute inset-0 bg-primary/10 mix-blend-overlay z-10" />
-        </div>
+      {/* Desktop Hero (md+) */}
+      <div className="hidden md:block">
+        <DesktopHero />
+      </div>
 
-        {/* Integrated Floating Header Area */}
-        <div className="absolute top-0 left-0 right-0 z-30 px-6 pt-6">
-          <div className="container mx-auto flex items-center justify-between">
-            {/* Location Pill */}
-            <div className="flex-shrink-0">
-              <LocationSelector isHero={true} />
-            </div>
-
-            {/* Profile Action */}
-            <div className="flex items-center gap-3">
-              {session ? (
-                <ProfileSheet isHero={true} />
-              ) : (
-                <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-                  <SheetTrigger asChild>
-                    <div className="w-12 h-12 bg-indigo-200/90 backdrop-blur-sm rounded-full flex items-center justify-center border border-indigo-300/50 cursor-pointer active:scale-90 transition-transform shadow-lg group">
-                      <User className="h-6 w-6 text-indigo-700 group-hover:scale-110 transition-transform" />
-                    </div>
-                  </SheetTrigger>
-                  <SheetContent
-                    side="bottom"
-                    className="rounded-t-3xl h-[80dvh] inset-x-0 bottom-0 border-t bg-white p-0 flex flex-col"
-                    onOpenAutoFocus={(e) => e.preventDefault()}
-                  >
-                    <UserAuthSheet setSheetOpen={setSheetOpen} />
-                  </SheetContent>
-                </Sheet>
-              )}
-            </div>
+      {/* Mobile Hero (md hidden) */}
+      <div className="md:hidden">
+        {/* Hero Section with Integrated Header */}
+        <section className="relative h-[50vh] rounded-b-[2rem] shadow-2xl overflow-hidden group">
+          {/* Main Background Video */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/hero-video.webp"
+              alt="Hellofixo Hero"
+              fill
+              className="object-cover"
+              unoptimized
+              priority
+            />
+            {/* Enhanced gradients for readability and depth */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 z-10" />
+            <div className="absolute inset-0 bg-primary/10 mix-blend-overlay z-10" />
           </div>
-        </div>
 
-        {/* Hero Content */}
-        <div className="relative h-full container mx-auto px-6 flex flex-col justify-end pb-12 z-20">
-          <div className="max-w-2xl space-y-5">
-
-
-            {/* Headline */}
-            <div className="space-y-4">
-              <div className="drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
-                <AnimatedHeroText
-                  className="text-4xl sm:text-5xl md:text-7xl"
-                  highlightColor="text-primary"
-                />
+          {/* Integrated Floating Header Area */}
+          <div className="absolute top-0 left-0 right-0 z-30 px-6 pt-6">
+            <div className="container mx-auto flex items-center justify-between">
+              {/* Location Pill */}
+              <div className="flex-shrink-0">
+                <LocationSelector isHero={true} />
               </div>
 
-              <p className="text-white/80 text-sm md:text-lg font-medium max-w-sm leading-relaxed drop-shadow-md">
-                Premium doorstep repairs with Bihar&apos;s most trusted certified technicians.
-              </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="pt-2">
-              <HeroCTA />
+              {/* Profile Action */}
+              <div className="flex items-center gap-3">
+                {session ? (
+                  <ProfileSheet isHero={true} />
+                ) : (
+                  <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                    <SheetTrigger asChild>
+                      <div className="w-12 h-12 bg-indigo-200/90 backdrop-blur-sm rounded-full flex items-center justify-center border border-indigo-300/50 cursor-pointer active:scale-90 transition-transform shadow-lg group">
+                        <User className="h-6 w-6 text-indigo-700 group-hover:scale-110 transition-transform" />
+                      </div>
+                    </SheetTrigger>
+                    <SheetContent
+                      side="bottom"
+                      className="rounded-t-3xl h-[80dvh] inset-x-0 bottom-0 border-t bg-white p-0 flex flex-col"
+                      onOpenAutoFocus={(e) => e.preventDefault()}
+                    >
+                      <UserAuthSheet setSheetOpen={setSheetOpen} />
+                    </SheetContent>
+                  </Sheet>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+
+          {/* Hero Content */}
+          <div className="relative h-full container mx-auto px-6 z-20 flex flex-col justify-end pb-12">
+            <div className="max-w-xl space-y-5">
+              {/* Headline */}
+              <div className="space-y-4">
+                <div className="drop-shadow-[0_2px_15px_rgba(0,0,0,0.6)]">
+                  <AnimatedHeroText
+                    className="text-4xl sm:text-5xl leading-tight tracking-tighter"
+                    highlightColor="text-primary"
+                  />
+                </div>
+
+                <p className="text-white/90 text-sm font-bold max-w-xl leading-relaxed drop-shadow-md">
+                  Premium doorstep repairs with Bihar&apos;s most trusted certified technicians. Affordable, fast & guaranteed.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2">
+                <div className="scale-100 origin-left">
+                  <HeroCTA />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
 
       {/* Services Grid */}
-      <section id="services" className="container mx-auto px-4 mt-12 mb-8">
-        <div className="flex justify-between items-end mb-6 px-1">
+      <section id="services" className="container mx-auto px-4 md:px-8 mt-12 md:mt-24">
+        <div className="flex justify-between items-end mb-6 md:mb-12">
           <div>
-            <h2 className="text-2xl md:text-4xl font-black tracking-tight text-[#1e1b4b]">
-              Our <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">Services</span>
+            <h2 className="text-2xl md:text-6xl font-black tracking-tight text-[#1e1b4b]">
+              Our <span className="text-primary">Services</span>
             </h2>
-            <p className="text-xs md:text-sm text-indigo-600 font-bold mt-1">Select a category to book</p>
+            <p className="text-xs md:text-xl text-indigo-600/60 font-bold mt-1 md:mt-4">Quality repairs at your doorstep</p>
           </div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 h-auto py-2 px-3 text-sm font-black flex items-center group">
+              <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 h-auto py-2 px-3 text-sm font-black flex items-center group md:text-lg md:px-8 md:py-4 md:rounded-2xl">
                 <span>{t('viewAll', { defaultValue: 'View All' })}</span>
-                <ChevronRight className="w-4 h-4 ml-0.5 group-hover:translate-x-0.5 transition-transform" />
+                <ChevronRight className="w-4 h-4 ml-0.5 group-hover:translate-x-0.5 transition-transform md:w-6 md:h-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[90vh] flex flex-col rounded-t-3xl">
+            <SheetContent side="bottom" className="h-[90vh] flex flex-col rounded-t-3xl md:h-[80vh] md:max-w-4xl md:mx-auto md:rounded-[3rem] md:bottom-10 md:inset-x-10">
               <AllServicesSheet />
             </SheetContent>
           </Sheet>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-8">
           {loading
             ? Array.from({ length: 6 }).map((_, i) => <ServiceCardSkeleton key={i} />)
             : categories.slice(0, 6).map((category) => (
@@ -292,22 +301,22 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
       </section>
 
       {/* Referral Banner */}
-      <section className="container mx-auto px-4 mb-8 mt-12">
+      <section className="container mx-auto px-4 md:px-8 mt-12 md:mt-24">
         <ReferralBanner />
       </section>
 
-      {/* Quick Features - Grid Layout */}
-      <section className="py-6 mb-6">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-3 gap-3 md:gap-4">
+      {/* Quick Features */}
+      <section className="py-6 md:py-20">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-8">
             {featureCards.map((card, index) => (
-              <div key={index} className="flex flex-col items-center justify-center bg-gradient-to-br from-indigo-50 to-white py-5 px-2 rounded-3xl shadow-lg border-2 border-indigo-100 text-center transition-all hover:shadow-xl hover:border-indigo-200 active:scale-95">
-                <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white mb-3 shadow-lg">
-                  <card.icon className="w-5 h-5 md:w-6 md:h-6" />
+              <div key={index} className="flex flex-col items-center justify-center bg-white py-5 px-2 md:py-10 md:px-6 rounded-3xl md:rounded-3xl shadow-soft border border-indigo-50/50 text-center transition-all hover:shadow-glow hover:-translate-y-1">
+                <div className="w-11 h-11 md:w-16 md:h-16 rounded-2xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-6">
+                  <card.icon className="w-5 h-5 md:w-8 md:h-8" />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-[11px] md:text-xs font-black uppercase tracking-tight text-indigo-900 leading-tight">{card.title}</span>
-                  <span className="text-[8px] md:text-[9px] text-indigo-600 font-bold uppercase tracking-wide leading-tight">{card.description}</span>
+                  <span className="text-[11px] md:text-xl font-black uppercase tracking-tight text-indigo-950 leading-tight">{card.title}</span>
+                  <span className="text-[8px] md:text-xs text-indigo-600 font-bold uppercase tracking-wider leading-tight">{card.description}</span>
                 </div>
               </div>
             ))}
@@ -315,47 +324,51 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         </div>
       </section>
 
-      <div className="bg-white dark:bg-card rounded-t-3xl shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-8 pb-12">
-        <div id="how-it-works">
+      <div className="bg-white dark:bg-card rounded-t-3xl md:rounded-t-[5rem] shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-8 pb-12 md:pt-20 md:pb-24">
+        <div id="how-it-works" className="container mx-auto px-4 md:px-8">
           <HowItWorks t={t} />
         </div>
 
         {/* Live Tracking Card */}
-        <section className="container mx-auto px-4 mb-8 mt-12">
+        <section className="container mx-auto px-4 md:px-8 mt-12 md:mt-24">
           <BookingTrackerModal asChild={true}>
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-3xl p-6 shadow-lg border-2 border-dashed border-indigo-300 active:scale-98 transition-transform cursor-pointer relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Search className="w-24 h-24 -mr-8 -mt-8 text-indigo-600" />
+            <div className="bg-gradient-to-br from-indigo-600 to-indigo-900 rounded-3xl md:rounded-[3rem] p-6 md:p-16 shadow-2xl active:scale-98 transition-all cursor-pointer relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-110 transition-transform duration-700">
+                <Search className="w-40 h-40 md:w-64 md:h-64 -mr-10 -mt-10 text-white" />
               </div>
-              <div className="relative z-10 flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
+              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
+                <div className="text-center md:text-left">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-3 md:mb-6">
                     <span className="flex h-2 w-2 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-600 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                     </span>
-                    <p className="text-xs font-black uppercase tracking-wider text-indigo-600">Live Status</p>
+                    <p className="text-[10px] md:text-base font-black uppercase tracking-[0.2em] text-white/70">Live Tracker</p>
                   </div>
-                  <h3 className="text-2xl font-black mb-1 text-indigo-900">Track Your Repair</h3>
-                  <p className="text-indigo-600 text-sm font-bold">Check current status of your booking</p>
+                  <h3 className="text-2xl md:text-5xl font-black mb-3 text-white tracking-tighter">Track Your <span className="text-indigo-200">Repair</span></h3>
+                  <p className="text-white/60 text-sm md:text-lg font-medium max-w-xl">Get real-time updates on your service request status.</p>
                 </div>
-                <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg">
-                  <ChevronRight className="w-6 h-6 text-white" />
+                <div className="bg-white/10 backdrop-blur-md p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-2xl group-hover:bg-white transition-all duration-500 border border-white/20">
+                  <ChevronRight className="w-8 h-8 md:w-12 md:h-12 text-white group-hover:text-indigo-600" />
                 </div>
               </div>
             </div>
           </BookingTrackerModal>
         </section>
 
-        <VerifiedTechnicians t={t} />
+        <div className="mt-20 md:mt-24">
+          <VerifiedTechnicians t={t} />
+        </div>
 
-        <section id="why-choose-us" className="py-8 md:py-12">
-          <div className="container mx-auto px-4">
+        <section id="why-choose-us" className="py-12 md:py-24">
+          <div className="container mx-auto px-4 md:px-8">
             <TrustIndicators t={t} />
           </div>
         </section>
 
-        <Testimonials t={t} />
+        <div className="mt-12 md:mt-0">
+          <Testimonials t={t} />
+        </div>
 
         <BecomePartner />
 
