@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { HellofixoLogo } from './HellofixoLogo';
 
 export default function SplashScreen() {
     const [isVisible, setIsVisible] = useState(true);
@@ -26,7 +27,7 @@ export default function SplashScreen() {
                     className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white"
                 >
                     {/* Background Layer with soft gradient */}
-                    <div className="absolute inset-0 bg-[#f8fafc]" />
+                    <div className="absolute inset-0 bg-[#1a1a3b]" />
 
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
@@ -45,18 +46,17 @@ export default function SplashScreen() {
                             initial={{ y: 30, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ duration: 0.8 }}
-                            className="relative mb-8"
+                            className="relative mb-6"
                         >
-                            {/* Outer Glow */}
-                            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150" />
-
-                            <div className="w-24 h-24 bg-primary rounded-[2rem] flex items-center justify-center shadow-2xl shadow-primary/20 relative z-10">
-                                <span className="text-6xl font-[1000] text-white italic tracking-tighter">H</span>
-                            </div>
+                            <img
+                                src="/brand-logo.png"
+                                alt="Hellofixo"
+                                className="w-48 md:w-64 h-auto object-contain"
+                            />
                         </motion.div>
 
                         {/* Brand Text Stack */}
-                        <div className="text-center">
+                        {/* <div className="text-center">
                             <motion.h1
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{
@@ -79,7 +79,7 @@ export default function SplashScreen() {
                             >
                                 Bihar's Trusted Repair
                             </motion.p>
-                        </div>
+                        </div> */}
                     </motion.div>
 
                     {/* Bottom Progress/Loading Indicator */}

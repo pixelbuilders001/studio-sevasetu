@@ -10,15 +10,15 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 
 type AreaInfo = {
-    Name: string;
-    District: string;
-    State: string;
+  Name: string;
+  District: string;
+  State: string;
 }
 
 type ServiceableCity = {
-    city_name: string;
-    inspection_multiplier: number;
-    repair_multiplier: number;
+  city_name: string;
+  inspection_multiplier: number;
+  repair_multiplier: number;
 } | null;
 
 type Location = {
@@ -42,16 +42,16 @@ type LocationContextType = {
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
 const defaultLocation: Location = {
-    pincode: '411001',
-    city: 'Pune',
-    area: {
-        Name: 'Pune City',
-        District: 'Pune',
-        State: 'Maharashtra'
-    },
-    isServiceable: true,
-    inspection_multiplier: 1,
-    repair_multiplier: 1,
+  pincode: 'Enter 6-digit Pincode',
+  city: 'Select City',
+  area: {
+    Name: 'Select City',
+    District: 'Select City',
+    State: 'Select City'
+  },
+  isServiceable: true,
+  inspection_multiplier: 1,
+  repair_multiplier: 1,
 }
 
 export function LocationProvider({ children }: { children: ReactNode }) {
@@ -61,40 +61,40 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const checkServiceability = useCallback(async (city: string): Promise<ServiceableCity> => {
     if (!city) return null;
     try {
-        const { data: serviceableCity, error } = await supabase
-            .from("serviceable_cities")
-            .select("city_name, inspection_multiplier, repair_multiplier")
-            .eq("city_name", city)
-            .eq("is_active", true)
-            .maybeSingle();
+      const { data: serviceableCity, error } = await supabase
+        .from("serviceable_cities")
+        .select("city_name, inspection_multiplier, repair_multiplier")
+        .eq("city_name", city)
+        .eq("is_active", true)
+        .maybeSingle();
 
-        if (error) {
-            console.error('Serviceability check error:', error);
-            return null;
-        }
-        return serviceableCity;
-    } catch (e) {
-        console.error("Exception during serviceability check", e);
+      if (error) {
+        console.error('Serviceability check error:', error);
         return null;
+      }
+      return serviceableCity;
+    } catch (e) {
+      console.error("Exception during serviceability check", e);
+      return null;
     }
   }, []);
 
   const updateServiceability = useCallback(async (loc: Omit<Location, 'isServiceable' | 'inspection_multiplier' | 'repair_multiplier'>) => {
     const serviceableCityData = await checkServiceability(loc.city);
     if (serviceableCityData) {
-        setLocationState({
-            ...loc,
-            isServiceable: true,
-            inspection_multiplier: serviceableCityData.inspection_multiplier,
-            repair_multiplier: serviceableCityData.repair_multiplier,
-        });
+      setLocationState({
+        ...loc,
+        isServiceable: true,
+        inspection_multiplier: serviceableCityData.inspection_multiplier,
+        repair_multiplier: serviceableCityData.repair_multiplier,
+      });
     } else {
-        setLocationState({
-            ...loc,
-            isServiceable: false,
-            inspection_multiplier: 1,
-            repair_multiplier: 1
-        });
+      setLocationState({
+        ...loc,
+        isServiceable: false,
+        inspection_multiplier: 1,
+        repair_multiplier: 1
+      });
     }
   }, [checkServiceability]);
 
