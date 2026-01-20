@@ -34,6 +34,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { User, Bell } from 'lucide-react';
 import { checkRestricted } from '@/utils/auth';
+import AppDownloadBanner from '@/components/AppDownloadBanner';
 
 
 function ServiceCardSkeleton() {
@@ -369,6 +370,8 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         <div className="mt-12 md:mt-0">
           <Testimonials t={t} />
         </div>
+
+        <AppDownloadBanner />
 
         <BecomePartner />
 
