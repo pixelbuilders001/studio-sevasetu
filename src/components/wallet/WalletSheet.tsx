@@ -173,7 +173,7 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
                                                     navigator.share({
                                                         title: 'Refer & Earn',
                                                         text: `Use my referral code ${referralCode} to get ₹50 off!`,
-                                                        url: 'https://sevasetu.com'
+                                                        url: 'https://hellofixo.com'
                                                     })
                                                 } else {
                                                     handleCopy(referralCode)

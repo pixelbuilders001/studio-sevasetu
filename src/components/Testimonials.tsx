@@ -46,7 +46,7 @@ export default function Testimonials({ t }: { t: TranslationFunc }) {
           <h2 className="text-2xl md:text-4xl font-black tracking-tight text-[#1e1b4b] mb-2">
             Loved by <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">Locals</span>
           </h2>
-          <p className="text-sm md:text-base text-indigo-600 font-bold">Join 50,000+ satisfied neighbors who trust SevaSetu</p>
+          <p className="text-sm md:text-base text-indigo-600 font-bold">Join 50,000+ satisfied neighbors who trust Hellofixo</p>
         </div>
 
         {/* Scrolling List */}

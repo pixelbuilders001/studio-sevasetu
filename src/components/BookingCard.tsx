@@ -84,9 +84,10 @@ interface BookingCardProps {
     onQuoteAction?: (quote: RepairQuote & { booking_id: string }) => void;
     onCancel?: (bookingId: string) => void;
     onShare?: (code: string) => void;
+    onDownloadInvoice?: (booking: Booking) => void;
 }
 
-export default function BookingCard({ booking, onQuoteAction, onCancel, onShare }: BookingCardProps) {
+export default function BookingCard({ booking, onQuoteAction, onCancel, onShare, onDownloadInvoice }: BookingCardProps) {
     const ServiceIcon = iconMap[booking.categories.name] || Laptop;
     const isQuotationShared = booking.status.toLowerCase() === 'quotation_shared';
     const isCodeSent = booking.status.toLowerCase() === 'code_sent';
@@ -95,7 +96,7 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare 
     const isCancelable = ['pending', 'confirmed', 'assigned'].includes(booking.status.toLowerCase());
     const isRepairCompleted = booking.status.toLowerCase() === 'repair_completed';
     const showTechnicianDetails = ['assigned', 'accepted', 'on_the_way'].includes(booking.status.toLowerCase());
-
+    console.log("ndndnd", booking);
     const [technician, setTechnician] = useState<Technician | null>(null);
 
     useEffect(() => {
@@ -297,8 +298,13 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare 
                     </div>
                 )}
 
-                {isCompleted && (
-                    <Button variant="outline" size="sm" className="w-full font-black text-xs h-10 rounded-xl bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100 transition-all">
+                {(isCompleted || isRepairCompleted) && onDownloadInvoice && (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onDownloadInvoice(booking)}
+                        className="w-full font-black text-xs h-10 rounded-xl bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100 transition-all"
+                    >
                         <Download className="mr-2 h-3.5 w-3.5" />
                         Download Invoice
                     </Button>

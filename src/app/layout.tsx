@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'SevaSetu - Trusted Local Repair',
+  title: 'Hellofixo - Trusted Local Repair',
   description: 'Trusted Local Repair for Phones & Home Appliances',
 };
 

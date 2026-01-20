@@ -954,7 +954,7 @@ export async function getBookingHistory() {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError || !session) return [];
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking?select=id,order_id,status,technician_id,created_at,media_url,completion_code,final_amount_to_be_paid,final_amount_paid,payment_method,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking?select=id,order_id,status,technician_id,created_at,media_url,completion_code,final_amount_to_be_paid,user_name,full_address,final_amount_paid,payment_method,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,

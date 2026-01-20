@@ -16,6 +16,8 @@ import QuotationModal from '@/components/QuotationModal';
 import { CancelBookingModal } from '@/components/CancelBookingModal';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
+import InvoicePreviewSheet from '@/components/InvoicePreviewSheet';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 
 export function BookingHistoryModal({
     isOpen,
@@ -27,6 +29,7 @@ export function BookingHistoryModal({
     const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedQuote, setSelectedQuote] = useState<(RepairQuote & { booking_id: string }) | null>(null);
+    const [selectedInvoiceBooking, setSelectedInvoiceBooking] = useState<Booking | null>(null);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [bookingToCancelId, setBookingToCancelId] = useState<string | null>(null);
     const { toast } = useToast();
@@ -131,6 +134,7 @@ export function BookingHistoryModal({
                                             onQuoteAction={(quote) => setSelectedQuote(quote)}
                                             onCancel={(id) => openCancelModal(id)}
                                             onShare={handleShare}
+                                            onDownloadInvoice={(b) => setSelectedInvoiceBooking(b)}
                                         />
                                     ))}
                                 </div>
@@ -154,6 +158,13 @@ export function BookingHistoryModal({
                 bookingId={bookingToCancelId}
                 onSuccess={handleCancellationSuccess}
             />
+            {selectedInvoiceBooking && (
+                <Sheet open={!!selectedInvoiceBooking} onOpenChange={() => setSelectedInvoiceBooking(null)}>
+                    <SheetContent side="bottom" className="h-[90vh] flex flex-col rounded-t-3xl p-0">
+                        <InvoicePreviewSheet booking={selectedInvoiceBooking} />
+                    </SheetContent>
+                </Sheet>
+            )}
         </>
     );
 }

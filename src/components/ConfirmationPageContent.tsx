@@ -76,8 +76,8 @@ export default function ConfirmationPageContent() {
   }
 
   const whatsappMessage = displayReferralCode
-    ? `Hey! I booked a service from SEVASETU. Use my referral code ${displayReferralCode} and get ₹100 off. Book now 👉 https://sevasetu.com`
-    : `I just booked a service with SevaSetu! My Booking ID is ${bookingId}.`;
+    ? `Hey! I booked a service from HELLOFIXO. Use my referral code ${displayReferralCode} and get ₹100 off. Book now 👉 https://hellofixo.com`
+    : `I just booked a service with Hellofixo! My Booking ID is ${bookingId}.`;
 
   return (
     <div className="max-w-md mx-auto space-y-6 pb-12">

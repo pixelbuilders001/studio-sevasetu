@@ -34,7 +34,7 @@ export default function TrustIndicators({ t }: { t: TranslationFunc }) {
         {/* Header Section */}
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-4xl font-black tracking-tight text-[#1e1b4b] mb-2">
-            Why Choose <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">SevaSetu?</span>
+            Why Choose <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">Hellofixo?</span>
           </h2>
           <p className="text-sm md:text-base text-indigo-600 font-bold">Transparency and trust in every service</p>
         </div>
