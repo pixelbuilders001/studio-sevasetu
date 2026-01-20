@@ -32,6 +32,7 @@ import UserAuthSheet from '@/components/UserAuthSheet';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { User, Bell } from 'lucide-react';
+import { checkRestricted } from '@/utils/auth';
 
 
 function ServiceCardSkeleton() {
@@ -110,17 +111,35 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  console.log("session", session, sheetOpen);
+
 
   const supabase = createSupabaseBrowserClient();
 
   useEffect(() => {
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
+      if (data.session?.user) {
+        const isRestricted = await checkRestricted(supabase, data.session.user.id);
+        if (isRestricted) {
+          setSession(null);
+          return;
+        }
+      }
       setSession(data.session);
     };
     getSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const isRestricted = await checkRestricted(supabase, session.user.id);
+        if (isRestricted) {
+          setSession(null);
+          // Do NOT close sheet
+          return;
+        }
+      }
+
       setSession(session);
       if (session && sheetOpen) {
         setSheetOpen(false);

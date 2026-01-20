@@ -6,8 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { createSupabaseBrowserClient } from '@/lib/supabaseClient'; // Updated import
+import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
+import { checkRestricted } from '@/utils/auth';
+import { useToast } from '@/hooks/use-toast';
+import FullScreenLoader from '@/components/FullScreenLoader';
 
 const AuthHeaderLogo = ({ title, subtitle }: { title: React.ReactNode; subtitle: string }) => (
   <div className="flex flex-col items-center justify-center text-center mb-8">
@@ -34,29 +37,50 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [message, setMessage] = useState('');
 
-  const supabase = createSupabaseBrowserClient(); // New client instantiation
+  const supabase = createSupabaseBrowserClient();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      if (user) {
-        console.log('UserAuthSheet current user:', user.email);
+    const initSession = async () => {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (currentSession?.user) {
+        const isRestricted = await checkRestricted(supabase, currentSession.user.id);
+        if (isRestricted) {
+          await supabase.auth.signOut();
+          setSession(null);
+          setMessage('Invalid credentials');
+          return;
+        }
       }
+      setSession(currentSession);
     };
-    getSession();
+    initSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const isRestricted = await checkRestricted(supabase, session.user.id);
+        if (isRestricted) {
+          await supabase.auth.signOut();
+          setSession(null);
+          setMessage('Invalid credentials');
+          toast({
+            variant: "destructive",
+            title: "Access Denied",
+            description: "Invalid credentials.",
+          });
+          return;
+        }
+      }
       setSession(session);
     });
 
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [supabase.auth]);
+  }, [supabase.auth, toast]);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -82,12 +106,37 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
     e.preventDefault();
     setLoading(true);
     setMessage('');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    // 1. Attempt Sign In
+    const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password });
+
     if (error) {
       setMessage(error.message);
-    } else {
+      setLoading(false);
+      return;
+    }
+
+    if (user) {
+      // 2. Check Role
+      const isRestricted = await checkRestricted(supabase, user.id);
+
+      if (isRestricted) {
+        await supabase.auth.signOut();
+        setSession(null);
+        setMessage('Invalid credentials');
+        toast({
+          variant: "destructive",
+          title: "Access Denied",
+          description: "Invalid credentials.",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // 4. Success - Only close if role is valid
       setSheetOpen(false);
     }
+
     setLoading(false);
   };
 
@@ -108,13 +157,17 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
   };
 
   const handleLogout = async () => {
+    setLoggingOut(true);
+    await new Promise(resolve => setTimeout(resolve, 800));
     await supabase.auth.signOut();
     setSheetOpen(false);
+    setLoggingOut(false);
   };
 
   const UserAccountView = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
+        {loggingOut && <FullScreenLoader message="Logging out..." />}
         <div className="relative mb-8">
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full blur-xl opacity-30" />
           <Avatar className="w-28 h-28 border-4 border-indigo-100 shadow-2xl relative z-10">
@@ -127,8 +180,9 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
         <Button
           className="w-full max-w-xs h-14 rounded-2xl bg-red-500 text-white text-base font-black hover:bg-red-600 shadow-lg shadow-red-200 transition-all"
           onClick={handleLogout}
+          disabled={loading}
         >
-          LOGOUT
+          {loading ? 'LOGGING OUT...' : 'LOGOUT'}
         </Button>
       </div>
     );

@@ -38,6 +38,8 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 
+import FullScreenLoader from '@/components/FullScreenLoader';
+
 /* ---------------- TYPES ---------------- */
 
 interface UserProfile {
@@ -212,11 +214,12 @@ function ProfileContent() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-
+  console.log(profile);
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -253,9 +256,13 @@ function ProfileContent() {
   };
 
   const logout = async () => {
+    setLoggingOut(true);
+    // Add small delay to show loader 
+    await new Promise(resolve => setTimeout(resolve, 800));
     await supabase.auth.signOut();
     toast({ title: 'Logged out successfully' });
     router.push('/');
+    setLoggingOut(false);
   };
 
   const initials = (name: string) =>
@@ -266,6 +273,7 @@ function ProfileContent() {
       .slice(0, 2)
       .toUpperCase();
 
+  if (loggingOut) return <FullScreenLoader message="Logging out..." />;
   if (loading) return <ProfileSkeleton />;
 
   if (!session || !profile)

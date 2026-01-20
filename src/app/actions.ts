@@ -393,7 +393,7 @@ export async function getUserProfile() {
       },
       cache: 'no-store', // Ensure fresh data on every fetch
     });
-
+    console.log("response", response)
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Profile API Error:', errorData);

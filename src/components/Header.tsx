@@ -12,6 +12,7 @@ import UserAuthSheet from './UserAuthSheet';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { ProfileSheet } from '@/components/profile/ProfileSheet'; // Import the new ProfileSheet
+import { checkRestricted } from '@/utils/auth';
 
 const Logo = () => (
   <Link href="/" className="flex flex-col flex-shrink-0 group transition-all duration-300 hover:scale-105 active:scale-95">
@@ -47,20 +48,40 @@ export default function Header() {
   const [session, setSession] = useState<Session | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  console.log("sahdhsxhsh", session, sheetOpen);
 
   const supabase = createSupabaseBrowserClient();
 
   useEffect(() => {
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
+
+      if (data.session?.user) {
+        const isRestricted = await checkRestricted(supabase, data.session.user.id);
+        if (isRestricted) {
+          setSession(null);
+          setLoading(false);
+          return;
+        }
+      }
+
       setSession(data.session);
       setLoading(false);
     };
     getSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const isRestricted = await checkRestricted(supabase, session.user.id);
+        if (isRestricted) {
+          setSession(null);
+          // Do NOT close sheet
+          return;
+        }
+      }
+
       setSession(session);
-      // Close login sheet when user logs in
+      // Close login sheet only if valid user logs in
       if (session && sheetOpen) {
         setSheetOpen(false);
       }

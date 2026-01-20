@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-export default function FullScreenLoader() {
+export default function FullScreenLoader({ message = "Loading" }: { message?: string }) {
     return (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="relative flex flex-col items-center">
@@ -35,7 +35,7 @@ export default function FullScreenLoader() {
                 <div className="w-16 h-1 bg-foreground/10 rounded-full mt-[-4px] animate-pulse"></div>
 
                 <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-foreground/40 animate-pulse">
-                    Loading
+                    {message}
                 </p>
             </div>
         </div>
