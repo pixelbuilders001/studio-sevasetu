@@ -6,15 +6,37 @@ const withPWA = withPWAInit({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
   register: true,
-  skipWaiting: true,
   workboxOptions: {
+    skipWaiting: true,
+    clientsClaim: true,
     disableDevLogs: true,
     runtimeCaching: [
       // 🔐 SUPABASE — NEVER CACHE
       {
-        urlPattern: ({ url }) =>
-          url.hostname.includes('supabase.co'),
+        urlPattern: /^https:\/\/.*\.supabase\.co\/.*$/i,
         handler: 'NetworkOnly',
+      },
+      // 🏠 START URL (Fix for ReferenceError)
+      {
+        urlPattern: '/',
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'start-url',
+          plugins: [
+            {
+              cacheWillUpdate: async ({ response }) => {
+                if (response && response.type === 'opaqueredirect') {
+                  return new Response(response.body, {
+                    status: 200,
+                    statusText: 'OK',
+                    headers: response.headers,
+                  });
+                }
+                return response;
+              },
+            },
+          ],
+        },
       },
 
       // 🔐 NEXT API ROUTES — NEVER CACHE
@@ -78,8 +100,6 @@ const withPWA = withPWAInit({
         },
       },
     ]
-
-
   },
 });
 
