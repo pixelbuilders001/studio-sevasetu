@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Poppins } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -10,12 +10,19 @@ const poppins = Poppins({
   variable: '--font-poppins',
 });
 
+export const viewport: Viewport = {
+  themeColor: '#1e1b4b',
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   title: 'Hellofixo - Bihar\'s Most Trusted Doorstep Repair Service',
   description: 'Premium doorstep mobile, laptop, and appliance repairs across Bihar. Certified technicians, 60-min visits, and 30-day warranty. Book now for affordable and reliable service.',
   keywords: ['mobile repair Bihar', 'laptop repair Patna', 'AC service Bihar', 'fridge repair', 'washing machine service', 'home appliance repair', 'certified technicians', 'doorstep repair'],
   authors: [{ name: 'Hellofixo' }],
   metadataBase: new URL('https://hellofixo.in'),
+  manifest: '/manifest.json',
   alternates: {
     canonical: '/',
   },
@@ -61,6 +68,14 @@ export const metadata: Metadata = {
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Hellofixo',
+  },
+  formatDetection: {
+    telephone: false,
   },
 };
 
