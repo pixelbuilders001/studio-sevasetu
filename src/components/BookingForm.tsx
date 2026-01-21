@@ -646,7 +646,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
               <Button
                 type="submit"
                 disabled={isPending || finalPayable === null}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full px-8 shadow-lg shadow-primary/25 h-11 flex items-center gap-2 group min-w-[140px]"
+                className="bg-[#1e1b4b] hover:bg-primary text-white font-black rounded-full px-8 shadow-lg shadow-indigo-100 h-11 flex items-center gap-2 group min-w-[140px] uppercase text-xs tracking-widest transition-all"
               >
                 {isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin text-white" />

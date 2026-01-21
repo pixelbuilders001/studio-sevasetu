@@ -175,7 +175,7 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
               placeholder={t('pincodeInputPlaceholder')}
               className="flex-grow rounded-xl h-11"
             />
-            <Button onClick={handlePincodeSearch} disabled={isLoading} className="rounded-xl h-11">
+            <Button onClick={handlePincodeSearch} disabled={isLoading} className="rounded-xl h-11 bg-[#1e1b4b] hover:bg-primary text-white font-black uppercase text-xs tracking-widest transition-all">
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('searchButton')}
             </Button>
           </div>
@@ -205,9 +205,9 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
         </div>
         <DialogFooter className="flex-row gap-2">
           <DialogClose asChild>
-            <Button type="button" variant="outline" className="flex-1 rounded-full h-11">{t('cancelButton')}</Button>
+            <Button type="button" variant="outline" className="flex-1 rounded-full h-11 border-2 font-black uppercase text-[10px] tracking-widest hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all">{t('cancelButton')}</Button>
           </DialogClose>
-          <Button onClick={handleLocationConfirm} disabled={!selectedArea || !currentIsServiceable} className="flex-1 rounded-full h-11 bg-primary">
+          <Button onClick={handleLocationConfirm} disabled={!selectedArea || !currentIsServiceable} className="flex-1 rounded-full h-11 bg-[#1e1b4b] hover:bg-primary text-white font-black uppercase text-[10px] tracking-widest transition-all">
             {t('confirmLocationButton')}
           </Button>
         </DialogFooter>

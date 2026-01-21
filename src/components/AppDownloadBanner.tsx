@@ -7,7 +7,7 @@ import { Smartphone, Apple, PlayCircle, Sparkles, Zap, BellRing } from 'lucide-r
 
 export default function AppDownloadBanner() {
     return (
-        <section className="container mx-auto px-4 md:px-8 mt-12 md:mt-24">
+        <section className="container mx-auto mb-12 px-4 md:px-8 mt-12 md:mt-24">
             <div className="relative overflow-hidden rounded-[2.5rem] md:rounded-[3.5rem] bg-[#1e1b4b] text-white p-6 md:py-8 px-12 group">
                 {/* Decorative Elements */}
                 <div className="absolute top-0 right-0 w-72 h-72 bg-primary/20 rounded-full blur-[100px] -mr-36 -mt-36 group-hover:bg-primary/30 transition-colors duration-700" />

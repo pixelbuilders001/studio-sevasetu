@@ -2,6 +2,7 @@
 'use client';
 import { useTranslation } from '@/hooks/useTranslation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 export default function Footer() {
@@ -17,7 +18,15 @@ export default function Footer() {
             <div className="container mx-auto px-4 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     <div>
-                        <h3 className="text-xl font-bold font-headline text-primary mb-2">{t('appName')}</h3>
+                        <Link href="/" className="inline-block mb-4">
+                            <Image
+                                src="/logo-image.png"
+                                alt="Hellofixo"
+                                width={120}
+                                height={38}
+                                className="object-contain h-10 w-auto"
+                            />
+                        </Link>
                         <p className="text-muted-foreground text-sm">{t('footerTagline')}</p>
                     </div>
                     <div>

@@ -185,14 +185,14 @@ export function DesktopBookingForm({
             return;
         }
         try {
-            const { valid, message, discount } = await verifyReferralCodeAction(code);
-            if (valid) {
+            const response = await verifyReferralCodeAction(code);
+            if (response && response.valid) {
                 setReferralStatus('success');
-                setReferralMessage(message || `REFERRAL APPLIED!`);
-                setDiscount(discount || 0);
+                setReferralMessage(response.message || `REFERRAL APPLIED!`);
+                setDiscount(response.discount || 0);
             } else {
                 setReferralStatus('error');
-                setReferralMessage(message || 'Invalid referral code.');
+                setReferralMessage(response?.message || 'Invalid referral code.');
                 setDiscount(0);
             }
         } catch (e) {
@@ -511,7 +511,7 @@ export function DesktopBookingForm({
                                     <div key={p.id} className="flex items-start justify-between text-xs py-1">
                                         <span className="text-slate-600 flex items-center gap-2">
                                             <div className="w-1 h-1 rounded-full bg-slate-300" />
-                                            {p.title}
+                                            {p.name}
                                         </span>
                                         <span className="font-semibold text-slate-900">₹{(p.base_min_fee * location.repair_multiplier).toFixed(0)}</span>
                                     </div>
@@ -560,7 +560,7 @@ export function DesktopBookingForm({
                             <Button
                                 type="submit"
                                 disabled={isPending}
-                                className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] group flex items-center justify-center gap-3"
+                                className="w-full h-14 bg-[#1e1b4b] hover:bg-primary text-white font-black rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] group flex items-center justify-center gap-3 uppercase text-xs tracking-widest"
                             >
                                 {isPending ? (
                                     <Loader2 className="w-5 h-5 animate-spin" />

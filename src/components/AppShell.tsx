@@ -10,6 +10,7 @@ import { LocationProvider } from '@/context/LocationContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import SplashScreen from '@/components/SplashScreen';
 import { DesktopNavbar } from '@/components/DesktopNavbar';
+import OfflineDetector from '@/components/OfflineDetector';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -19,6 +20,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <LanguageProvider>
       <LocationProvider>
         <SplashScreen />
+        <OfflineDetector />
         {/* Desktop Navigation */}
         <DesktopNavbar />
 

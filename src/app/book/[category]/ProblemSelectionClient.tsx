@@ -232,7 +232,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                 <Button
                   onClick={handleBookRepair}
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full px-6 shadow-lg shadow-primary/25 h-10 flex items-center gap-2 group"
+                  className="bg-[#1e1b4b] hover:bg-primary text-white font-black rounded-full px-8 shadow-lg shadow-indigo-200 h-11 flex items-center gap-2 group transition-all uppercase text-xs tracking-widest"
                 >
                   <span>Continue</span>
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />

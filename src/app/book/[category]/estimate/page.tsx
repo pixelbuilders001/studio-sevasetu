@@ -285,7 +285,7 @@ export default function PriceEstimationPage() {
             <Button
               onClick={handleConfirmVisit}
               size="lg"
-              className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm tracking-wide rounded-2xl shadow-xl shadow-indigo-200 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full h-14 bg-[#1e1b4b] hover:bg-primary text-white font-black text-xs tracking-widest rounded-2xl shadow-xl shadow-indigo-100 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] uppercase"
             >
               CONFIRM BOOKING
               <ArrowRight className="w-5 h-5" />

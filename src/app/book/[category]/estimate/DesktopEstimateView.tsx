@@ -195,7 +195,7 @@ export default function DesktopEstimateView({
 
                                     <Button
                                         onClick={handleConfirmVisit}
-                                        className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm tracking-wide shadow-md shadow-primary/10 transition-all active:scale-[0.98]"
+                                        className="w-full h-12 rounded-xl bg-[#1e1b4b] hover:bg-primary text-white font-black text-xs tracking-widest shadow-lg shadow-indigo-100 transition-all active:scale-[0.98] uppercase"
                                     >
                                         CONFIRM BOOKING
                                         <ArrowRight className="ml-2 w-4 h-4" />
