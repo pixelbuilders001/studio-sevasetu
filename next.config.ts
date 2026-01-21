@@ -10,129 +10,76 @@ const withPWA = withPWAInit({
   workboxOptions: {
     disableDevLogs: true,
     runtimeCaching: [
+      // 🔐 SUPABASE — NEVER CACHE
       {
-        urlPattern: /^https:\/\/upoafhtidiwsihwijwex\.supabase\.co\/.*$/,
+        urlPattern: ({ url }) =>
+          url.hostname.includes('supabase.co'),
         handler: 'NetworkOnly',
-        options: {
-          cacheName: 'supabase-api',
-          backgroundSync: {
-            name: 'supabase-queue',
-            options: {
-              maxRetentionTime: 24 * 60, // Retry for up to 24 hours
-            },
-          },
-        },
       },
+
+      // 🔐 NEXT API ROUTES — NEVER CACHE
       {
         urlPattern: /\/api\/.*$/i,
+        handler: 'NetworkOnly',
+      },
+
+      // ✅ NEXT PAGES / NAVIGATION
+      {
+        urlPattern: ({ request }) => request.mode === 'navigate',
         handler: 'NetworkFirst',
         options: {
-          cacheName: 'apis',
-          expiration: {
-            maxEntries: 16,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
-          networkTimeoutSeconds: 10, // Fallback to cache if network takes longer than 10 seconds
+          cacheName: 'pages',
+          networkTimeoutSeconds: 5,
         },
       },
+
+      // ✅ STATIC IMAGES
       {
         urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
         handler: 'StaleWhileRevalidate',
         options: {
-          cacheName: 'static-image-assets',
-          expiration: {
-            maxEntries: 64,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
+          cacheName: 'static-images',
         },
       },
+
+      // ✅ NEXT IMAGE OPTIMIZATION
       {
         urlPattern: /\/_next\/image\?url=.*$/i,
         handler: 'StaleWhileRevalidate',
         options: {
-          cacheName: 'next-image',
-          expiration: {
-            maxEntries: 64,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
+          cacheName: 'next-images',
         },
       },
-      {
-        urlPattern: /\.(?:mp3|wav|ogg)$/i,
-        handler: 'CacheFirst',
-        options: {
-          rangeRequests: true,
-          cacheName: 'static-audio-assets',
-          expiration: {
-            maxEntries: 32,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
-        },
-      },
+
+      // ✅ JS FILES
       {
         urlPattern: /\.(?:js)$/i,
         handler: 'StaleWhileRevalidate',
         options: {
-          cacheName: 'static-js-assets',
-          expiration: {
-            maxEntries: 32,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
+          cacheName: 'static-js',
         },
       },
+
+      // ✅ CSS FILES
       {
-        urlPattern: /\.(?:css|less)$/i,
+        urlPattern: /\.(?:css)$/i,
         handler: 'StaleWhileRevalidate',
         options: {
-          cacheName: 'static-style-assets',
-          expiration: {
-            maxEntries: 32,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
+          cacheName: 'static-css',
         },
       },
+
+      // ✅ NEXT DATA
       {
         urlPattern: /\/_next\/data\/.*$/i,
         handler: 'NetworkFirst',
         options: {
           cacheName: 'next-data',
-          expiration: {
-            maxEntries: 32,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
         },
       },
-      {
-        urlPattern: /\.(?:json|xml|csv)$/i,
-        handler: 'NetworkFirst',
-        options: {
-          cacheName: 'static-data-assets',
-          expiration: {
-            maxEntries: 32,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
-        },
-      },
-      {
-        urlPattern: ({ url }) => {
-          const isSameOrigin = self.origin === url.origin;
-          if (!isSameOrigin) return false;
-          const pathname = url.pathname;
-          // Exclude /api/auth/callback/* to prevent caching during auth flow
-          if (pathname.startsWith('/api/auth/')) return false;
-          return true;
-        },
-        handler: 'NetworkFirst',
-        options: {
-          cacheName: 'others',
-          expiration: {
-            maxEntries: 32,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
-          },
-          networkTimeoutSeconds: 10,
-        },
-      },
-    ],
+    ]
+
+
   },
 });
 

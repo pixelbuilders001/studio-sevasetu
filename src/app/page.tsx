@@ -113,7 +113,6 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  console.log("session", session, sheetOpen);
 
 
   const supabase = createSupabaseBrowserClient();
