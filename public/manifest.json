@@ -29,5 +29,22 @@
             "sizes": "180x180",
             "type": "image/png"
         }
-    ]
+    ],
+    "screenshots": [
+        {
+            "src": "/icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Hellofixo Home"
+        },
+        {
+            "src": "/icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Hellofixo Mobile"
+        }
+    ],
+    "id": "/"
 }

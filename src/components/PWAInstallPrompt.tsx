@@ -14,7 +14,10 @@ export default function PWAInstallPrompt() {
     useEffect(() => {
         // 1. Check if already installed
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
-        if (isStandalone) return;
+        if (isStandalone) {
+            console.log('App is in standalone mode');
+            return;
+        }
 
         // 2. Detect platform
         const userAgent = window.navigator.userAgent.toLowerCase();
@@ -26,10 +29,16 @@ export default function PWAInstallPrompt() {
 
         // 3. Listen for beforeinstallprompt (Android/Chrome)
         const handleBeforeInstallPrompt = (e: Event) => {
+            console.log('beforeinstallprompt event fired');
             e.preventDefault();
             setDeferredPrompt(e);
-            // Delay showing the prompt slightly for better UX
-            setTimeout(() => setShowPrompt(true), 3000);
+
+            // Check if user has already dismissed it this session
+            const isDismissed = sessionStorage.getItem('pwa-prompt-dismissed');
+            if (!isDismissed) {
+                // Delay showing the prompt slightly for better UX
+                setTimeout(() => setShowPrompt(true), 3000);
+            }
         };
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
