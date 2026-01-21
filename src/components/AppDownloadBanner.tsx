@@ -8,7 +8,7 @@ import { Smartphone, Apple, PlayCircle, Sparkles, Zap, BellRing } from 'lucide-r
 export default function AppDownloadBanner() {
     return (
         <section className="container mx-auto px-4 md:px-8 mt-12 md:mt-24">
-            <div className="relative overflow-hidden rounded-[2.5rem] md:rounded-[3.5rem] bg-[#1e1b4b] text-white p-6 md:p-14 group">
+            <div className="relative overflow-hidden rounded-[2.5rem] md:rounded-[3.5rem] bg-[#1e1b4b] text-white p-6 md:py-8 px-12 group">
                 {/* Decorative Elements */}
                 <div className="absolute top-0 right-0 w-72 h-72 bg-primary/20 rounded-full blur-[100px] -mr-36 -mt-36 group-hover:bg-primary/30 transition-colors duration-700" />
                 <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-500/10 rounded-full blur-[100px] -ml-36 -mb-36" />
@@ -80,7 +80,7 @@ export default function AppDownloadBanner() {
                         transition={{ delay: 0.4, type: "spring", damping: 15 }}
                         className="relative w-full max-w-[200px] md:max-w-[240px]"
                     >
-                        <div className="relative aspect-[9/19] rounded-[2.5rem] border-[6px] border-white/10 shadow-2xl overflow-hidden bg-slate-900 group-hover:border-white/20 transition-colors">
+                        <div className="relative aspect-[10/19] rounded-[2.5rem] border-[6px] border-white/10 shadow-2xl overflow-hidden bg-slate-900 group-hover:border-white/20 transition-colors">
                             {/* App Content: Hero Image/Video */}
                             <div className="absolute inset-0 z-0">
                                 <Image

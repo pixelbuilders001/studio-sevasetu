@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import { HellofixoLogo } from '@/components/HellofixoLogo';
 import LocationSelector from '@/components/LocationSelector';
 import { Button } from '@/components/ui/button';
@@ -74,9 +75,14 @@ export function DesktopNavbar() {
             <div className="relative z-[60] flex items-center gap-10 px-8 py-3 bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] rounded-full transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] hover:bg-white/80">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
-                    <span className="text-xl font-black tracking-tighter text-[#1e1b4b]">
-                        HELLO<span className="text-primary">FIXO</span>
-                    </span>
+                    <Image
+                        src="/logo-image.png"
+                        alt="Hellofixo"
+                        width={90}
+                        height={28}
+                        className="object-contain h-8 w-auto"
+                        priority
+                    />
                 </Link>
 
                 {/* Navigation */}
