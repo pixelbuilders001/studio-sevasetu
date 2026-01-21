@@ -131,7 +131,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
     };
     getSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         const isRestricted = await checkRestricted(supabase, session.user.id);
         if (isRestricted) {
