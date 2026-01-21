@@ -80,7 +80,7 @@ export default function AppDownloadBanner() {
                         transition={{ delay: 0.4, type: "spring", damping: 15 }}
                         className="relative w-full max-w-[200px] md:max-w-[240px]"
                     >
-                        <div className="relative aspect-[10/19] rounded-[2.5rem] border-[6px] border-white/10 shadow-2xl overflow-hidden bg-slate-900 group-hover:border-white/20 transition-colors">
+                        <div className="relative aspect-[9/16] rounded-[2.5rem] border-[6px] border-white/10 shadow-2xl overflow-hidden bg-slate-900 group-hover:border-white/20 transition-colors">
                             {/* App Content: Hero Image/Video */}
                             <div className="absolute inset-0 z-0">
                                 <Image
