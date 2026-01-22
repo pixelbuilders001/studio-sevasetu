@@ -101,6 +101,11 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     'https://6000-firebase-studio-1767068471018.cluster-ulqnojp5endvgve6krhe7klaws.cloudworkstations.dev',
   ],
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['http://localhost:9002', 'https://rnbkwzl7-9002.inc1.devtunnels.ms'],
+    },
+  },
 };
 
 const withSerwist = require("@serwist/next").default({

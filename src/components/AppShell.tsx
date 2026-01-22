@@ -12,6 +12,7 @@ import SplashScreen from '@/components/SplashScreen';
 import { DesktopNavbar } from '@/components/DesktopNavbar';
 import OfflineDetector from '@/components/OfflineDetector';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+import PWASessionRestore from '@/components/PWASessionRestore';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,6 +21,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <LanguageProvider>
       <LocationProvider>
+        <PWASessionRestore />
         <SplashScreen />
         <OfflineDetector />
         <PWAInstallPrompt />
