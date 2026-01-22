@@ -1,107 +1,4 @@
-
 import type { NextConfig } from 'next';
-import withPWAInit from "@ducanh2912/next-pwa";
-
-const withPWA = withPWAInit({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
-  register: true,
-  workboxOptions: {
-    skipWaiting: true,
-    clientsClaim: true,
-    disableDevLogs: true,
-    runtimeCaching: [
-      // 🔐 SUPABASE — NEVER CACHE
-      {
-        urlPattern: /^https:\/\/.*\.supabase\.co\/.*$/i,
-        handler: 'NetworkOnly',
-      },
-      // 🏠 START URL (Fix for ReferenceError)
-      {
-        urlPattern: '/',
-        handler: 'NetworkFirst',
-        options: {
-          cacheName: 'start-url',
-          plugins: [
-            {
-              cacheWillUpdate: async ({ response }) => {
-                if (response && response.type === 'opaqueredirect') {
-                  return new Response(response.body, {
-                    status: 200,
-                    statusText: 'OK',
-                    headers: response.headers,
-                  });
-                }
-                return response;
-              },
-            },
-          ],
-        },
-      },
-
-      // 🔐 NEXT API ROUTES — NEVER CACHE
-      {
-        urlPattern: /\/api\/.*$/i,
-        handler: 'NetworkOnly',
-      },
-
-      // ✅ NEXT PAGES / NAVIGATION
-      {
-        urlPattern: ({ request }) => request.mode === 'navigate',
-        handler: 'NetworkFirst',
-        options: {
-          cacheName: 'pages',
-          networkTimeoutSeconds: 5,
-        },
-      },
-
-      // ✅ STATIC IMAGES
-      {
-        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
-        handler: 'StaleWhileRevalidate',
-        options: {
-          cacheName: 'static-images',
-        },
-      },
-
-      // ✅ NEXT IMAGE OPTIMIZATION
-      {
-        urlPattern: /\/_next\/image\?url=.*$/i,
-        handler: 'StaleWhileRevalidate',
-        options: {
-          cacheName: 'next-images',
-        },
-      },
-
-      // ✅ JS FILES
-      {
-        urlPattern: /\.(?:js)$/i,
-        handler: 'StaleWhileRevalidate',
-        options: {
-          cacheName: 'static-js',
-        },
-      },
-
-      // ✅ CSS FILES
-      {
-        urlPattern: /\.(?:css)$/i,
-        handler: 'StaleWhileRevalidate',
-        options: {
-          cacheName: 'static-css',
-        },
-      },
-
-      // ✅ NEXT DATA
-      {
-        urlPattern: /\/_next\/data\/.*$/i,
-        handler: 'NetworkFirst',
-        options: {
-          cacheName: 'next-data',
-        },
-      },
-    ]
-  },
-});
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -199,6 +96,22 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  // CAUTION: This is an experimental feature.
+  // Note that the cloud IDE domains are temporary and will change.
+  allowedDevOrigins: [
+    'https://6000-firebase-studio-1767068471018.cluster-ulqnojp5endvgve6krhe7klaws.cloudworkstations.dev',
+  ],
 };
 
-export default withPWA(nextConfig);
+const withSerwist = require("@serwist/next").default({
+  swSrc: "src/app/sw.ts",
+  swDest: "public/sw.js",
+  disable: process.env.NODE_ENV === "development",
+  reloadOnOnline: true,
+  // User requested no precaching. 
+  // Serwist might still look for a manifest, but we can control the strategy in sw.ts
+});
+
+export default withSerwist(nextConfig);
+
+
