@@ -5,6 +5,7 @@
     "start_url": "/",
     "scope": "/",
     "display": "standalone",
+    "orientation": "any",
     "background_color": "#ffffff",
     "theme_color": "#1e1b4b",
     "icons": [
@@ -49,5 +50,6 @@
             "label": "Hellofixo Mobile"
         }
     ],
-    "id": "/"
+    "id": "/",
+    "prefer_related_applications": false
 }
