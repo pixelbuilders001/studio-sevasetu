@@ -41,8 +41,8 @@ export default function Footer() {
                     <div>
                         <h4 className="font-semibold mb-3">{t('footerContactUs')}</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><a href="mailto:support@hellofixo.com" className="hover:text-primary">support@hellofixo.com</a></li>
-                            <li><a href="tel:+911234567890" className="hover:text-primary">+91 12345 67890</a></li>
+                            <li><a href="mailto:hellofixo.services@gmail.com" className="hover:text-primary">hellofixo.support@gmail.com</a></li>
+                            <li><a href="tel:+9661313766" className="hover:text-primary">+91 9661313766</a></li>
                         </ul>
                     </div>
                     <div>

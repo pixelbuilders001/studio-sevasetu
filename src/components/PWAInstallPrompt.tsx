@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 export default function PWAInstallPrompt() {
     const [showPrompt, setShowPrompt] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-    const [platform, setPlatform] = useState<'android' | 'ios' | 'desktop' | 'other'>('other');
+    const [platform, setPlatform] = useState<'android' | 'ios'  | 'other'>('other');
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -64,21 +64,21 @@ export default function PWAInstallPrompt() {
         }
 
         // 6. For desktop browsers that support PWA but might not fire beforeinstallprompt immediately
-        if (platform === 'desktop' && !deferredPrompt) {
-            // Check if PWA is installable (has manifest and service worker)
-            const checkInstallable = () => {
-                if ('serviceWorker' in navigator && window.matchMedia('(display-mode: browser)').matches) {
-                    setTimeout(() => {
-                        const isDismissed = sessionStorage.getItem('pwa-prompt-dismissed');
-                        if (!isDismissed && !deferredPrompt) {
-                            // Show prompt even without beforeinstallprompt for desktop
-                            setShowPrompt(true);
-                        }
-                    }, 3000);
-                }
-            };
-            checkInstallable();
-        }
+        // if (platform === 'desktop' && !deferredPrompt) {
+        //     // Check if PWA is installable (has manifest and service worker)
+        //     const checkInstallable = () => {
+        //         if ('serviceWorker' in navigator && window.matchMedia('(display-mode: browser)').matches) {
+        //             setTimeout(() => {
+        //                 const isDismissed = sessionStorage.getItem('pwa-prompt-dismissed');
+        //                 if (!isDismissed && !deferredPrompt) {
+        //                     // Show prompt even without beforeinstallprompt for desktop
+        //                     setShowPrompt(true);
+        //                 }
+        //             }, 3000);
+        //         }
+        //     };
+        //     checkInstallable();
+        // }
 
         const handleResize = () => {
             setIsMobile(checkMobile());
@@ -101,13 +101,7 @@ export default function PWAInstallPrompt() {
                 setShowPrompt(false);
             }
             setDeferredPrompt(null);
-        } else if (platform === 'desktop') {
-            // For desktop, guide user to browser's install option
-            // Chrome/Edge: Click the install icon in address bar
-            // Or show instructions
-            setShowPrompt(false);
-            sessionStorage.setItem('pwa-prompt-dismissed', 'true');
-        }
+        } 
     };
 
     const handleDismiss = () => {
@@ -146,11 +140,9 @@ export default function PWAInstallPrompt() {
 
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 md:w-14 md:h-14 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                            {platform === 'desktop' ? (
-                                <Monitor className="w-6 h-6 md:w-7 md:h-7 text-primary" />
-                            ) : (
+                        
                                 <Smartphone className="w-6 h-6 md:w-7 md:h-7 text-primary" />
-                            )}
+                            
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -160,14 +152,13 @@ export default function PWAInstallPrompt() {
                             <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 font-medium leading-tight mt-0.5">
                                 {platform === 'ios'
                                     ? "Fast access from your home screen"
-                                    : platform === 'desktop'
-                                    ? "Install for faster access and offline support"
-                                    : "Faster bookings & real-time updates"
+                                    : 
+                                     "Faster bookings & real-time updates"
                                 }
                             </p>
                         </div>
 
-                        {(platform === 'android' || platform === 'desktop') && deferredPrompt ? (
+                        {(platform === 'android') && deferredPrompt ? (
                             <Button
                                 onClick={handleInstallClick}
                                 size="sm"
