@@ -23,16 +23,44 @@ export async function generateMetadata(
   return {
     title,
     description,
+    keywords: [
+      `${category.name} repair`,
+      `${category.name} service Bihar`,
+      `${category.name} repair near me`,
+      `doorstep ${category.name} repair`,
+      `professional ${category.name} service`,
+    ],
     openGraph: {
+      type: 'website',
       title,
       description,
-      images: [category.image.imageUrl],
+      url: `https://hellofixo.in/book/${categorySlug}`,
+      siteName: 'Hellofixo',
+      images: [
+        {
+          url: category.image.imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${category.name} Repair Service - Hellofixo`,
+        },
+        {
+          url: '/logo-image.png',
+          width: 1200,
+          height: 630,
+          alt: 'Hellofixo - Doorstep Repair Service',
+        },
+      ],
+      locale: 'en_IN',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
       images: [category.image.imageUrl],
+      creator: '@hellofixo',
+    },
+    alternates: {
+      canonical: `/book/${categorySlug}`,
     },
   };
 }
