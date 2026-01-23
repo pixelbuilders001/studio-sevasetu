@@ -33,9 +33,10 @@ export default function PWAInstallPrompt() {
             setPlatform('ios');
         } else if (/android/.test(userAgent)) {
             setPlatform('android');
-        } else if (/chrome|edge|opera|firefox|safari/.test(userAgent)) {
+        }
+        else if (/chrome|edge|opera|firefox|safari/.test(userAgent)) {
             // Desktop browsers that support PWA
-            setPlatform('desktop');
+            setPlatform('other');
         }
 
         // 4. Listen for beforeinstallprompt (works on Chrome, Edge, Opera, etc.)
@@ -175,16 +176,7 @@ export default function PWAInstallPrompt() {
                                 <Download className="w-3 h-3 md:w-4 md:h-4 mr-1.5" />
                                 Install
                             </Button>
-                        ) : platform === 'desktop' && !deferredPrompt ? (
-                            <Button
-                                onClick={handleDismiss}
-                                size="sm"
-                                className="bg-primary hover:bg-primary/90 text-white rounded-xl px-4 md:px-5 py-0 h-9 md:h-10 text-[10px] md:text-xs font-black uppercase tracking-wider shadow-lg shadow-primary/20"
-                            >
-                                <PlusSquare className="w-3 h-3 md:w-4 md:h-4 mr-1.5" />
-                                Got it
-                            </Button>
-                        ) : platform === 'ios' ? (
+                        ): platform === 'ios' ? (
                             <div className="flex items-center gap-1.5 bg-indigo-50 dark:bg-slate-800 px-3 py-2 rounded-xl border border-indigo-100 dark:border-slate-700">
                                 <Share className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                                 <span className="text-[9px] md:text-[10px] font-black text-indigo-900 dark:text-indigo-200 uppercase tracking-tighter">Tap Share & Add to Home</span>
