@@ -5,7 +5,7 @@ import { useRouter, notFound } from 'next/navigation';
 import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useToast } from '@/hooks/use-toast';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight, ArrowLeft, HelpCircle, Camera, Plus, Star, MapPin, PhoneCall } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,12 +19,31 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
   const { t, getTranslatedCategory } = useTranslation();
   const router = useRouter();
   const { toast } = useToast();
-  const { media, setMedia, setSecondaryMedia } = useBooking();
+  const { media, secondaryMedia, setMedia, setSecondaryMedia } = useBooking();
 
   const [selectedProblems, setSelectedProblems] = useState<Problem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([null, null]);
   const photoInputsRef = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    // Sync previews with context media on mount
+    const previews = [null, null] as (string | null)[];
+    if (media) {
+      previews[0] = URL.createObjectURL(media);
+    }
+    if (secondaryMedia) {
+      previews[1] = URL.createObjectURL(secondaryMedia);
+    }
+    setPhotoPreviews(previews);
+
+    return () => {
+      // Clean up previews on unmount
+      previews.forEach(p => {
+        if (p) URL.revokeObjectURL(p);
+      });
+    };
+  }, [media, secondaryMedia]);
 
   if (!category) {
     notFound();

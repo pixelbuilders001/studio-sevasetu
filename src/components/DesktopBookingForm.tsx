@@ -62,7 +62,7 @@ export function DesktopBookingForm({
     const { location } = useLocation();
     const { toast } = useToast();
     const router = useRouter();
-    const { media, secondaryMedia } = useBooking();
+    const { media, secondaryMedia, clearMedia } = useBooking();
 
     const [showRepairInfo, setShowRepairInfo] = useState(false);
 
@@ -139,6 +139,7 @@ export function DesktopBookingForm({
             });
         }
         if (state?.bookingId) {
+            clearMedia();
             router.push(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode || ''}`);
         }
     }, [state, t, toast, router]);

@@ -46,7 +46,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [useWallet, setUseWallet] = useState(false);
 
-  const { media, secondaryMedia } = useBooking();
+  const { media, secondaryMedia, clearMedia } = useBooking();
 
   // grandTotal includes GST
   const initialPayable = Math.max(grandTotal - discount, 0);
@@ -114,6 +114,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
       });
     }
     if (state?.bookingId) {
+      clearMedia();
       router.push(`/confirmation?bookingId=${state.bookingId}&referralCode=${state.referralCode || ''}`);
     }
   }, [state, t, toast, router]);
