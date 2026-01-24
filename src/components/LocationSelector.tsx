@@ -63,12 +63,14 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
       if (data && data[0].Status === 'Success') {
         const postOffices = data[0].PostOffice;
         const district = postOffices[0]?.District;
+        console.log("District:", district);
 
         if (!district) {
           throw new Error("Could not determine district from pincode.");
         }
 
         const serviceableCityData = await checkServiceability(district);
+
 
         if (serviceableCityData) {
           setPostalData(postOffices);

@@ -8,6 +8,7 @@ import BottomNavBar from '@/components/BottomNavBar';
 import { Toaster } from '@/components/ui/toaster';
 import { LocationProvider } from '@/context/LocationContext';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { BookingProvider } from '@/context/BookingContext';
 import SplashScreen from '@/components/SplashScreen';
 import { DesktopNavbar } from '@/components/DesktopNavbar';
 import OfflineDetector from '@/components/OfflineDetector';
@@ -21,17 +22,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <LanguageProvider>
       <LocationProvider>
-        <PWASessionRestore />
-        <SplashScreen />
-        <OfflineDetector />
-        <PWAInstallPrompt />
-        {/* Desktop Navigation */}
-        <DesktopNavbar />
+        <BookingProvider>
+          <PWASessionRestore />
+          <SplashScreen />
+          <OfflineDetector />
+          <PWAInstallPrompt />
+          {/* Desktop Navigation */}
+          <DesktopNavbar />
 
-        {pathname !== '/' && <Header />}
-        <main className={`flex-grow ${pathname === '/' ? 'pt-0 md:pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
-        <Footer />
-        {showBottomNav && <BottomNavBar />}
+          {pathname !== '/' && <Header />}
+          <main className={`flex-grow ${pathname === '/' ? 'pt-0 md:pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
+          <Footer />
+          {showBottomNav && <BottomNavBar />}
+        </BookingProvider>
       </LocationProvider>
     </LanguageProvider>
   );

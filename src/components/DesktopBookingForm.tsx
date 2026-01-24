@@ -11,11 +11,12 @@ import {
     Camera, Clock, ArrowRight, Flag, CheckCircle, IndianRupee,
     Tag, Gift, X, Calendar as CalendarIcon, Wallet, ChevronRight,
     Plus, ImageIcon,
-    ShieldCheck
+    ShieldCheck, Info
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
+import { useBooking } from '@/context/BookingContext';
 import {
     bookService, verifyReferralCode as verifyReferralCodeAction,
     saveAddress, getSavedAddresses, getWalletBalance, getUserProfile
@@ -41,6 +42,8 @@ interface DesktopBookingFormProps {
     problemIds: string;
     inspectionFee: number;
     totalEstimatedPrice: number;
+    gstAmount: number;
+    grandTotal: number;
     categoryName: string;
     selectedProblems: Problem[];
 }
@@ -50,6 +53,8 @@ export function DesktopBookingForm({
     problemIds,
     inspectionFee,
     totalEstimatedPrice,
+    gstAmount,
+    grandTotal,
     categoryName,
     selectedProblems
 }: DesktopBookingFormProps) {
@@ -57,6 +62,9 @@ export function DesktopBookingForm({
     const { location } = useLocation();
     const { toast } = useToast();
     const router = useRouter();
+    const { media, secondaryMedia } = useBooking();
+
+    const [showRepairInfo, setShowRepairInfo] = useState(false);
 
     const [referral, setReferral] = useState('');
     const [userName, setUserName] = useState('');
@@ -68,7 +76,8 @@ export function DesktopBookingForm({
     const [walletBalance, setWalletBalance] = useState<number>(0);
     const [useWallet, setUseWallet] = useState(false);
 
-    const initialPayable = Math.max(inspectionFee - discount, 0);
+    // grandTotal already includes GST (inspectionFee + gstAmount)
+    const initialPayable = Math.max(grandTotal - discount, 0);
     const walletDeduction = useWallet ? Math.min(walletBalance, initialPayable) : 0;
     const finalPayable = Math.max(initialPayable - walletDeduction, 0);
 
@@ -262,7 +271,11 @@ export function DesktopBookingForm({
     };
 
     return (
-        <form action={formAction} className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-20">
+        <form action={(formData) => {
+            if (media) formData.append('media', media);
+            if (secondaryMedia) formData.append('secondary_media', secondaryMedia);
+            formAction(formData);
+        }} className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-20">
 
             {/* Form Fields Column */}
             <div className="lg:col-span-7 space-y-8">
@@ -399,8 +412,8 @@ export function DesktopBookingForm({
                     </div>
                 </section>
 
-                {/* Schedule & Photos */}
-                <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Schedule */}
+                <section className="w-full">
                     {/* Date & Time */}
                     <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
                         <div className="flex items-center gap-3 mb-6">
@@ -410,7 +423,7 @@ export function DesktopBookingForm({
                             <h2 className="text-lg font-bold text-slate-900">Schedule</h2>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Service Date</label>
                                 <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
@@ -446,46 +459,15 @@ export function DesktopBookingForm({
                         </div>
                     </div>
 
-                    {/* Problem Photos */}
-                    <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center">
-                                <Camera className="w-5 h-5 text-purple-600" />
-                            </div>
-                            <h2 className="text-lg font-bold text-slate-900">Issue Photos</h2>
-                        </div>
 
-                        <div className="flex items-center gap-4">
-                            <label className="relative flex-1 flex flex-col items-center justify-center h-32 cursor-pointer border-2 border-dashed border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all group">
-                                <Plus className="w-6 h-6 text-slate-300 group-hover:text-slate-500 mb-2" />
-                                <span className="text-xs font-bold text-slate-400 group-hover:text-slate-600 uppercase tracking-wider">Add Photo</span>
-                                <input type="file" className="sr-only" accept="image/*" onChange={handleImageChange} name="media" />
-                            </label>
 
-                            {imagePreview && (
-                                <div className="relative w-32 h-32 rounded-xl overflow-hidden border border-slate-200 group">
-                                    <Image src={imagePreview} alt="Preview" fill className="object-cover" />
-                                    <button
-                                        type="button"
-                                        onClick={() => setImagePreview(null)}
-                                        className="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500 shadow-sm border border-slate-100 hover:bg-red-50 transition-colors"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                        <p className="text-[10px] text-slate-400 mt-3 flex items-center gap-1.5 uppercase tracking-wide font-bold">
-                            <ImageIcon className="w-3 h-3" />
-                            Optional: Helps technician prepare
-                        </p>
-                    </div>
+                    {/* Problem Photos (Removed as it is now in Problem Selection) */}
                 </section>
 
-            </div>
+            </div >
 
             {/* Summary Sidebar Column */}
-            <div className="lg:col-span-5">
+            < div className="lg:col-span-5" >
                 <div className="sticky top-24 space-y-6">
 
                     {/* Booking Summary */}
@@ -495,8 +477,8 @@ export function DesktopBookingForm({
                                 Booking Summary
                             </h3>
                         </div>
-                        <CardContent className="p-6">
-                            <div className="flex items-center gap-4 mb-6">
+                        <CardContent className="p-4">
+                            <div className="flex items-center gap-4 mb-4">
                                 <div className="w-12 h-12 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
                                     <ShieldCheck className="w-6 h-6 text-indigo-600" />
                                 </div>
@@ -506,14 +488,14 @@ export function DesktopBookingForm({
                                 </div>
                             </div>
 
-                            <div className="space-y-3 mb-8">
+                            <div className="space-y-2 mb-4">
                                 {selectedProblems.map(p => (
                                     <div key={p.id} className="flex items-start justify-between text-xs py-1">
                                         <span className="text-slate-600 flex items-center gap-2">
                                             <div className="w-1 h-1 rounded-full bg-slate-300" />
                                             {p.name}
                                         </span>
-                                        <span className="font-semibold text-slate-900">₹{(p.base_min_fee * location.repair_multiplier).toFixed(0)}</span>
+                                        {/* <span className="font-semibold text-slate-900">₹{(p.base_min_fee * location.repair_multiplier).toFixed(0)}</span> */}
                                     </div>
                                 ))}
                                 <div className="h-px bg-slate-100 my-2" />
@@ -521,13 +503,41 @@ export function DesktopBookingForm({
                                     <span className="text-slate-500">Inspection/Visit Fee</span>
                                     <span className="font-semibold text-slate-900">₹{inspectionFee.toFixed(0)}</span>
                                 </div>
+                                <div className="flex items-center justify-between text-xs mt-2">
+                                    <span className="text-slate-500">GST (4%)</span>
+                                    <span className="font-semibold text-slate-900">₹{gstAmount.toFixed(0)}</span>
+                                </div>
+
+                                <div className="border-t border-dashed border-slate-200 my-2"></div>
+
+                                <div className="flex justify-between items-start text-xs">
+                                    <span className="text-slate-500 font-semibold">Repair Fee</span>
+                                    <div className="flex items-center gap-1.5">
+                                        <p className="text-[10px] text-slate-400 italic font-medium">To be decided after inspection</p>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowRepairInfo(!showRepairInfo)}
+                                            className="text-slate-400 hover:text-primary transition-colors"
+                                            aria-label="Repair fee information"
+                                        >
+                                            <Info className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                </div>
+                                {showRepairInfo && (
+                                    <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-2.5 mt-1">
+                                        <p className="text-[10px] text-slate-600 leading-relaxed">
+                                            You can choose to proceed or decline after knowing the price
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Price Breakdown */}
-                            <div className="bg-slate-50/80 rounded-xl p-5 space-y-3 border border-slate-100/50 mb-6">
+                            <div className="bg-slate-50/80 rounded-xl p-4 space-y-2 border border-slate-100/50 mb-4">
                                 <div className="flex justify-between items-center text-sm">
-                                    <span className="text-slate-600">Initial Payable</span>
-                                    <span className="text-slate-900 font-semibold text-lg">₹{inspectionFee}</span>
+                                    <span className="text-slate-600">Final Inspection Fee</span>
+                                    <span className="text-slate-900 font-semibold text-lg">₹{grandTotal}</span>
                                 </div>
                                 {discount > 0 && (
                                     <div className="flex justify-between items-center text-sm text-green-600 font-medium">
@@ -543,107 +553,125 @@ export function DesktopBookingForm({
                                 )}
                             </div>
 
-                            <div className="flex justify-between items-end mb-8 px-1">
-                                <div>
+                            <div className="flex justify-between items-end mb-4 px-1">
+                                {/* <div>
                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ">Final Payable</span>
-                                    <div className="text-3xl font-bold text-slate-900 tracking-tight flex items-baseline">
-                                        <span className="text-xl mr-1">₹</span>
+                                    <div className="text-2xl font-bold text-slate-900 tracking-tight flex items-baseline">
+                                        <span className="text-lg mr-1">₹</span>
                                         {finalPayable}
                                     </div>
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Total Estimated</span>
-                                    <span className="text-sm font-semibold text-slate-500">₹{totalEstimatedPrice}</span>
-                                </div>
+                                </div> */}
                             </div>
+                            <div className="space-y-3 mb-4">
+                                {/* Coupon Code */}
+                                <div className={cn(
+                                    "relative flex items-center bg-white border rounded-xl transition-all duration-300 h-12 pr-1 shadow-sm",
+                                    referralStatus === 'success' ? "border-green-500/50 bg-green-50/50" : referralStatus === 'error' ? "border-red-500/50 bg-red-50/50" : "border-slate-200 focus-within:border-primary/50"
+                                )}>
+                                    <Tag className={cn("w-4 h-4 ml-3 mx-2 shrink-0", referralStatus === 'success' ? "text-green-500" : referralStatus === 'error' ? "text-red-500" : "text-slate-400")} />
+                                    <input
+                                        placeholder="COUPON CODE"
+                                        value={referral}
+                                        onChange={(e) => {
+                                            setReferral(e.target.value.toUpperCase());
+                                            if (referralStatus !== 'idle') {
+                                                setReferralStatus('idle');
+                                                setReferralMessage('');
+                                                setDiscount(0);
+                                            }
+                                        }}
+                                        disabled={referralStatus === 'success'}
+                                        className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-bold text-slate-700 placeholder:text-slate-400/70 placeholder:font-bold uppercase h-full p-0"
+                                    />
+                                    {referralStatus === 'success' ? (
+                                        <button type="button" onClick={() => { setReferral(''); setReferralStatus('idle'); setDiscount(0); }} className="px-3 text-slate-400 hover:text-red-500 h-full flex items-center justify-center">
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    ) : (
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            onClick={verifyReferralCode}
+                                            disabled={!referral.trim() || referralStatus === 'verifying'}
+                                            className="h-8 md:h-9 text-[10px] md:text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 mr-1"
+                                        >
+                                            {referralStatus === 'verifying' ? <Loader2 className="w-3 h-3 animate-spin" /> : 'APPLY'}
+                                        </Button>
+                                    )}
+                                </div>
 
+                                {/* Special Offer Banner */}
+                                {/* {referralStatus !== 'success' && (
+                                    <div className="bg-primary/5 border border-primary/10 rounded-xl p-3 flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                                            <Gift className="w-4 h-4 text-primary" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none">Special Offer</h4>
+                                            <p className="text-[10px] text-slate-500 leading-normal">
+                                                Apply a friend's code to get <span className="font-bold text-slate-900">₹50 OFF</span> on visit fee!
+                                            </p>
+                                        </div>
+                                    </div>
+                                )} */}
+
+                                {/* Wallet Toggle */}
+                                {walletBalance > 0 && (
+                                    <div
+                                        onClick={() => setUseWallet(!useWallet)}
+                                        className={cn(
+                                            "bg-slate-50 border rounded-xl p-3 flex items-center justify-between cursor-pointer transition-all hover:bg-slate-100",
+                                            useWallet ? "border-indigo-500 bg-indigo-50/20 ring-1 ring-indigo-500/20" : "border-slate-200"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn(
+                                                "w-8 h-8 rounded-full flex items-center justify-center",
+                                                useWallet ? "bg-indigo-600 text-white" : "bg-white text-slate-400 border border-slate-200"
+                                            )}>
+                                                <Wallet className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-900 leading-none">Use Wallet Balance</p>
+                                                <p className="text-[10px] text-slate-500 mt-1">Available: ₹{walletBalance}</p>
+                                            </div>
+                                        </div>
+                                        <div className={cn(
+                                            "w-10 h-5 rounded-full p-1 transition-colors",
+                                            useWallet ? "bg-indigo-600" : "bg-slate-200"
+                                        )}>
+                                            <div className={cn(
+                                                "w-3 h-3 rounded-full bg-white transition-transform",
+                                                useWallet ? "translate-x-5" : "translate-x-0"
+                                            )} />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                             <Button
                                 type="submit"
                                 disabled={isPending}
-                                className="w-full h-14 bg-[#1e1b4b] hover:bg-primary text-white font-black rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] group flex items-center justify-center gap-3 uppercase text-xs tracking-widest"
+                                className="w-full h-12 bg-[#1e1b4b] hover:bg-primary text-white font-black rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] group flex items-center justify-center gap-3 uppercase text-xs tracking-widest"
                             >
                                 {isPending ? (
                                     <Loader2 className="w-5 h-5 animate-spin" />
                                 ) : (
                                     <>
-                                        FINISH BOOKING
-                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                        <span>BOOK INSPECTION</span>
+                                        <div className="w-px h-4 bg-white/20" />
+                                        <span className="text-sm">₹{finalPayable}</span>
+                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform opacity-70" />
                                     </>
                                 )}
                             </Button>
 
-                            <p className="text-[10px] text-slate-400 text-center mt-4 font-semibold uppercase tracking-wider">
+                            <p className="text-[10px] text-slate-400 text-center mt-2 font-semibold uppercase tracking-wider">
                                 Secure & Encrypted Checkout
                             </p>
                         </CardContent>
                     </Card>
 
-                    {/* Offers & Wallet Card */}
-                    <div className="space-y-4">
-                        {/* Referral Code */}
-                        <div className={cn(
-                            "bg-white border rounded-xl px-4 py-3 flex items-center gap-3 transition-all",
-                            referralStatus === 'success' ? "border-green-300 bg-green-50/30" : "border-slate-200"
-                        )}>
-                            <Tag className={cn("w-4 h-4", referralStatus === 'success' ? "text-green-500" : "text-slate-400")} />
-                            <input
-                                placeholder="COUPON CODE"
-                                value={referral}
-                                onChange={(e) => setReferral(e.target.value.toUpperCase())}
-                                disabled={referralStatus === 'success' || referralStatus === 'verifying'}
-                                className="flex-1 bg-transparent border-none focus:ring-0 text-xs font-bold text-slate-700 placeholder:text-slate-300 uppercase"
-                            />
-                            {referralStatus === 'success' ? (
-                                <button type="button" onClick={() => { setReferral(''); setReferralStatus('idle'); setDiscount(0); }} className="text-slate-400 hover:text-red-500">
-                                    <X className="w-4 h-4" />
-                                </button>
-                            ) : (
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={verifyReferralCode}
-                                    disabled={!referral.trim() || referralStatus === 'verifying'}
-                                    className="h-8 text-[10px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100"
-                                >
-                                    {referralStatus === 'verifying' ? <Loader2 className="w-3 h-3 animate-spin" /> : 'APPLY'}
-                                </Button>
-                            )}
-                        </div>
 
-                        {/* Wallet Toggle */}
-                        {walletBalance > 0 && (
-                            <div
-                                onClick={() => setUseWallet(!useWallet)}
-                                className={cn(
-                                    "bg-white border rounded-xl p-4 flex items-center justify-between cursor-pointer transition-all hover:bg-slate-50/50",
-                                    useWallet ? "border-indigo-500 bg-indigo-50/20 ring-1 ring-indigo-500/20" : "border-slate-200"
-                                )}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={cn(
-                                        "w-8 h-8 rounded-full flex items-center justify-center",
-                                        useWallet ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-400"
-                                    )}>
-                                        <Wallet className="w-4 h-4" />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-slate-900 leading-none">Use Wallet Balance</p>
-                                        <p className="text-[10px] text-slate-500 mt-1">Available: ₹{walletBalance}</p>
-                                    </div>
-                                </div>
-                                <div className={cn(
-                                    "w-10 h-5 rounded-full p-1 transition-colors",
-                                    useWallet ? "bg-indigo-600" : "bg-slate-200"
-                                )}>
-                                    <div className={cn(
-                                        "w-3 h-3 rounded-full bg-white transition-transform",
-                                        useWallet ? "translate-x-5" : "translate-x-0"
-                                    )} />
-                                </div>
-                            </div>
-                        )}
-                    </div>
 
                     {state?.error && (
                         <Alert variant="destructive" className="rounded-xl border-red-100 bg-red-50/30 text-red-600">
@@ -654,10 +682,10 @@ export function DesktopBookingForm({
                     )}
 
                 </div>
-            </div>
+            </div >
 
             <input type="hidden" name="preferred_service_date" value={date ? date.toISOString().split('T')[0] : ''} />
             <input type="hidden" name="preferred_time_slot" value={selectedTimeSlot} />
-        </form>
+        </form >
     );
 }

@@ -18,6 +18,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import UserAuthSheet from '@/components/UserAuthSheet';
 import { Session } from '@supabase/supabase-js';
+import ServiceFlowTimeline from '@/components/ServiceFlowTimeline';
 import {
   Dialog,
   DialogContent,
@@ -53,6 +54,7 @@ export default function PriceEstimationPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [authSheetOpen, setAuthSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showRepairInfo, setShowRepairInfo] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -123,6 +125,8 @@ export default function PriceEstimationPage() {
   }
 
   const inspectionFee = category.base_inspection_fee * location.inspection_multiplier;
+  const gstAmount = Math.round(inspectionFee * 0.04);
+  const grandTotal = inspectionFee + gstAmount;
 
   const totalRepairCost = selectedProblems.reduce((acc, problem) => {
     return acc + (problem.base_min_fee * location.repair_multiplier);
@@ -151,6 +155,8 @@ export default function PriceEstimationPage() {
           inspectionFee={inspectionFee}
           totalRepairCost={totalRepairCost}
           totalEstimatedPrice={totalEstimatedPrice}
+          gstAmount={gstAmount}
+          grandTotal={grandTotal}
           handleConfirmVisit={handleConfirmVisit}
           router={router}
         />
@@ -239,43 +245,71 @@ export default function PriceEstimationPage() {
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-500 font-medium">Est. Repair Cost</span>
+                      <span className="text-gray-500 font-medium">GST (4%)</span>
                       <span className="font-bold text-gray-900 flex items-center bg-gray-50 px-2 py-0.5 rounded-lg">
                         <IndianRupee className="w-3 h-3 mr-0.5" />
-                        {totalRepairCost}
+                        {gstAmount}
                       </span>
                     </div>
+
+                    <div className="border-t-2 border-dashed border-gray-100 my-2"></div>
+
+                    <div className="flex justify-between items-start text-sm">
+                      <span className="text-gray-500 font-medium">Repair Fee</span>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-xs text-gray-400 italic font-medium">To be decided after inspection</p>
+                        <button
+                          onClick={() => setShowRepairInfo(!showRepairInfo)}
+                          className="text-gray-400 hover:text-primary transition-colors"
+                          aria-label="Repair fee information"
+                        >
+                          <Info className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                    {showRepairInfo && (
+                      <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-3 -mt-1">
+                        <p className="text-xs text-gray-600 leading-relaxed">
+                          You can choose to proceed or decline after knowing the price
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-black text-indigo-900 text-base">Total Estimate</span>
+                      <span className="font-black text-indigo-900 text-base">Payable Now</span>
                       <div className="flex items-center text-2xl font-black text-indigo-600">
                         <IndianRupee className="w-5 h-5 mr-0.5 stroke-[3px]" />
-                        {totalEstimatedPrice}
+                        {grandTotal}
                       </div>
                     </div>
-                    <p className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider text-right">Pay After Service</p>
+                    <p className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider text-right">Inspection charges only</p>
                   </div>
                 </div>
 
                 {/* Note */}
-                <div className="flex items-start gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100/50">
+                {/* <div className="flex items-start gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100/50">
                   <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
                   <p className="text-[11px] text-blue-700/80 leading-relaxed font-medium">
                     Final amount depends on diagnosis and parts required. Visting charges apply even if no repair is done.
                   </p>
-                </div>
+                </div> */}
 
               </div>
             </div>
 
             {/* Guarantee Badge */}
-            <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50/50 p-3 rounded-2xl border border-green-100/50 mb-8 mx-4">
+
+
+            {/* Service Flow Timeline */}
+            <div className="mb-8 mx-4">
+              <ServiceFlowTimeline inspectionFee={inspectionFee} />
+            </div>
+            <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50/50 p-3 rounded-2xl border border-green-100/50 mb-6 mx-4">
               <ShieldCheck className="w-5 h-5 fill-green-100" />
               <span className="text-xs font-black uppercase tracking-wider">30-Day Service Guarantee</span>
             </div>
-
           </div>
         </div>
 

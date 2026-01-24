@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useBooking } from '@/context/BookingContext';
 
 
 const initialState = {
@@ -29,7 +30,7 @@ const initialState = {
   referralCode: undefined,
 };
 
-export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstimatedPrice }: { categoryId: string; problemIds: string; inspectionFee: number; totalEstimatedPrice: number; }) {
+export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstimatedPrice, gstAmount, grandTotal }: { categoryId: string; problemIds: string; inspectionFee: number; totalEstimatedPrice: number; gstAmount: number; grandTotal: number; }) {
   const { t } = useTranslation();
   const { location } = useLocation();
   const { toast } = useToast();
@@ -45,7 +46,10 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [useWallet, setUseWallet] = useState(false);
 
-  const initialPayable = Math.max(inspectionFee - discount, 0);
+  const { media, secondaryMedia } = useBooking();
+
+  // grandTotal includes GST
+  const initialPayable = Math.max(grandTotal - discount, 0);
   const walletDeduction = useWallet ? Math.min(walletBalance, initialPayable) : 0;
   const finalPayable = Math.max(initialPayable - walletDeduction, 0);
 
@@ -310,7 +314,11 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
 
   return (
     <>
-      <form action={formAction} className="space-y-6 pb-36">
+      <form action={(formData) => {
+        if (media) formData.append('media', media);
+        if (secondaryMedia) formData.append('secondary_media', secondaryMedia);
+        formAction(formData);
+      }} className="space-y-6 pb-36">
 
         {/* Contact Section */}
         <div className="animate-fade-in-up" style={{ animationDelay: '50ms' }}>
@@ -410,30 +418,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
           </div>
         </div>
 
-        {/* Photos Section */}
-        <div className="animate-fade-in-up" style={{ animationDelay: '150ms' }}>
-          <div className="flex items-center gap-2 px-1 mb-3">
-            <Camera className="w-4 h-4 text-primary" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Add Problem Photos (Optional)</h2>
-          </div>
-          <div className="flex items-center gap-4">
-            <label htmlFor="media" className="relative flex flex-col items-center justify-center w-28 h-28 cursor-pointer bg-card border-2 border-dashed border-muted-foreground/20 rounded-2xl hover:bg-primary/5 hover:border-primary/30 transition-all group">
-              <Camera className="w-6 h-6 text-muted-foreground group-hover:text-primary mb-1.5 transition-colors" />
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Add Photo</span>
-              <Input id="media" name="media" type="file" accept="image/*" className="sr-only" onChange={handleImageChange} />
-            </label>
-            {imagePreview && (
-              <div className="relative w-28 h-28 rounded-2xl overflow-hidden border shadow-sm group">
-                <Image src={imagePreview} alt="Image preview" layout="fill" objectFit="cover" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Button type="button" size="icon" variant="destructive" onClick={() => setImagePreview(null)} className="rounded-full w-8 h-8">
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Photos Section (Removed as it is now in Problem Selection) */}
 
         {/* Time Selection Section */}
         <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
@@ -630,7 +615,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
                     {(discount > 0 || useWallet) && (
                       <div className="flex flex-col ml-2">
                         <span className="text-[9px] text-muted-foreground line-through decoration-red-500/50 opacity-50 font-bold leading-none">
-                          ₹{inspectionFee}
+                          ₹{grandTotal}
                         </span>
                         {useWallet && (
                           <span className="text-[8px] bg-green-500 text-white px-1 rounded-sm mt-0.5 font-black uppercase tracking-tighter leading-none">

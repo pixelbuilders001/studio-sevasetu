@@ -19,6 +19,8 @@ type BookingDetailsData = {
   totalRepairCost: number;
   inspectionFee: number;
   totalEstimatedPrice: number;
+  gstAmount: number;
+  grandTotal: number;
 }
 
 
@@ -61,6 +63,10 @@ function BookingDetailsContent() {
           return acc + (problem.base_min_fee * location.repair_multiplier);
         }, 0);
 
+
+
+        const gstAmount = Math.round(inspectionFee * 0.04);
+        const grandTotal = inspectionFee + gstAmount;
         const totalEstimatedPrice = totalRepairCost + inspectionFee;
 
         setDetails({
@@ -68,7 +74,9 @@ function BookingDetailsContent() {
           selectedProblems,
           totalRepairCost,
           inspectionFee,
-          totalEstimatedPrice
+          totalEstimatedPrice,
+          gstAmount,
+          grandTotal
         });
 
       } catch (error) {
@@ -139,6 +147,8 @@ function BookingDetailsContent() {
               problemIds={problemIds!}
               inspectionFee={details.inspectionFee}
               totalEstimatedPrice={details.totalEstimatedPrice}
+              gstAmount={details.gstAmount}
+              grandTotal={details.grandTotal}
             />
           </div>
         </div>
@@ -152,6 +162,8 @@ function BookingDetailsContent() {
           inspectionFee={details.inspectionFee}
           totalRepairCost={details.totalRepairCost}
           totalEstimatedPrice={details.totalEstimatedPrice}
+          gstAmount={details.gstAmount}
+          grandTotal={details.grandTotal}
           selectedProblems={details.selectedProblems}
           router={router}
         />

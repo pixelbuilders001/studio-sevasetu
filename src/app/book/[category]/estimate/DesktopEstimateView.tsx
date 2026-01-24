@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { ServiceCategory, Problem } from '@/lib/data';
 import { useTranslation } from '@/hooks/useTranslation';
+import ServiceFlowTimeline from '@/components/ServiceFlowTimeline';
 
 interface DesktopEstimateViewProps {
     category: ServiceCategory;
@@ -29,6 +30,8 @@ interface DesktopEstimateViewProps {
     inspectionFee: number;
     totalRepairCost: number;
     totalEstimatedPrice: number;
+    gstAmount: number;
+    grandTotal: number;
     handleConfirmVisit: () => void;
     router: any;
 }
@@ -39,10 +42,13 @@ export default function DesktopEstimateView({
     inspectionFee,
     totalRepairCost,
     totalEstimatedPrice,
+    gstAmount,
+    grandTotal,
     handleConfirmVisit,
     router
 }: DesktopEstimateViewProps) {
     const { t } = useTranslation();
+    const [showRepairInfo, setShowRepairInfo] = useState(false);
 
     return (
         <div className="min-h-screen bg-slate-50/20 pt-8 pb-20">
@@ -126,15 +132,13 @@ export default function DesktopEstimateView({
                                 </div>
                             </div>
 
-                            {/* Important Info Footer */}
-                            <div className="bg-blue-50/30 p-5 px-6 border-t border-slate-100 flex items-start gap-3">
-                                <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                                <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                                    <span className="font-bold text-slate-700">Note:</span> If no repair is performed after diagnosis, only the <span className="text-primary font-bold">₹{inspectionFee} visiting charge</span> will be applicable.
-                                </p>
-                            </div>
+
                         </div>
 
+
+
+                        {/* Service Flow Timeline */}
+                        <ServiceFlowTimeline inspectionFee={inspectionFee} />
                         {/* Feature Highlights Grid */}
                         <div className="grid grid-cols-3 gap-4">
                             {[
@@ -172,24 +176,47 @@ export default function DesktopEstimateView({
                                             </div>
                                         </div>
                                         <div className="flex justify-between items-center text-sm">
-                                            <span className="text-slate-500 font-semibold">Repair Fee Estimation</span>
+                                            <span className="text-slate-500 font-semibold">GST (4%)</span>
                                             <div className="flex items-center font-bold text-slate-800">
                                                 <IndianRupee className="w-3.5 h-3.5 mr-0.5" />
-                                                {totalRepairCost}
+                                                {gstAmount}
                                             </div>
                                         </div>
+
+                                        <div className="border-t border-dashed border-slate-200 my-2"></div>
+
+                                        <div className="flex justify-between items-start text-sm">
+                                            <span className="text-slate-500 font-semibold">Repair Fee</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <p className="text-xs text-slate-400 italic font-medium">To be decided after inspection</p>
+                                                <button
+                                                    onClick={() => setShowRepairInfo(!showRepairInfo)}
+                                                    className="text-slate-400 hover:text-primary transition-colors"
+                                                    aria-label="Repair fee information"
+                                                >
+                                                    <Info className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {showRepairInfo && (
+                                            <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-3 -mt-2">
+                                                <p className="text-xs text-slate-600 leading-relaxed">
+                                                    You can choose to proceed or decline after knowing the price
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="pt-6 border-t border-slate-50">
                                         <div className="bg-primary/5 rounded-xl p-5 border border-primary/10">
                                             <div className="flex justify-between items-center mb-1">
-                                                <span className="text-xs font-bold text-primary uppercase tracking-tight">Total Estimate</span>
+                                                <span className="text-xs font-bold text-primary uppercase tracking-tight">Payable Now</span>
                                                 <div className="flex items-center text-2xl font-bold text-primary tracking-tight">
                                                     <IndianRupee className="w-5 h-5 mr-0.5" />
-                                                    {totalEstimatedPrice}
+                                                    {grandTotal}
                                                 </div>
                                             </div>
-                                            <p className="text-[10px] text-slate-400 font-medium">Estimated final amount payable after service</p>
+                                            <p className="text-[10px] text-slate-400 font-medium">Inspection charges only</p>
                                         </div>
                                     </div>
 
@@ -209,7 +236,7 @@ export default function DesktopEstimateView({
                             </div>
 
                             {/* Loyalty/Referral Hint */}
-                            <div className="bg-slate-900 p-5 rounded-2xl flex items-center justify-between group cursor-pointer hover:bg-slate-800 transition-colors">
+                            {/* <div className="bg-slate-900 p-5 rounded-2xl flex items-center justify-between group cursor-pointer hover:bg-slate-800 transition-colors">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                                         <Star className="w-5 h-5 text-primary" />
@@ -220,7 +247,7 @@ export default function DesktopEstimateView({
                                     </div>
                                 </div>
                                 <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 

@@ -10,12 +10,14 @@ import { CheckCircle, ArrowRight, ArrowLeft, HelpCircle, Camera, Plus, Star, Map
 import { cn } from '@/lib/utils';
 import DesktopProblemSelection from './DesktopProblemSelection';
 import FullScreenLoader from '@/components/FullScreenLoader';
+import { useBooking } from '@/context/BookingContext';
 
 type ClientCategory = Omit<ServiceCategory, 'icon'> & { iconName: string };
 
 export default function ProblemSelectionClient({ category }: { category: ClientCategory }) {
   const { t, getTranslatedCategory } = useTranslation();
   const router = useRouter();
+  const { setMedia, setSecondaryMedia } = useBooking();
 
   const [selectedProblems, setSelectedProblems] = useState<Problem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -62,6 +64,13 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
 
   const handlePhotoChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
+    if (index === 0) {
+      setMedia(file || null);
+    } else if (index === 1) {
+      setSecondaryMedia(file || null);
+    }
+
     setPhotoPreviews((prev) => {
       const updated = [...prev];
       if (updated[index]) {
@@ -200,102 +209,102 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
 
               <div className="space-y-3">
                 {displayProblems.map((problem: Problem, index: number) => {
-              const isSelected = selectedProblems.some((p) => p.id === problem.id);
-              const isOther = problem.name.toLowerCase().includes('other') || problem.name.toLowerCase().includes('not sure');
+                  const isSelected = selectedProblems.some((p) => p.id === problem.id);
+                  const isOther = problem.name.toLowerCase().includes('other') || problem.name.toLowerCase().includes('not sure');
 
-              if (isOther) {
-                return (
-                  <div
-                    key={problem.id}
-                    onClick={() => toggleProblemSelection(problem)}
-                    className={cn(
-                      'group relative overflow-hidden rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer',
-                      isSelected
-                        ? 'border-primary bg-primary/5 ring-1 ring-primary/15 shadow-md shadow-primary/10'
-                        : 'border-slate-200 bg-white hover:border-primary/40 hover:shadow-[0_10px_30px_rgba(79,70,229,0.08)]',
-                      'bg-indigo-50/40'
-                    )}
-                  >
-                    <div className="p-4 flex items-center gap-4">
-                      <div className={cn(
-                        "relative w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300",
-                        isSelected ? "bg-primary/10" : "bg-white"
-                      )}>
-                        <HelpCircle className="w-7 h-7 text-primary" />
-                      </div>
+                  if (isOther) {
+                    return (
+                      <div
+                        key={problem.id}
+                        onClick={() => toggleProblemSelection(problem)}
+                        className={cn(
+                          'group relative overflow-hidden rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer',
+                          isSelected
+                            ? 'border-primary bg-primary/5 ring-1 ring-primary/15 shadow-md shadow-primary/10'
+                            : 'border-slate-200 bg-white hover:border-primary/40 hover:shadow-[0_10px_30px_rgba(79,70,229,0.08)]',
+                          'bg-indigo-50/40'
+                        )}
+                      >
+                        <div className="p-4 flex items-center gap-4">
+                          <div className={cn(
+                            "relative w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300",
+                            isSelected ? "bg-primary/10" : "bg-white"
+                          )}>
+                            <HelpCircle className="w-7 h-7 text-primary" />
+                          </div>
 
-                      <div className="flex-grow space-y-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-sm text-slate-900">{problem.name}</h3>
-                          <span className="text-[10px] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-                            Recommended
-                          </span>
+                          <div className="flex-grow space-y-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold text-sm text-slate-900">{problem.name}</h3>
+                              <span className="text-[10px] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                                Recommended
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 leading-relaxed">
+                              {t('other_problem_description' as any, { defaultValue: "A technician will call to diagnose." })}
+                            </p>
+                          </div>
+
+                          <div className={cn(
+                            "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300",
+                            isSelected
+                              ? "bg-primary border-primary scale-110 shadow-sm shadow-primary/30"
+                              : "border-slate-300 bg-white"
+                          )}>
+                            {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
+                          </div>
                         </div>
-                        <p className="text-[11px] text-slate-500 leading-relaxed">
-                          {t('other_problem_description' as any, { defaultValue: "A technician will call to diagnose." })}
-                        </p>
                       </div>
+                    )
+                  }
 
-                      <div className={cn(
-                        "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300",
+                  return (
+                    <div
+                      key={problem.id}
+                      onClick={() => toggleProblemSelection(problem)}
+                      className={cn(
+                        'group relative overflow-hidden rounded-2xl border transition-all duration-300 cursor-pointer bg-white shadow-[0_10px_30px_rgba(15,23,42,0.04)]',
                         isSelected
-                          ? "bg-primary border-primary scale-110 shadow-sm shadow-primary/30"
-                          : "border-slate-300 bg-white"
-                      )}>
-                        {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
+                          ? 'border-primary bg-primary/5 ring-1 ring-primary/15'
+                          : 'border-slate-200 hover:border-primary/40 hover:shadow-[0_14px_36px_rgba(79,70,229,0.08)]'
+                      )}
+                    >
+                      <div className="p-4 flex items-center gap-4">
+                        <div className={cn(
+                          "relative w-12 h-12 rounded-xl flex items-center justify-center p-2 transition-colors duration-300 bg-slate-50",
+                          isSelected ? "bg-primary/10" : "group-hover:bg-primary/5"
+                        )}>
+                          <Image
+                            src={problem.image.imageUrl}
+                            alt={problem.name}
+                            width={40}
+                            height={40}
+                            className="object-contain"
+                          />
+                        </div>
+
+                        <div className="flex-grow space-y-0.5">
+                          <h3 className={cn(
+                            "font-semibold text-sm transition-colors",
+                            isSelected ? "text-primary" : "text-slate-900"
+                          )}>
+                            {problem.name}
+                          </h3>
+                          <p className="text-[11px] text-slate-500">Tap to select this issue</p>
+                        </div>
+
+                        <div className={cn(
+                          "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300",
+                          isSelected
+                            ? "bg-primary border-primary scale-110 shadow-sm shadow-primary/30"
+                            : "border-slate-300 bg-white"
+                        )}>
+                          {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              }
-
-              return (
-                <div
-                  key={problem.id}
-                  onClick={() => toggleProblemSelection(problem)}
-                  className={cn(
-                    'group relative overflow-hidden rounded-2xl border transition-all duration-300 cursor-pointer bg-white shadow-[0_10px_30px_rgba(15,23,42,0.04)]',
-                    isSelected
-                      ? 'border-primary bg-primary/5 ring-1 ring-primary/15'
-                      : 'border-slate-200 hover:border-primary/40 hover:shadow-[0_14px_36px_rgba(79,70,229,0.08)]'
-                  )}
-                >
-                  <div className="p-4 flex items-center gap-4">
-                    <div className={cn(
-                      "relative w-12 h-12 rounded-xl flex items-center justify-center p-2 transition-colors duration-300 bg-slate-50",
-                      isSelected ? "bg-primary/10" : "group-hover:bg-primary/5"
-                    )}>
-                      <Image
-                        src={problem.image.imageUrl}
-                        alt={problem.name}
-                        width={40}
-                        height={40}
-                        className="object-contain"
-                      />
-                    </div>
-
-                    <div className="flex-grow space-y-0.5">
-                      <h3 className={cn(
-                        "font-semibold text-sm transition-colors",
-                        isSelected ? "text-primary" : "text-slate-900"
-                      )}>
-                        {problem.name}
-                      </h3>
-                      <p className="text-[11px] text-slate-500">Tap to select this issue</p>
-                    </div>
-
-                    <div className={cn(
-                      "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300",
-                      isSelected
-                        ? "bg-primary border-primary scale-110 shadow-sm shadow-primary/30"
-                        : "border-slate-300 bg-white"
-                    )}>
-                      {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
 
               </div>
             </section>
