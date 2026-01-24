@@ -12,6 +12,8 @@ import { cn } from '@/lib/utils';
 import DesktopProblemSelection from './DesktopProblemSelection';
 import FullScreenLoader from '@/components/FullScreenLoader';
 import { useBooking } from '@/context/BookingContext';
+import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
+
 
 type ClientCategory = Omit<ServiceCategory, 'icon'> & { iconName: string };
 
@@ -24,7 +26,10 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
   const [selectedProblems, setSelectedProblems] = useState<Problem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([null, null]);
+  const [technicians, setTechnicians] = useState<any[]>([]);
+  const [isTechniciansLoading, setIsTechniciansLoading] = useState(true);
   const photoInputsRef = useRef<(HTMLInputElement | null)[]>([]);
+
 
   useEffect(() => {
     // Sync previews with context media on mount
@@ -44,6 +49,49 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
       });
     };
   }, [media, secondaryMedia]);
+
+  useEffect(() => {
+    async function fetchTechnicians() {
+      if (!category?.id) return;
+
+      const supabase = createSupabaseBrowserClient();
+      try {
+        const { data, error } = await supabase
+          .from('technician_categories')
+          .select(`
+            technicians (
+              id,
+              full_name,
+              total_experience,
+              is_active,
+              verification_status,
+              service_area,
+              pincode,
+              selfie_url
+            )
+          `)
+          .eq('category_id', category.id)
+          .eq('technicians.is_active', true)
+          .eq('technicians.verification_status', 'approved')
+          .limit(2);
+
+
+        if (error) {
+          console.error('Error fetching technicians:', error);
+        } else {
+          const technicianList = data?.map((item: any) => item.technicians).filter(Boolean) || [];
+          setTechnicians(technicianList);
+        }
+      } catch (err) {
+        console.error('Failed to fetch technicians:', err);
+      } finally {
+        setIsTechniciansLoading(false);
+      }
+    }
+
+    fetchTechnicians();
+  }, [category?.id]);
+
 
   if (!category) {
     notFound();
@@ -123,6 +171,8 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
           toggleProblemSelection={toggleProblemSelection}
           handleBookRepair={handleBookRepair}
           router={router}
+          technicians={technicians}
+          isTechniciansLoading={isTechniciansLoading}
         />
       </div>
 
@@ -359,51 +409,52 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
               </div>
 
               <div className="flex gap-3 overflow-x-auto pb-1 hide-scrollbar">
-                <div className="min-w-[230px] bg-white rounded-2xl border border-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.06)] p-4 flex items-center gap-3">
-                  <div className="relative">
-                    <div
-                      className="w-14 h-14 rounded-2xl bg-slate-200 shadow-lg overflow-hidden"
-                      style={{ backgroundImage: 'url(https://i.pravatar.cc/120?img=12)', backgroundSize: 'cover', backgroundPosition: 'center' }}
-                    />
-                    <span className="absolute -right-1 -bottom-1 flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                    </span>
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-sm text-slate-900">Suman Gupta</p>
-                      <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-500">
-                        <Star className="w-3 h-3 fill-amber-400" />
-                        4.8
-                      </span>
+                {isTechniciansLoading ? (
+                  [1, 2].map((i) => (
+                    <div key={i} className="min-w-[230px] bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3 animate-pulse">
+                      <div className="w-14 h-14 rounded-2xl bg-slate-200" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-slate-200 rounded w-24" />
+                        <div className="h-3 bg-slate-200 rounded w-16" />
+                      </div>
                     </div>
-                    <p className="text-[11px] text-slate-500">Ready for visit</p>
-                  </div>
-                </div>
-                <div className="min-w-[230px] bg-white rounded-2xl border border-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.06)] p-4 flex items-center gap-3">
-                  <div className="relative">
-                    <div
-                      className="w-14 h-14 rounded-2xl bg-slate-200 shadow-lg overflow-hidden"
-                      style={{ backgroundImage: 'url(https://i.pravatar.cc/120?img=47)', backgroundSize: 'cover', backgroundPosition: 'center' }}
-                    />
-                    <span className="absolute -right-1 -bottom-1 flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                    </span>
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-sm text-slate-900">Ramesh Kumar</p>
-                      <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-500">
-                        <Star className="w-3 h-3 fill-amber-400" />
-                        4.9
-                      </span>
+                  ))
+                ) : technicians.length > 0 ? (
+                  technicians.map((tech) => (
+                    <div key={tech.id} className="min-w-[230px] bg-white rounded-2xl border border-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.06)] p-4 flex items-center gap-3">
+                      <div className="relative">
+                        <div
+                          className="w-14 h-14 rounded-2xl bg-slate-200 shadow-lg overflow-hidden"
+                          style={{
+                            backgroundImage: `url(${tech.selfie_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                          }}
+                        />
+                        <span className="absolute -right-1 -bottom-1 flex h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                        </span>
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-sm text-slate-900 line-clamp-1">{tech.full_name}</p>
+                          <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-500">
+                            <Star className="w-3 h-3 fill-amber-400" />
+                            4.8
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500">{tech.total_experience}+ yrs exp</p>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-slate-500">Ready for visit</p>
+                  ))
+                ) : (
+                  <div className="w-full text-center py-4 bg-white rounded-2xl border border-slate-100 italic text-slate-400 text-sm">
+                    No active technicians found for this category nearby.
                   </div>
-                </div>
+                )}
               </div>
+
             </section>
 
           </div>

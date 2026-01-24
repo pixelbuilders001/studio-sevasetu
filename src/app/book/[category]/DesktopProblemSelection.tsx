@@ -20,7 +20,10 @@ interface DesktopProblemSelectionProps {
     toggleProblemSelection: (problem: Problem) => void;
     handleBookRepair: () => void;
     router: any;
+    technicians?: any[];
+    isTechniciansLoading?: boolean;
 }
+
 
 export default function DesktopProblemSelection({
     category,
@@ -28,7 +31,9 @@ export default function DesktopProblemSelection({
     selectedProblems,
     toggleProblemSelection,
     handleBookRepair,
-    router
+    router,
+    technicians = [],
+    isTechniciansLoading = false
 }: DesktopProblemSelectionProps) {
     const { t } = useTranslation();
     const { location } = useLocation();
@@ -250,50 +255,50 @@ export default function DesktopProblemSelection({
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="bg-white rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/40 p-5 flex items-center gap-4">
-                                    <div className="relative">
-                                        <div
-                                            className="w-16 h-16 rounded-2xl bg-slate-200 shadow-lg overflow-hidden"
-                                            style={{ backgroundImage: 'url(https://i.pravatar.cc/120?img=12)', backgroundSize: 'cover', backgroundPosition: 'center' }}
-                                        />
-                                        <span className="absolute -right-1 -bottom-1 flex h-3.5 w-3.5">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
-                                        </span>
-                                    </div>
-                                    <div className="flex-1 space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-bold text-sm text-slate-900">Suman Gupta</p>
-                                            <span className="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                                                <Star className="w-3.5 h-3.5 fill-amber-400" />
-                                                4.8
-                                            </span>
+                                {isTechniciansLoading ? (
+                                    [1, 2].map((i) => (
+                                        <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 animate-pulse">
+                                            <div className="w-16 h-16 rounded-2xl bg-slate-200" />
+                                            <div className="flex-1 space-y-2">
+                                                <div className="h-4 bg-slate-200 rounded w-24" />
+                                                <div className="h-3 bg-slate-200 rounded w-16" />
+                                            </div>
                                         </div>
-                                        <p className="text-xs text-slate-500">Ready for visit</p>
-                                    </div>
-                                </div>
-                                <div className="bg-white rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/40 p-5 flex items-center gap-4">
-                                    <div className="relative">
-                                        <div
-                                            className="w-16 h-16 rounded-2xl bg-slate-200 shadow-lg overflow-hidden"
-                                            style={{ backgroundImage: 'url(https://i.pravatar.cc/120?img=47)', backgroundSize: 'cover', backgroundPosition: 'center' }}
-                                        />
-                                        <span className="absolute -right-1 -bottom-1 flex h-3.5 w-3.5">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
-                                        </span>
-                                    </div>
-                                    <div className="flex-1 space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-bold text-sm text-slate-900">Ramesh Kumar</p>
-                                            <span className="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                                                <Star className="w-3.5 h-3.5 fill-amber-400" />
-                                                4.9
-                                            </span>
+                                    ))
+                                ) : technicians.length > 0 ? (
+                                    technicians.map((tech) => (
+                                        <div key={tech.id} className="bg-white rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/40 p-5 flex items-center gap-4">
+                                            <div className="relative">
+                                                <div
+                                                    className="w-16 h-16 rounded-2xl bg-slate-200 shadow-lg overflow-hidden"
+                                                    style={{
+                                                        backgroundImage: `url(${tech.selfie_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'})`,
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center'
+                                                    }}
+                                                />
+                                                <span className="absolute -right-1 -bottom-1 flex h-3.5 w-3.5">
+                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                    <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+                                                </span>
+                                            </div>
+                                            <div className="flex-1 space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="font-bold text-sm text-slate-900 line-clamp-1">{tech.full_name}</p>
+                                                    <span className="flex items-center gap-1 text-xs font-semibold text-amber-500">
+                                                        <Star className="w-3.5 h-3.5 fill-amber-400" />
+                                                        4.8
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-slate-500">{tech.total_experience}+ yrs exp</p>
+                                            </div>
                                         </div>
-                                        <p className="text-xs text-slate-500">Ready for visit</p>
+                                    ))
+                                ) : (
+                                    <div className="col-span-1 md:col-span-2 text-center py-6 bg-white rounded-2xl border border-slate-100 italic text-slate-400 text-sm">
+                                        No active technicians found for this category nearby.
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </section>
 
