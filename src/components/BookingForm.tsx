@@ -56,18 +56,9 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined, totalEstimatedPrice, finalPayable, useWallet ? walletDeduction : null);
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
 
-  const [date, setDate] = useState<Date | null>(() => {
-    const now = new Date();
-    const currentHour = now.getHours();
-    if (currentHour >= 18) {
-      const tomorrow = new Date(now);
-      tomorrow.setDate(now.getDate() + 1);
-      return tomorrow;
-    }
-    return now;
-  });
+  const [date, setDate] = useState<Date | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("9 AM-12 PM");
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("");
   const [address, setAddress] = useState('');
   const [isGpsLoading, setIsGpsLoading] = useState(false);
   const [isSavingAddress, setIsSavingAddress] = useState(false);
@@ -256,39 +247,24 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
       return;
     }
     try {
-      const { valid, message, discount } = await verifyReferralCodeAction(code);
+      const response = await verifyReferralCodeAction(code);
 
-      if (valid) {
+      if (response && response.valid) {
         setReferralStatus('success');
-        // Note: verifyReferralCodeAction needs to return discount too if the original API did. 
-        // Based on the original code, the API returned 'discount'. I should check if my action returns it.
-        // My action only returns { valid, message }. I need to update the action to return discount if valid.
-        // Wait, I should first update the action to return the full data.
-        // Let's assume for now I'll fix the action in the next step or right now.
-        // Actually, looking at the previous step, I only returned { valid, message }.
-        // The original code used `data.discount`.
-        // I must update `actions.ts` to return `data` or `discount`.
-        // I will do that first. 
-        // ABORTING THIS EDIT to fix action first.
-
-        // Wait, I can't abort comfortably here. I will complete this edit assuming I'll fix the action immediately after.
-        // Or I can just write the correct code here and then fix the action.
-
-        setReferralMessage(message || `REFERRAL APPLIED!`);
-        setDiscount(discount || 0);
-        // The discount logic depends on the API response.
-        // I'll update the action to return the whole data object or specifically the discount.
+        setReferralMessage(response.message || 'Referee Applied!');
+        setDiscount(response.discount || 0);
       } else {
         setReferralStatus('error');
-        setReferralMessage(message || 'Invalid referral code.');
+        setReferralMessage(response?.message || 'Invalid referral code.');
         setDiscount(0);
       }
-    } catch (e) {
+    } catch (error) {
       setReferralStatus('error');
       setReferralMessage('Could not verify referral code.');
       setDiscount(0);
     }
   };
+
 
   const removeReferralCode = () => {
     setReferral('');
@@ -315,6 +291,14 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   return (
     <>
       <form action={(formData) => {
+        if (!date) {
+          toast({ variant: 'destructive', title: 'Date Required', description: 'Please select a service date.' });
+          return;
+        }
+        if (!selectedTimeSlot) {
+          toast({ variant: 'destructive', title: 'Time Slot Required', description: 'Please select a time slot.' });
+          return;
+        }
         if (media) formData.append('media', media);
         if (secondaryMedia) formData.append('secondary_media', secondaryMedia);
         formAction(formData);

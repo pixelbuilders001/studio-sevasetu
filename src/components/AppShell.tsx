@@ -34,6 +34,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <main className={`flex-grow ${pathname === '/' ? 'pt-0 md:pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
           <Footer />
           {showBottomNav && <BottomNavBar />}
+          <Toaster />
         </BookingProvider>
       </LocationProvider>
     </LanguageProvider>

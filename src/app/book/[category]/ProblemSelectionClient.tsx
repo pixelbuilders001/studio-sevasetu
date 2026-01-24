@@ -4,6 +4,7 @@ import { type Problem, type ServiceCategory } from '@/lib/data';
 import { useRouter, notFound } from 'next/navigation';
 import Image from 'next/image';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useToast } from '@/hooks/use-toast';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight, ArrowLeft, HelpCircle, Camera, Plus, Star, MapPin, PhoneCall } from 'lucide-react';
@@ -17,7 +18,8 @@ type ClientCategory = Omit<ServiceCategory, 'icon'> & { iconName: string };
 export default function ProblemSelectionClient({ category }: { category: ClientCategory }) {
   const { t, getTranslatedCategory } = useTranslation();
   const router = useRouter();
-  const { setMedia, setSecondaryMedia } = useBooking();
+  const { toast } = useToast();
+  const { media, setMedia, setSecondaryMedia } = useBooking();
 
   const [selectedProblems, setSelectedProblems] = useState<Problem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +55,16 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
     if (selectedProblems.length === 0) {
       return;
     }
+
+    if (!media) {
+      toast({
+        variant: "destructive",
+        title: "Photo Required",
+        description: "Please upload at least one photo of the issue to proceed."
+      });
+      return;
+    }
+
     setIsLoading(true);
     const problemIds = selectedProblems.map(p => p.id).join(',');
     router.push(`/book/${category.slug}/estimate?problems=${problemIds}`);
@@ -101,17 +113,20 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
         <div className="bg-white pt-6 pb-6 shadow-sm">
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between gap-4">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => router.back()}
-                className="w-9 h-9 rounded-full bg-background/60 border border-slate-200 hover:bg-primary/10 transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
-              <div className="flex-1 text-center">
-                <h1 className="text-xl font-bold text-slate-900">Pick problems</h1>
+              <div className='flex items-center gap-2'>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => router.back()}
+                  className="w-9 h-9 rounded-full bg-background/60 border border-slate-200 hover:bg-primary/10 transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <div className="flex-1 text-center">
+                  <h1 className="text-xl font-bold text-slate-900">Pick problems</h1>
+                </div>
               </div>
+
               <a
                 href="tel:+917033000034"
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-emerald-200 text-emerald-700 bg-emerald-50 text-xs font-semibold shadow-sm hover:bg-emerald-100 active:scale-95 transition-all"

@@ -94,18 +94,9 @@ export function DesktopBookingForm({
 
     const [state, formAction, isPending] = useActionState(boundBookService, initialState);
 
-    const [date, setDate] = useState<Date | null>(() => {
-        const now = new Date();
-        const currentHour = now.getHours();
-        if (currentHour >= 18) {
-            const tomorrow = new Date(now);
-            tomorrow.setDate(now.getDate() + 1);
-            return tomorrow;
-        }
-        return now;
-    });
+    const [date, setDate] = useState<Date | null>(null);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-    const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("9 AM-12 PM");
+    const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("");
     const [address, setAddress] = useState('');
     const [isGpsLoading, setIsGpsLoading] = useState(false);
     const [isSavingAddress, setIsSavingAddress] = useState(false);
@@ -272,6 +263,14 @@ export function DesktopBookingForm({
 
     return (
         <form action={(formData) => {
+            if (!date) {
+                toast({ variant: 'destructive', title: 'Date Required', description: 'Please select a service date.' });
+                return;
+            }
+            if (!selectedTimeSlot) {
+                toast({ variant: 'destructive', title: 'Time Slot Required', description: 'Please select a time slot.' });
+                return;
+            }
             if (media) formData.append('media', media);
             if (secondaryMedia) formData.append('secondary_media', secondaryMedia);
             formAction(formData);
