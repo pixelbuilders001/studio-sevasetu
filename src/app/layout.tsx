@@ -220,6 +220,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <head>
+        {/* PWA Event Capture Script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                window.deferredPWAEvent = e;
+              });
+            `,
+          }}
+        />
         {/* Primary Structured Data */}
         <script
           type="application/ld+json"

@@ -13,6 +13,8 @@ export default function PWAInstallPrompt() {
     const [platform, setPlatform] = useState<'android' | 'ios' | 'other'>('other');
     const [isMobile, setIsMobile] = useState(false);
     const pathname = usePathname();
+    const criteriaMetRef = React.useRef(false);
+    const deferredPromptRef = React.useRef<any>(null);
 
     useEffect(() => {
         // 1. Check if already installed
@@ -30,108 +32,101 @@ export default function PWAInstallPrompt() {
         setIsMobile(mobileFlag);
         if (!mobileFlag) return;
 
-        // 3. Detect platform
-        const userAgent = window.navigator.userAgent.toLowerCase();
-        if (/iphone|ipad|ipod/.test(userAgent)) {
-            setPlatform('ios');
-        } else if (/android/.test(userAgent)) {
-            setPlatform('android');
-        } else {
-            setPlatform('other');
-        }
-
         const isDismissed = sessionStorage.getItem('pwa-prompt-dismissed');
         const isDismissedOnConfirmation = sessionStorage.getItem('pwa-prompt-dismissed-confirmation');
 
         if (isDismissed && pathname !== '/confirmation') return;
         if (isDismissedOnConfirmation && pathname === '/confirmation') return;
 
-        // 4. Trigger Logic Function
-        const triggerPrompt = (delay: number) => {
-            const timer = setTimeout(() => {
-                const stillDismissed = sessionStorage.getItem('pwa-prompt-dismissed');
-                const stillDismissedOnConf = sessionStorage.getItem('pwa-prompt-dismissed-confirmation');
+        // 3. Detect platform
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        const isIOS = /iphone|ipad|ipod/.test(userAgent);
+        if (isIOS) setPlatform('ios');
+        else if (/android/.test(userAgent)) setPlatform('android');
+        else setPlatform('other');
 
-                if (pathname === '/confirmation') {
-                    if (!stillDismissedOnConf) setShowPrompt(true);
-                } else {
-                    if (!stillDismissed) setShowPrompt(true);
-                }
-            }, delay);
-            return timer;
+        // 4. Trace-based state
+        const checkAndShow = () => {
+            const isIOS = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+
+            // Re-read dismissal
+            const d1 = sessionStorage.getItem('pwa-prompt-dismissed');
+            const d2 = sessionStorage.getItem('pwa-prompt-dismissed-confirmation');
+            if (pathname === '/confirmation' && d2) return;
+            if (pathname !== '/confirmation' && d1) return;
+
+            // Use the early-captured event if available
+            const globalEvent = (window as any).deferredPWAEvent;
+            if (globalEvent && !deferredPromptRef.current) {
+                deferredPromptRef.current = globalEvent;
+                setDeferredPrompt(globalEvent);
+            }
+
+            if (criteriaMetRef.current && (isIOS || deferredPromptRef.current)) {
+                setShowPrompt(true);
+            }
         };
 
-        // 5. Handle Paths
-        let mainTimer: NodeJS.Timeout;
+        const setCriteriaMet = () => {
+            criteriaMetRef.current = true;
+            checkAndShow();
+        };
+
+        // 5. Trigger Logic
+        let timer: NodeJS.Timeout | undefined;
 
         if (pathname === '/') {
-            // Homepage: 10s delay
-            mainTimer = setTimeout(() => {
-                const stillDismissed = sessionStorage.getItem('pwa-prompt-dismissed');
-                if (!stillDismissed) setShowPrompt(true);
-            }, 10000);
-
-            // OR Scroll threshold
             const handleScroll = () => {
-                if (window.scrollY > 300) {
-                    const stillDismissed = sessionStorage.getItem('pwa-prompt-dismissed');
-                    if (!stillDismissed) {
-                        setShowPrompt(true);
-                        window.removeEventListener('scroll', handleScroll);
-                    }
+                if (window.scrollY > 400) {
+                    setCriteriaMet();
+                    window.removeEventListener('scroll', handleScroll);
                 }
             };
             window.addEventListener('scroll', handleScroll);
+            if (window.scrollY > 400) setCriteriaMet();
 
             return () => {
-                clearTimeout(mainTimer);
                 window.removeEventListener('scroll', handleScroll);
             };
         } else if (pathname === '/confirmation') {
-            // Confirmation: 3s delay
-            mainTimer = triggerPrompt(3000);
-        } else if (pathname.includes('/book/')) {
-            // Booking paths: keep 2s/5s logic
-            if (platform === 'ios') {
-                mainTimer = triggerPrompt(5000);
-            }
+            timer = setTimeout(setCriteriaMet, 3000);
+        } else {
+            timer = setTimeout(setCriteriaMet, 2000);
         }
 
-        // 6. beforeinstallprompt listener
+        // 6. beforeinstallprompt listener (as backup)
         const handleBeforeInstallPrompt = (e: Event) => {
-            console.log('beforeinstallprompt event fired');
             e.preventDefault();
+            deferredPromptRef.current = e;
             setDeferredPrompt(e);
-
-            // Only auto-show here if not on specific pages that have custom logic
-            if (!['/', '/confirmation'].includes(pathname)) {
-                triggerPrompt(2000);
-            }
+            (window as any).deferredPWAEvent = e;
+            checkAndShow();
         };
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-        const handleResize = () => {
-            setIsMobile(checkMobile());
-        };
+        // Initial check immediately on mount
+        checkAndShow();
+
+        const handleResize = () => setIsMobile(checkMobile());
         window.addEventListener('resize', handleResize);
 
         return () => {
-            if (mainTimer) clearTimeout(mainTimer);
+            if (timer) clearTimeout(timer);
             window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
             window.removeEventListener('resize', handleResize);
         };
-    }, [pathname, platform]);
+    }, [pathname]);
 
     const handleInstallClick = async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-
-            if (outcome === 'accepted') {
-                setShowPrompt(false);
-            }
+        const promptEvent = deferredPromptRef.current || deferredPrompt;
+        if (promptEvent) {
+            promptEvent.prompt();
+            const { outcome } = await promptEvent.userChoice;
+            if (outcome === 'accepted') setShowPrompt(false);
+            deferredPromptRef.current = null;
             setDeferredPrompt(null);
+            (window as any).deferredPromptForFix = null;
         }
     };
 

@@ -29,7 +29,20 @@ export async function updateSession(request: NextRequest) {
         }
     )
 
-    await supabase.auth.getUser()
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
+
+    // Protected routes logic
+    const path = request.nextUrl.pathname
+    const isConfirmationPath = path.startsWith('/confirmation')
+    const isBookingDetailsPath = /^\/book\/[^/]+\/details$/.test(path)
+
+    if (!user && (isConfirmationPath || isBookingDetailsPath)) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/'
+        return NextResponse.redirect(url)
+    }
 
     return response
 }
