@@ -77,10 +77,10 @@ const pwaConfig = withPWA({
         urlPattern: ({ url }: { url: URL }) => {
           // Only cache same-origin requests, exclude auth
           return !url.pathname.includes('/auth/') &&
-                 !url.pathname.startsWith('/api/auth') &&
-                 !url.searchParams.has('code') &&
-                 !url.searchParams.has('access_token') &&
-                 !url.searchParams.has('refresh_token');
+            !url.pathname.startsWith('/api/auth') &&
+            !url.searchParams.has('code') &&
+            !url.searchParams.has('access_token') &&
+            !url.searchParams.has('refresh_token');
         },
         handler: 'NetworkFirst',
         options: {
@@ -187,6 +187,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'api.dicebear.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.freepik.com',
         port: '',
         pathname: '/**',
       }

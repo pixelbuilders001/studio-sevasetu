@@ -15,6 +15,7 @@ import {
   LogOut,
   Gift,
   Copy,
+  Share2,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -30,6 +31,7 @@ import { EditProfileModal } from './EditProfileModal';
 import { AddressManagementModal } from './AddressManagementModal';
 import { BookingHistoryModal } from './BookingHistoryModal';
 import { WalletModal } from './WalletModal';
+import ShareAppButton from '@/components/ShareAppButton';
 
 import {
   Sheet,
@@ -83,6 +85,21 @@ const MenuItem = ({
 const ReferEarnCard = ({ code }: { code: string }) => {
   const { toast } = useToast();
 
+  const shareReferral = async () => {
+    const text = `Hey! Use my referral code ${code} and get ₹50 off on doorstep repairs with helloFixo. Book now 👉 https://hellofixo.in`;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'helloFixo Referral',
+          text: text,
+          url: 'https://hellofixo.in',
+        });
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      }
+    } catch { }
+  };
+
   const copyCode = () => {
     navigator.clipboard.writeText(code);
     toast({ title: 'Referral code copied' });
@@ -94,10 +111,15 @@ const ReferEarnCard = ({ code }: { code: string }) => {
         <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-indigo-50">
           <Gift className="w-7 h-7 text-indigo-600" />
         </div>
-        <div>
-          <h3 className="text-lg font-black text-indigo-950">Refer & Earn ₹50</h3>
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-black text-indigo-950">Refer & Earn ₹50</h3>
+            <button onClick={shareReferral} className="p-2 bg-white rounded-lg border border-indigo-50 text-indigo-600 active:scale-90 transition-transform">
+              <Share2 className="w-4 h-4" />
+            </button>
+          </div>
           <p className="text-xs text-indigo-900/60 font-medium leading-tight">
-            Invite friends and you both get ₹50 off on next service
+            Invite friends and you both get ₹50 off
           </p>
         </div>
       </div>
@@ -237,7 +259,7 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
               ...p,
               referral_code: refCode || p.referral_code || '',
             });
-          } else {
+          } else if (authUser) {
             // Fallback to auth user info
             setProfile({
               id: authUser.id,
@@ -397,6 +419,13 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
             label="Saved Addresses"
             onClick={() => setIsAddressModalOpen(true)}
           />
+          <div className="pt-2">
+            <ShareAppButton
+              variant="indigo"
+              className="w-full h-14 rounded-2xl text-xs uppercase"
+              label="Share helloFixo App"
+            />
+          </div>
         </div>
 
         {/* LOGOUT */}

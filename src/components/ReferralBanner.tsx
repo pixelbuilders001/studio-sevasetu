@@ -52,11 +52,11 @@ export default function ReferralBanner() {
         e.stopPropagation();
         if (!referralCode) return;
 
-        const shareMessage = `Get flat Rs. 50 OFF on your first repair with Hellofixo! Use my referral code: ${referralCode}`;
+        const shareMessage = `Get flat Rs. 50 OFF on your first repair with helloFixo! Use my referral code: ${referralCode}`;
 
         if (navigator.share) {
             navigator.share({
-                title: 'Hellofixo Referral',
+                title: 'helloFixo Referral',
                 text: shareMessage,
                 url: window.location.origin,
             }).catch(console.error);

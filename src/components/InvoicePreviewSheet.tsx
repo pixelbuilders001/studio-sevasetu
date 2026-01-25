@@ -16,7 +16,7 @@ const Logo = () => (
             <span className="text-2xl font-bold text-primary-foreground">S</span>
         </div>
         <div>
-            <h5 className="text-lg font-bold text-primary leading-tight">Hellofixo</h5>
+            <h5 className="text-lg font-bold text-primary leading-tight">helloFixo</h5>
             <span className="text-xs font-semibold text-muted-foreground leading-tight tracking-wide">REPAIR & SOLUTIONS</span>
         </div>
     </div>
@@ -96,9 +96,9 @@ const InvoicePreviewContent = React.forwardRef<HTMLDivElement, { booking: Bookin
                 </div>
 
                 <div className="text-center pt-8 border-t border-gray-100">
-                    <p className="text-xs text-gray-400 mb-2">Thank you for choosing Hellofixo!</p>
+                    <p className="text-xs text-gray-400 mb-2">Thank you for choosing helloFixo!</p>
                     <p className="text-[10px] text-gray-300 uppercase tracking-widest">
-                        This is a computer generated invoice • Authorized by Hellofixo
+                        This is a computer generated invoice • Authorized by helloFixo
                     </p>
                 </div>
             </div>

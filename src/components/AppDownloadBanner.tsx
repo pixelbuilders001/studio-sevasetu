@@ -3,7 +3,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Smartphone, Apple, PlayCircle, Sparkles, Zap, BellRing } from 'lucide-react';
+import { Smartphone, Apple, PlayCircle, Sparkles, Zap, BellRing, Share2 } from 'lucide-react';
+import ShareAppButton from '@/components/ShareAppButton';
 
 export default function AppDownloadBanner() {
     return (
@@ -68,6 +69,14 @@ export default function AppDownloadBanner() {
                                     <p className="text-[8px] font-black uppercase tracking-wider text-white/40">Soon on</p>
                                     <p className="text-xs md:text-sm font-black tracking-tight">Play Store</p>
                                 </div>
+                            </div>
+
+                            {/* Share App Button */}
+                            <div className="w-full md:w-auto">
+                                <ShareAppButton
+                                    className="w-full md:w-auto h-auto py-3 md:py-4 px-8 rounded-xl md:rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white font-black text-xs md:text-sm shadow-xl transition-all hover:-translate-y-1 group/share"
+                                    label="Share App"
+                                />
                             </div>
                         </motion.div>
                     </div>

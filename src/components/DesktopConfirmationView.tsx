@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import BookingTrackerModal from './BookingTrackerModal';
 
+import { TranslationFunc } from '@/context/LanguageContext';
+
 interface DesktopConfirmationViewProps {
     bookingId: string;
     displayReferralCode: string | null;
@@ -18,7 +20,7 @@ interface DesktopConfirmationViewProps {
     isCopied: boolean;
     isReferralCopied: boolean;
     whatsappMessage: string;
-    t: (key: string) => string;
+    t: TranslationFunc;
 }
 
 export default function DesktopConfirmationView({
@@ -200,7 +202,7 @@ export default function DesktopConfirmationView({
                                 <div className="mt-8 pt-6 border-t border-slate-50">
                                     <p className="text-xs text-slate-400 flex items-center gap-2">
                                         <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                                        All services are covered by Hellofixo Quality Guarantee
+                                        All services are covered by helloFixo Quality Guarantee
                                     </p>
                                 </div>
                             </div>

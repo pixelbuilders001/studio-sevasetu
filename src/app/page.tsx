@@ -198,7 +198,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           <div className="absolute inset-0 z-0">
             <Image
               src="/hero-video.webp"
-              alt="Hellofixo Hero"
+              alt="helloFixo Hero"
               fill
               className="object-cover"
               unoptimized
@@ -380,7 +380,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-xl font-bold text-primary-foreground">S</span>
             </div>
-            <span className="text-lg font-bold text-foreground">Hellofixo</span>
+            <span className="text-lg font-bold text-foreground">helloFixo</span>
           </div>
           <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
             Leading the way in doorstep mobile and appliance repairs across Bihar. Join thousands of happy customers today.
@@ -391,7 +391,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
             <Link href="/contact" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary">Support</Link>
           </div>
           <p className="text-[10px] font-medium text-muted-foreground/40 uppercase tracking-[0.2em]">
-            &copy; {new Date().getFullYear()} Hellofixo &bull; Crafted with love
+            &copy; {new Date().getFullYear()} helloFixo &bull; Crafted with love
           </p>
         </div>
       </div>

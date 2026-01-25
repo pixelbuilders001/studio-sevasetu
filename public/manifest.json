@@ -1,6 +1,6 @@
 {
-    "name": "Hellofixo",
-    "short_name": "Hellofixo",
+    "name": "helloFixo",
+    "short_name": "helloFixo",
     "description": "Bihar's Most Trusted Doorstep Repair Service",
     "start_url": "/",
     "scope": "/",
@@ -40,14 +40,14 @@
             "sizes": "512x512",
             "type": "image/png",
             "form_factor": "wide",
-            "label": "Hellofixo Home"
+            "label": "helloFixo Home"
         },
         {
             "src": "/icons/icon-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "form_factor": "narrow",
-            "label": "Hellofixo Mobile"
+            "label": "helloFixo Mobile"
         }
     ],
     "id": "/",

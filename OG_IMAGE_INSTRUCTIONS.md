@@ -12,9 +12,9 @@ To enable proper preview images on WhatsApp, Facebook, Instagram, and Twitter, y
 
 ### Design Guidelines:
 1. **Background**: Use your brand color (#1e1b4b) or a gradient
-2. **Logo**: Include your Hellofixo logo prominently
+2. **Logo**: Include your helloFixo logo prominently
 3. **Text**: 
-   - Main headline: "Hellofixo"
+   - Main headline: "helloFixo"
    - Subheadline: "Bihar's Most Trusted Doorstep Repair Service"
    - Tagline: "Premium Repairs at Your Doorstep"
 4. **Visual Elements**: 

@@ -77,7 +77,7 @@ export function DesktopNavbar() {
                 <Link href="/" className="flex items-center gap-2">
                     <Image
                         src="/logo-image.png"
-                        alt="Hellofixo"
+                        alt="hellofixo"
                         width={90}
                         height={28}
                         className="object-contain h-8 w-auto"

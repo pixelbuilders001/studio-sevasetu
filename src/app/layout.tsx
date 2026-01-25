@@ -18,8 +18,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'Hellofixo - Bihar\'s Most Trusted Doorstep Repair Service',
-    template: '%s | Hellofixo',
+    default: 'helloFixo - Bihar\'s Most Trusted Doorstep Repair Service',
+    template: '%s | helloFixo',
   },
   description: 'Premium doorstep mobile, laptop, and appliance repairs across Bihar. Certified technicians, 60-min visits, and 30-day warranty. Book now for affordable and reliable service.',
   keywords: [
@@ -39,9 +39,9 @@ export const metadata: Metadata = {
     'mobile repair service',
     'laptop repair service',
   ],
-  authors: [{ name: 'Hellofixo', url: 'https://hellofixo.in' }],
-  creator: 'Hellofixo',
-  publisher: 'Hellofixo',
+  authors: [{ name: 'helloFixo', url: 'https://hellofixo.in' }],
+  creator: 'helloFixo',
+  publisher: 'helloFixo',
   metadataBase: new URL('https://hellofixo.in'),
   manifest: '/manifest.json',
   alternates: {
@@ -51,26 +51,26 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     url: 'https://hellofixo.in',
-    siteName: 'Hellofixo',
-    title: 'Hellofixo - Bihar\'s Most Trusted Doorstep Repair Service',
+    siteName: 'helloFixo',
+    title: 'helloFixo - Bihar\'s Most Trusted Doorstep Repair Service',
     description: 'Get your phone, laptop, or home appliances fixed at your doorstep by certified professionals in Bihar. 60-min visits, 30-day warranty, and affordable pricing.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Hellofixo - Doorstep Repair Service in Bihar',
+        alt: 'helloFixo - Doorstep Repair Service in Bihar',
         type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Hellofixo - Bihar\'s Most Trusted Doorstep Repair Service',
+    title: 'helloFixo - Bihar\'s Most Trusted Doorstep Repair Service',
     description: 'Premium doorstep repairs for phones and appliances in Bihar. Certified technicians, fast service, and guaranteed quality.',
     images: ['/og-image.png'],
-    creator: '@hellofixo',
-    site: '@hellofixo',
+    creator: '@helloFixo',
+    site: '@helloFixo',
   },
   robots: {
     index: true,
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Hellofixo',
+    title: 'helloFixo',
   },
   formatDetection: {
     telephone: true,
@@ -129,7 +129,7 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Hellofixo",
+    "name": "hellofixo",
     "image": "https://hellofixo.in/logo-image.png",
     "@id": "https://hellofixo.in",
     "url": "https://hellofixo.in",
@@ -162,9 +162,9 @@ export default function RootLayout({
       "closes": "20:00"
     },
     "sameAs": [
-      "https://facebook.com/hellofixo",
-      "https://twitter.com/hellofixo",
-      "https://instagram.com/hellofixo"
+      "https://facebook.com/helloFixo",
+      "https://twitter.com/helloFixo",
+      "https://instagram.com/helloFixo"
     ]
   };
 
@@ -172,7 +172,7 @@ export default function RootLayout({
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Hellofixo",
+    "name": "helloFixo",
     "url": "https://hellofixo.in",
     "logo": "https://hellofixo.in/logo-image.png",
     "contactPoint": {
@@ -184,8 +184,8 @@ export default function RootLayout({
     },
     "sameAs": [
       "https://facebook.com/hellofixo",
-      "https://twitter.com/hellofixo",
-      "https://instagram.com/hellofixo"
+      "https://twitter.com/helloFixo",
+      "https://instagram.com/helloFixo"
     ]
   };
 
@@ -195,7 +195,7 @@ export default function RootLayout({
     "serviceType": "Repair Service",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Hellofixo"
+      "name": "helloFixo"
     },
     "areaServed": {
       "@type": "State",
@@ -245,7 +245,7 @@ export default function RootLayout({
         <meta property="og:image:height" content="630" />
         <meta property="og:image:type" content="image/png" />
         <meta property="og:image:secure_url" content="https://hellofixo.in/og-image.png" />
-        <meta name="twitter:image:alt" content="Hellofixo - Doorstep Repair Service in Bihar" />
+        <meta name="twitter:image:alt" content="helloFixo - Doorstep Repair Service in Bihar" />
         {/* Additional WhatsApp/Facebook meta tags */}
         <meta property="fb:app_id" content="" />
         <meta name="theme-color" content="#1e1b4b" />

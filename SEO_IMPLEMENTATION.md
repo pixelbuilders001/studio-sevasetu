@@ -89,7 +89,7 @@ When sharing on:
 - **LinkedIn**: Shows professional preview
 
 All platforms will display:
-- Title: "Hellofixo - Bihar's Most Trusted Doorstep Repair Service"
+- Title: "helloFixo - Bihar's Most Trusted Doorstep Repair Service"
 - Description: Compelling service description
 - Image: Your logo-image.png (or og-image.png when created)
 

@@ -1159,3 +1159,51 @@ export async function getPincodeDataAction(pincode: string) {
     error: lastError instanceof Error ? lastError.message : 'Pincode service is currently unavailable. Please try again later.'
   };
 }
+
+export async function getTechniciansByPincodeAction(pincode: string) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/technicians?pincode=eq.${pincode}&is_active=eq.true&is_verified=eq.true&select=id,full_name,primary_skill,selfie_url,total_experience,service_area,other_skills`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      console.error('Technicians by pincode fetch error:', await response.text());
+      return [];
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Technicians by pincode fetch failed:', error);
+    return [];
+  }
+}

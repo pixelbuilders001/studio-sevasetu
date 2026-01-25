@@ -13,11 +13,11 @@ export async function generateMetadata(
 
   if (!category) {
     return {
-      title: 'Service Not Found - Hellofixo',
+      title: 'Service Not Found - helloFixo',
     };
   }
 
-  const title = `${category.name} Repair Service in Bihar | Hellofixo`;
+  const title = `${category.name} Repair Service in Bihar | helloFixo`;
   const description = `Professional ${category.name.toLowerCase()} repair services at your doorstep in Bihar. Certified technicians, fast visit, and guaranteed quality. Book your ${category.name.toLowerCase()} service today!`;
 
   return {
@@ -35,19 +35,19 @@ export async function generateMetadata(
       title,
       description,
       url: `https://hellofixo.in/book/${categorySlug}`,
-      siteName: 'Hellofixo',
+      siteName: 'helloFixo',
       images: [
         {
           url: category.image.imageUrl,
           width: 1200,
           height: 630,
-          alt: `${category.name} Repair Service - Hellofixo`,
+          alt: `${category.name} Repair Service - helloFixo`,
         },
         {
           url: '/logo-image.png',
           width: 1200,
           height: 630,
-          alt: 'Hellofixo - Doorstep Repair Service',
+          alt: 'helloFixo - Doorstep Repair Service',
         },
       ],
       locale: 'en_IN',
@@ -57,7 +57,7 @@ export async function generateMetadata(
       title,
       description,
       images: [category.image.imageUrl],
-      creator: '@hellofixo',
+      creator: '@helloFixo',
     },
     alternates: {
       canonical: `/book/${categorySlug}`,

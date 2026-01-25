@@ -42,7 +42,7 @@ export default function BecomePartner() {
             <div className="w-full lg:w-5/12 relative aspect-[2/1] lg:aspect-auto self-stretch min-h-[180px] md:min-h-[300px]">
               <Image
                 src="/partner-on-scooter.png"
-                alt="Hellofixo Partner"
+                alt="helloFixo Partner"
                 fill
                 className="object-cover object-top scale-110 lg:scale-100"
               />
@@ -70,7 +70,7 @@ export default function BecomePartner() {
                 className="text-2xl md:text-5xl font-black font-headline mb-3 md:mb-4 leading-[1.1] tracking-tight"
               >
                 Earn Big with <br />
-                <span className="text-yellow-300 italic">Hellofixo</span>
+                <span className="text-yellow-300 italic">helloFixo</span>
               </motion.h2>
 
               <motion.p
