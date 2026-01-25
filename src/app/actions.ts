@@ -35,7 +35,7 @@ export async function trackBooking(prevState: any, formData: FormData): Promise<
   }
 
   try {
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking_status_history?order_id=eq.${orderId}&select=order_id,status,note,created_at`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking_status_history?order_id=eq.${orderId}&select=order_id,status,note,created_at`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
@@ -148,7 +148,7 @@ export async function bookService(
   payload.set('final_amount_paid', '');
   payload.set('final_amount_to_be_paid', '');
   try {
-    const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/bookings', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/bookings`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -254,7 +254,7 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
       throw new Error(errorData.message || 'Failed to update booking with final amount.');
     }
 
-    const jobStatusResponse = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/update-job-status', {
+    const jobStatusResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/update-job-status`, {
       method: 'POST',
       headers: commonHeaders,
       body: JSON.stringify({
@@ -330,7 +330,7 @@ export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
       throw new Error(errorData.message || 'Failed to update quote status.');
     }
 
-    const jobStatusResponse = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/update-job-status', {
+    const jobStatusResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/update-job-status`, {
       method: 'POST',
       headers: commonHeaders,
       body: JSON.stringify({
@@ -376,24 +376,29 @@ export async function getUserProfile() {
       }
     );
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
-      console.error('Authentication Error:', sessionError?.message);
-      return { message: "Error", error: "You must be logged in to create a booking." };
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error('Authentication Error:', authError?.message);
+      return { message: "Error", error: "You must be logged in to view your profile." };
     }
 
-    const accessToken = session.access_token;
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/profiles?id=eq.${session.user.id}&limit=1`, {
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
+
+    if (!accessToken) {
+      return { message: "Error", error: "Session expired." };
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&limit=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json'
       },
-      cache: 'no-store', // Ensure fresh data on every fetch
+      cache: 'no-store',
     });
-    console.log("response", response)
+
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Profile API Error:', errorData);
@@ -401,10 +406,9 @@ export async function getUserProfile() {
     }
 
     const profileData = await response.json();
-    console.log("Profile data fetched from DB:", profileData);
 
     if (!profileData || profileData.length === 0) {
-      console.warn("No profile found for user ID:", session.user.id);
+      console.warn("No profile found for user ID:", user.id);
       return null;
     }
 
@@ -448,7 +452,7 @@ export async function updateUserProfile(data: { full_name: string; phone: string
     const accessToken = session.access_token;
     const userId = session.user.id;
 
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/profiles?id=eq.${userId}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -503,18 +507,18 @@ export async function getWalletBalance() {
       }
     );
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (sessionError || !session) {
-      console.error('Authentication Error:', sessionError?.message);
+    if (authError || !user) {
+      console.error('Authentication Error:', authError?.message);
       return 0;
     }
 
-    const accessToken = session.access_token;
-    const userId = session.user.id;
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
+    if (!accessToken) return 0;
 
-    // Direct REST API call as requested
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/wallets?user_id=eq.${userId}&limit=1`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/wallets?user_id=eq.${user.id}&limit=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -524,7 +528,6 @@ export async function getWalletBalance() {
     });
 
     if (!response.ok) {
-      // If not found (404) or empty, checking return
       if (response.status === 404) return 0;
       console.error('Failed to fetch wallet balance', response.statusText);
       return 0;
@@ -566,17 +569,18 @@ export async function getReferralCode() {
       }
     );
 
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (sessionError || !session) {
-      console.error('Authentication Error:', sessionError?.message);
+    if (authError || !user) {
+      console.error('Authentication Error:', authError?.message);
       return null;
     }
 
-    const accessToken = session.access_token;
-    const userId = session.user.id;
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
+    if (!accessToken) return null;
 
-    const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/referral_codes?user_id=eq.${session.user.id}&limit=1`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/referral_codes?user_id=eq.${user.id}&limit=1`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -601,6 +605,78 @@ export async function getReferralCode() {
   } catch (error) {
     console.error('Referral code fetch failed:', error);
     return null;
+  }
+}
+
+export async function getInitialProfileDataAction() {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+      }
+    );
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, error: "Not authenticated" };
+    }
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
+    if (!accessToken) return { success: false, error: "Session expired" };
+
+    const commonHeaders = {
+      'Authorization': `Bearer ${accessToken}`,
+      'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json'
+    };
+
+    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+    const [profileRes, walletRes, referralRes] = await Promise.all([
+      fetch(`${baseUrl}/rest/v1/profiles?id=eq.${user.id}&limit=1`, { headers: commonHeaders, cache: 'no-store' }),
+      fetch(`${baseUrl}/rest/v1/wallets?user_id=eq.${user.id}&limit=1`, { headers: commonHeaders, cache: 'no-store' }),
+      fetch(`${baseUrl}/rest/v1/referral_codes?user_id=eq.${user.id}&limit=1`, { headers: commonHeaders, cache: 'no-store' })
+    ]);
+
+    const [profileData, walletData, referralData] = await Promise.all([
+      profileRes.ok ? profileRes.json() : Promise.resolve([]),
+      walletRes.ok ? walletRes.json() : Promise.resolve([]),
+      referralRes.ok ? referralRes.json() : Promise.resolve([])
+    ]);
+
+    return {
+      success: true,
+      profile: profileData[0] || null,
+      walletBalance: walletData[0]?.balance || 0,
+      referralCode: referralData[0]?.referral_code || null,
+      user: {
+        id: user.id,
+        email: user.email,
+        phone: user.phone,
+        user_metadata: user.user_metadata,
+        created_at: user.created_at
+      }
+    };
+
+  } catch (error) {
+    console.error('getInitialProfileDataAction failed:', error);
+    return { success: false, error: "Internal server error" };
   }
 }
 
@@ -696,7 +772,7 @@ export async function verifyReferralCode(code: string) {
       'Content-Type': 'application/json',
     };
 
-    const response = await fetch('https://upoafhtidiwsihwijwex.supabase.co/functions/v1/check-referral', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/check-referral`, {
       method: 'POST',
       headers: commonHeaders,
       body: JSON.stringify({ referral_code: code }),
@@ -1034,4 +1110,52 @@ export async function getTechnicianById(technicianId: string) {
     console.error('Technician fetch failed:', error);
     return null;
   }
+}
+
+export async function getPincodeDataAction(pincode: string) {
+  const MAX_RETRIES = 2;
+  const TIMEOUT_MS = 8000;
+
+  const fetchWithTimeout = async (url: string, timeout: number) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(id);
+      return response;
+    } catch (error) {
+      clearTimeout(id);
+      throw error;
+    }
+  };
+
+  let lastError: any = null;
+
+  for (let i = 0; i <= MAX_RETRIES; i++) {
+    try {
+      const response = await fetchWithTimeout(`https://api.postalpincode.in/pincode/${pincode}`, TIMEOUT_MS);
+      if (!response.ok) {
+        throw new Error(`API returned status ${response.status}`);
+      }
+      const data = await response.json();
+      if (data && data[0].Status === 'Success') {
+        return { success: true, data: data[0].PostOffice };
+      } else if (data && data[0].Status === 'Error') {
+        return { success: false, error: data[0].Message || 'Invalid Pincode' };
+      }
+      throw new Error('Unexpected API response format');
+    } catch (error) {
+      lastError = error;
+      console.warn(`Pincode lookup attempt ${i + 1} failed:`, error);
+      if (i < MAX_RETRIES) {
+        // Wait a bit before retrying
+        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+      }
+    }
+  }
+
+  return {
+    success: false,
+    error: lastError instanceof Error ? lastError.message : 'Pincode service is currently unavailable. Please try again later.'
+  };
 }

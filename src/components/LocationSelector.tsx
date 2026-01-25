@@ -19,6 +19,7 @@ import { ChevronDown, Loader2, MapPin } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { useTranslation } from '@/hooks/useTranslation';
+import { getPincodeDataAction } from '@/app/actions';
 
 type PostalInfo = {
   Name: string;
@@ -57,11 +58,10 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
     setCurrentIsServiceable(false);
 
     try {
-      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
-      const data = await response.json();
+      const result = await getPincodeDataAction(pincode);
 
-      if (data && data[0].Status === 'Success') {
-        const postOffices = data[0].PostOffice;
+      if (result.success && result.data) {
+        const postOffices = result.data;
         const district = postOffices[0]?.District;
         console.log("District:", district);
 
@@ -87,7 +87,7 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
         }
 
       } else {
-        setError(data[0].Message || t('errorCouldNotFindPincode'));
+        setError(result.error || t('errorCouldNotFindPincode'));
         setPostalData([]);
         setCurrentIsServiceable(false);
       }

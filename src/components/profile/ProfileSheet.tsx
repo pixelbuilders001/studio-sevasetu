@@ -25,7 +25,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
-import { getUserProfile, getWalletBalance, getReferralCode } from '@/app/actions';
+import { getInitialProfileDataAction } from '@/app/actions';
 import { EditProfileModal } from './EditProfileModal';
 import { AddressManagementModal } from './AddressManagementModal';
 import { BookingHistoryModal } from './BookingHistoryModal';
@@ -214,7 +214,6 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
   const [walletBalance, setWalletBalance] = useState<number>(0);
@@ -222,51 +221,49 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
-  console.log(profile);
+
   useEffect(() => {
     const init = async () => {
       if (!isOpen) return;
       try {
         setLoading(true);
-        const { data } = await supabase.auth.getSession();
+        const result = await getInitialProfileDataAction();
 
-        if (!data.session) {
-          setLoading(false);
-          return;
-        }
+        if (result.success) {
+          const { profile: p, walletBalance: balance, referralCode: refCode, user: authUser } = result;
 
-        setSession(data.session);
+          if (p) {
+            setProfile({
+              ...p,
+              referral_code: refCode || p.referral_code || '',
+            });
+          } else {
+            // Fallback to auth user info
+            setProfile({
+              id: authUser.id,
+              email: authUser.email || '',
+              full_name: authUser.user_metadata?.full_name || '',
+              role: 'user',
+              phone: authUser.phone || '',
+              created_at: authUser.created_at || new Date().toISOString(),
+              referral_code: refCode || '',
+            } as UserProfile);
 
-        const [p, balance, refCode] = await Promise.all([
-          getUserProfile(),
-          getWalletBalance(),
-          getReferralCode()
-        ]);
-
-        if (p && !p.error) {
-          setProfile({
-            ...p,
-            referral_code: refCode || p.referral_code || '',
-          });
+            toast({
+              title: "Profile Not Found",
+              description: "Showing basic account info.",
+            });
+          }
           setWalletBalance(balance);
         } else {
-          console.error("Profile data error or missing:", p);
-          // Fallback to basic session info
-          setProfile({
-            id: data.session.user.id,
-            email: data.session.user.email || '',
-            full_name: data.session.user.user_metadata?.full_name || '',
-            role: 'user', // Default role
-            phone: data.session.user.phone || '',
-            created_at: data.session.user.created_at || new Date().toISOString(),
-            referral_code: refCode || '',
-          } as UserProfile);
-          setWalletBalance(balance); // Still set wallet balance if available
-          toast({
-            title: "Error",
-            description: "Failed to load full profile data, showing basic info.",
-            variant: "destructive"
-          });
+          console.error("Profile data error:", result.error);
+          if (result.error !== "Not authenticated") {
+            toast({
+              title: "Error",
+              description: "Failed to load profile data.",
+              variant: "destructive"
+            });
+          }
         }
       } catch (error) {
         console.error("Failed to initialize profile:", error);
@@ -275,14 +272,17 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
       }
     };
     init();
-  }, [isOpen, supabase, toast]);
+  }, [isOpen, toast]);
 
   const refreshProfile = async () => {
-    const p = await getUserProfile();
-    setProfile({
-      ...p,
-      referral_code: p.referral_code || `REF${p.id.slice(0, 5).toUpperCase()}`,
-    });
+    const result = await getInitialProfileDataAction();
+    if (result.success && result.profile) {
+      setProfile({
+        ...result.profile,
+        referral_code: result.referralCode || result.profile.referral_code || '',
+      });
+      setWalletBalance(result.walletBalance);
+    }
   };
 
   const logout = async () => {
@@ -306,7 +306,7 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
   if (loggingOut) return <FullScreenLoader message="Logging out..." />;
   if (loading) return <ProfileSkeleton />;
 
-  if (!session || !profile)
+  if (!profile)
     return (
       <div className="p-8 text-center">
         <h3 className="font-semibold text-lg">Not Logged In</h3>
@@ -472,7 +472,7 @@ export function ProfileSheet({ isHero }: { isHero?: boolean }) {
         <SheetHeader className="sr-only">
           <SheetTitle>Profile</SheetTitle>
         </SheetHeader>
-        <ProfileContent isOpen={open} />
+        {open && <ProfileContent isOpen={open} />}
       </SheetContent>
     </Sheet>
   );
