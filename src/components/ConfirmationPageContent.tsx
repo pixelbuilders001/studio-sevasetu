@@ -148,10 +148,10 @@ export default function ConfirmationPageContent() {
                     </div>
                   </div>
                   <Button asChild className="h-9 px-4 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-xl font-black text-[9px] uppercase tracking-widest shadow-lg shadow-green-500/20">
-                    <Link href={`https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`} target="_blank" className="flex items-center gap-1.5">
+                    <a href={`https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
                       <Share className="w-3 h-3" />
                       Share
-                    </Link>
+                    </a>
                   </Button>
                 </div>
               </div>

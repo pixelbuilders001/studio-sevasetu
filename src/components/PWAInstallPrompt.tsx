@@ -193,7 +193,7 @@ export default function PWAInstallPrompt() {
                             </p>
                         </div>
 
-                        {(platform === 'android') && deferredPrompt ? (
+                        {deferredPrompt ? (
                             <Button
                                 onClick={handleInstallClick}
                                 size="sm"
