@@ -178,7 +178,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
         <h2 className="text-3xl font-black text-[#1e1b4b] mb-2">Welcome Back!</h2>
         <p className="text-indigo-600 font-bold mb-8 text-sm">{session?.user?.email}</p>
         <Button
-          className="w-full max-w-xs h-14 rounded-2xl bg-red-500 text-white text-base font-black hover:bg-red-600 shadow-lg shadow-red-200 transition-all"
+          className="w-full max-w-xs h-14 rounded-2xl bg-red-500 text-white text-base font-black hover:bg-red-600 active:bg-red-700 shadow-lg shadow-red-200 transition-all"
           onClick={handleLogout}
           disabled={loading}
         >
@@ -228,7 +228,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               </div>
               <Button
                 type="submit"
-                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all"
+                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 active:bg-primary/80 shadow-lg shadow-primary/20 transition-all"
                 disabled={loading}
               >
                 {loading ? 'SIGNING IN...' : <>SIGN IN <ArrowRight className="h-5 w-5" /></>}
@@ -296,7 +296,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               </div>
               <Button
                 type="submit"
-                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all"
+                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 active:bg-primary/80 shadow-lg shadow-primary/20 transition-all"
                 disabled={loading}
               >
                 {loading ? 'CREATING ACCOUNT...' : <>CREATE ACCOUNT <ArrowRight className="h-5 w-5" /></>}
@@ -337,7 +337,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               </div>
               <Button
                 type="submit"
-                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all"
+                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 active:bg-primary/80 shadow-lg shadow-primary/20 transition-all"
                 disabled={loading}
               >
                 {loading ? 'SENDING...' : <>SEND RESET LINK <ArrowRight className="h-5 w-5" /></>}

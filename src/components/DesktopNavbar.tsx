@@ -131,7 +131,7 @@ export function DesktopNavbar() {
 
                         <Dialog open={authOpen} onOpenChange={setAuthOpen}>
                             <DialogTrigger asChild>
-                                <Button className="rounded-full px-8 py-6 font-black tracking-widest bg-[#1e1b4b] hover:bg-primary text-white shadow-xl shadow-indigo-100 transition-all uppercase text-xs">
+                                <Button className="relative z-10 rounded-full px-8 py-6 font-black tracking-widest bg-[#1e1b4b] hover:bg-primary text-white active:bg-[#151336] active:text-white shadow-xl shadow-indigo-100 transition-all uppercase text-xs">
                                     Login
                                 </Button>
                             </DialogTrigger>

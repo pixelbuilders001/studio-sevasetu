@@ -76,21 +76,26 @@ export default function PWAInstallPrompt() {
         let timer: NodeJS.Timeout | undefined;
 
         if (pathname === '/') {
+            // Homepage: 10s fallback timer OR 200px scroll
+            timer = setTimeout(setCriteriaMet, 10000);
+
             const handleScroll = () => {
-                if (window.scrollY > 400) {
+                if (window.scrollY > 200) {
                     setCriteriaMet();
                     window.removeEventListener('scroll', handleScroll);
                 }
             };
             window.addEventListener('scroll', handleScroll);
-            if (window.scrollY > 400) setCriteriaMet();
+            if (window.scrollY > 200) setCriteriaMet();
 
             return () => {
+                if (timer) clearTimeout(timer);
                 window.removeEventListener('scroll', handleScroll);
             };
         } else if (pathname === '/confirmation') {
             timer = setTimeout(setCriteriaMet, 3000);
         } else {
+            // Other pages: short delay
             timer = setTimeout(setCriteriaMet, 2000);
         }
 
@@ -105,6 +110,9 @@ export default function PWAInstallPrompt() {
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
+        // Periodic check to catch events set by the head script
+        const interval = setInterval(checkAndShow, 1000);
+
         // Initial check immediately on mount
         checkAndShow();
 
@@ -113,6 +121,7 @@ export default function PWAInstallPrompt() {
 
         return () => {
             if (timer) clearTimeout(timer);
+            clearInterval(interval);
             window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
             window.removeEventListener('resize', handleResize);
         };

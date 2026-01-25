@@ -72,12 +72,12 @@ export default function AppDownloadBanner() {
                             </div>
 
                             {/* Share App Button */}
-                            <div className="w-full md:w-auto">
+                            {/* <div className="w-full md:w-auto">
                                 <ShareAppButton
                                     className="w-full md:w-auto h-auto py-3 md:py-4 px-8 rounded-xl md:rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white font-black text-xs md:text-sm shadow-xl transition-all hover:-translate-y-1 group/share"
                                     label="Share App"
                                 />
-                            </div>
+                            </div> */}
                         </motion.div>
                     </div>
 
