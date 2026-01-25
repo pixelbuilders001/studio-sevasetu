@@ -14,6 +14,7 @@ import { DesktopNavbar } from '@/components/DesktopNavbar';
 import OfflineDetector from '@/components/OfflineDetector';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import PWASessionRestore from '@/components/PWASessionRestore';
+import IntroductionModal from '@/components/IntroductionModal';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -26,6 +27,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <PWASessionRestore />
           <SplashScreen />
           <OfflineDetector />
+          {pathname === '/' && <IntroductionModal />}
           <PWAInstallPrompt />
           {/* Desktop Navigation */}
           <DesktopNavbar />
