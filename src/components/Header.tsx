@@ -9,56 +9,12 @@ import { User } from 'lucide-react';
 import UserAuthSheet from './UserAuthSheet';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { Session } from '@supabase/supabase-js';
-import { ProfileSheet } from '@/components/profile/ProfileSheet'; // Import the new ProfileSheet
-import { checkRestricted } from '@/utils/auth';
+import { ProfileSheet } from '@/components/profile/ProfileSheet';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Header() {
-  const [session, setSession] = useState<Session | null>(null);
+  const { session, loading } = useAuth();
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  console.log("sahdhsxhsh", session, sheetOpen);
-
-  const supabase = createSupabaseBrowserClient();
-
-  useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-
-      if (data.session?.user) {
-        const isRestricted = await checkRestricted(supabase, data.session.user.id);
-        if (isRestricted) {
-          setSession(null);
-          setLoading(false);
-          return;
-        }
-      }
-
-      setSession(data.session);
-      setLoading(false);
-    };
-    getSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const isRestricted = await checkRestricted(supabase, session.user.id);
-        if (isRestricted) {
-          setSession(null);
-          // Do NOT close sheet
-          return;
-        }
-      }
-
-      setSession(session);
-      // Close login sheet only if valid user logs in
-      if (session && sheetOpen) {
-        setSheetOpen(false);
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [supabase.auth, sheetOpen]);
 
   // Skeleton loader for when session is being determined
   if (loading) {

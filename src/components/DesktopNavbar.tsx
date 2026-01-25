@@ -1,4 +1,4 @@
-'use client';
+import React, { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -8,9 +8,8 @@ import { HellofixoLogo } from '@/components/HellofixoLogo';
 import LocationSelector from '@/components/LocationSelector';
 import { Button } from '@/components/ui/button';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
-import { useEffect, useState } from 'react';
-import { Session } from '@supabase/supabase-js';
 import { ProfileSheet } from '@/components/profile/ProfileSheet';
+import { useAuth } from '@/context/AuthContext';
 import {
     Dialog,
     DialogContent,
@@ -27,36 +26,18 @@ import ServicesMegaMenu from './ServicesMegaMenu';
 
 export function DesktopNavbar() {
     const pathname = usePathname();
-    const [session, setSession] = useState<Session | null>(null);
+    const { session } = useAuth();
     const [authOpen, setAuthOpen] = useState(false);
     const [megaMenuOpen, setMegaMenuOpen] = useState(false);
     const [categories, setCategories] = useState<ServiceCategory[]>([]);
-    const supabase = createSupabaseBrowserClient();
 
     useEffect(() => {
-        const getSession = async () => {
-            const { data } = await supabase.auth.getSession();
-            setSession(data.session);
-        };
-        getSession();
-
         const fetchCategories = async () => {
             const cats = await getServiceCategoriesAction();
             setCategories(cats);
         };
         fetchCategories();
-
-        const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            setSession(session);
-            if (session && authOpen) {
-                setAuthOpen(false);
-            }
-        });
-
-        return () => {
-            authListener.subscription.unsubscribe();
-        };
-    }, [supabase.auth, authOpen]);
+    }, []);
 
     const toggleServices = (e: React.MouseEvent) => {
         e.preventDefault();

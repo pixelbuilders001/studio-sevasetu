@@ -32,7 +32,7 @@ export default function PWASessionRestore() {
       try {
         // Get current session
         const { data: { session }, error } = await supabase.auth.getSession();
-        
+
         if (error) {
           console.warn('Session restore error:', error);
           isRestoringRef.current = false;
@@ -48,7 +48,7 @@ export default function PWASessionRestore() {
 
           if (expiresAt && (expiresAt - now) < fiveMinutes) {
             // Session is about to expire, refresh it
-            const { data: { session: refreshedSession }, error: refreshError } = 
+            const { data: { session: refreshedSession }, error: refreshError } =
               await supabase.auth.refreshSession();
 
             if (refreshError) {

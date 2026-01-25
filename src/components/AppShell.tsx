@@ -15,30 +15,33 @@ import OfflineDetector from '@/components/OfflineDetector';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import PWASessionRestore from '@/components/PWASessionRestore';
 import IntroductionModal from '@/components/IntroductionModal';
+import { AuthProvider } from '@/context/AuthContext';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const showBottomNav = ['/', '/wallet', '/history'].includes(pathname);
 
   return (
-    <LanguageProvider>
-      <LocationProvider>
-        <BookingProvider>
-          <PWASessionRestore />
-          <SplashScreen />
-          <OfflineDetector />
-          {pathname === '/' && <IntroductionModal />}
-          <PWAInstallPrompt />
-          {/* Desktop Navigation */}
-          <DesktopNavbar />
+    <AuthProvider>
+      <LanguageProvider>
+        <LocationProvider>
+          <BookingProvider>
+            <PWASessionRestore />
+            <SplashScreen />
+            <OfflineDetector />
+            {pathname === '/' && <IntroductionModal />}
+            <PWAInstallPrompt />
+            {/* Desktop Navigation */}
+            <DesktopNavbar />
 
-          {pathname !== '/' && <Header />}
-          <main className={`flex-grow ${pathname === '/' ? 'pt-0 md:pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
-          <Footer />
-          {showBottomNav && <BottomNavBar />}
-          <Toaster />
-        </BookingProvider>
-      </LocationProvider>
-    </LanguageProvider>
+            {pathname !== '/' && <Header />}
+            <main className={`flex-grow ${pathname === '/' ? 'pt-0 md:pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
+            <Footer />
+            {showBottomNav && <BottomNavBar />}
+            <Toaster />
+          </BookingProvider>
+        </LocationProvider>
+      </LanguageProvider>
+    </AuthProvider>
   );
 }

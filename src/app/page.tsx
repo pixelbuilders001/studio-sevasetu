@@ -104,62 +104,26 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
 }
 
 
+import { useAuth } from '@/context/AuthContext';
+
 export default function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const { lang } = use(searchParams);
   const { t } = useTranslation();
   const router = useRouter();
 
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState<Session | null>(null);
+  const { session, loading: authLoading } = useAuth();
   const [sheetOpen, setSheetOpen] = useState(false);
-
-
-  const supabase = createSupabaseBrowserClient();
-
-  useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session?.user) {
-        const isRestricted = await checkRestricted(supabase, data.session.user.id);
-        if (isRestricted) {
-          setSession(null);
-          return;
-        }
-      }
-      setSession(data.session);
-    };
-    getSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        const isRestricted = await checkRestricted(supabase, session.user.id);
-        if (isRestricted) {
-          setSession(null);
-          // Do NOT close sheet
-          return;
-        }
-      }
-
-      setSession(session);
-      if (session && sheetOpen) {
-        setSheetOpen(false);
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [supabase.auth, sheetOpen]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      setLoading(true);
+      setCategoriesLoading(true);
       try {
         const data = await getServiceCategoriesAction();
         setCategories(data);
       } finally {
-        setLoading(false);
+        setCategoriesLoading(false);
       }
     };
     fetchCategories();
@@ -291,7 +255,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           </Sheet>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-8">
-          {loading
+          {categoriesLoading
             ? Array.from({ length: 6 }).map((_, i) => <ServiceCardSkeleton key={i} />)
             : categories.slice(0, 6).map((category) => (
               <ServiceCard key={category.id} category={category} />

@@ -31,56 +31,24 @@ const AuthHeaderLogo = ({ title, subtitle }: { title: React.ReactNode; subtitle:
 
 type AuthView = 'signIn' | 'createAccount' | 'forgotPassword';
 
+import { useAuth } from '@/context/AuthContext';
+
 export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: boolean) => void; }) {
   const [currentView, setCurrentView] = useState<AuthView>('signIn');
-  const [session, setSession] = useState<Session | null>(null);
+  const { session, isRestricted } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [message, setMessage] = useState('');
 
   const supabase = createSupabaseBrowserClient();
   const { toast } = useToast();
 
   useEffect(() => {
-    const initSession = async () => {
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
-      if (currentSession?.user) {
-        const isRestricted = await checkRestricted(supabase, currentSession.user.id);
-        if (isRestricted) {
-          await supabase.auth.signOut();
-          setSession(null);
-          setMessage('Invalid credentials');
-          return;
-        }
-      }
-      setSession(currentSession);
-    };
-    initSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const isRestricted = await checkRestricted(supabase, session.user.id);
-        if (isRestricted) {
-          await supabase.auth.signOut();
-          setSession(null);
-          setMessage('Invalid credentials');
-          toast({
-            variant: "destructive",
-            title: "Access Denied",
-            description: "Invalid credentials.",
-          });
-          return;
-        }
-      }
-      setSession(session);
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [supabase.auth, toast]);
+    if (isRestricted) {
+      setMessage('Invalid credentials');
+    }
+  }, [isRestricted]);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -122,7 +90,6 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
 
       if (isRestricted) {
         await supabase.auth.signOut();
-        setSession(null);
         setMessage('Invalid credentials');
         toast({
           variant: "destructive",
@@ -157,17 +124,15 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
   };
 
   const handleLogout = async () => {
-    setLoggingOut(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
+    setLoading(true);
     await supabase.auth.signOut();
     setSheetOpen(false);
-    setLoggingOut(false);
+    setLoading(false);
   };
 
   const UserAccountView = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full w-full max-w-sm">
-        {loggingOut && <FullScreenLoader message="Logging out..." />}
         <div className="relative mb-8">
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full blur-xl opacity-30" />
           <Avatar className="w-28 h-28 border-4 border-indigo-100 shadow-2xl relative z-10">
@@ -228,7 +193,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               </div>
               <Button
                 type="submit"
-                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 active:bg-primary/80 shadow-lg shadow-primary/20 transition-all"
+                className="w-full h-14 rounded-2xl bg-brand-600 text-white text-base font-black flex items-center justify-center gap-2 hover:bg-brand-700 active:scale-95 shadow-xl shadow-brand-200 transition-all uppercase"
                 disabled={loading}
               >
                 {loading ? 'SIGNING IN...' : <>SIGN IN <ArrowRight className="h-5 w-5" /></>}
@@ -296,7 +261,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               </div>
               <Button
                 type="submit"
-                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 active:bg-primary/80 shadow-lg shadow-primary/20 transition-all"
+                className="w-full h-14 rounded-2xl bg-brand-600 text-white text-base font-black flex items-center justify-center gap-2 hover:bg-brand-700 active:scale-95 shadow-xl shadow-brand-200 transition-all uppercase"
                 disabled={loading}
               >
                 {loading ? 'CREATING ACCOUNT...' : <>CREATE ACCOUNT <ArrowRight className="h-5 w-5" /></>}
@@ -337,7 +302,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
               </div>
               <Button
                 type="submit"
-                className="w-full h-14 rounded-2xl bg-primary text-white text-base font-black flex items-center justify-center gap-2 hover:bg-primary/90 active:bg-primary/80 shadow-lg shadow-primary/20 transition-all"
+                className="w-full h-14 rounded-2xl bg-brand-600 text-white text-base font-black flex items-center justify-center gap-2 hover:bg-brand-700 active:scale-95 shadow-xl shadow-brand-200 transition-all uppercase"
                 disabled={loading}
               >
                 {loading ? 'SENDING...' : <>SEND RESET LINK <ArrowRight className="h-5 w-5" /></>}
