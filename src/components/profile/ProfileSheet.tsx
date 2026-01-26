@@ -340,10 +340,20 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
     setLoggingOut(true);
     // Add small delay to show loader 
     await new Promise(resolve => setTimeout(resolve, 800));
-    await supabase.auth.signOut();
-    toast({ title: 'Logged out successfully' });
-    router.push('/');
-    setLoggingOut(false);
+
+    try {
+      await Promise.race([
+        supabase.auth.signOut(),
+        new Promise(resolve => setTimeout(resolve, 2000))
+      ]);
+    } catch (e) {
+      console.warn('Profile logout timed out', e);
+    }
+
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('sb-session-auth');
+      window.location.reload();
+    }
   };
 
   const initials = (name: string) =>
