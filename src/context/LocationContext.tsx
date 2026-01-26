@@ -42,12 +42,12 @@ type LocationContextType = {
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
 const defaultLocation: Location = {
-  pincode: 'Enter 6-digit Pincode',
+  pincode: '',
   city: 'Select City',
   area: {
-    Name: 'Select City',
-    District: 'Select City',
-    State: 'Select City'
+    Name: '',
+    District: '',
+    State: ''
   },
   isServiceable: true,
   inspection_multiplier: 1,

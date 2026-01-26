@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useLocation } from '@/context/LocationContext';
-import { ChevronDown, Loader2, MapPin } from 'lucide-react';
+import { ChevronDown, Loader2, MapPin, Crosshair } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -60,6 +60,7 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
     try {
       const result = await getPincodeDataAction(pincode);
 
+
       if (result.success && result.data) {
         const postOffices = result.data;
         const district = postOffices[0]?.District;
@@ -99,6 +100,76 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGPSLocation = () => {
+    setIsLoading(true);
+    setError('');
+
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser.');
+      setIsLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+          if (!response.ok) throw new Error('Failed to fetch location data');
+
+          const data = await response.json();
+          const address = data.address;
+
+          console.log('GPS Address:', address);
+
+          // Normalize city: city || town || village || county
+          const city = address.city || address.town || address.village || address.county;
+
+          if (!city) {
+            throw new Error('Could not detect city/district from your location.');
+          }
+
+          const serviceableCityData = await checkServiceability(city);
+
+          if (serviceableCityData) {
+            const detectedPincode = address.postcode || "";
+            const mockArea: PostalInfo = {
+              Name: city, // Use city name as area name for display
+              District: city,
+              State: address.state || "",
+              Pincode: detectedPincode
+            };
+
+            setPostalData([mockArea]);
+            setSelectedArea(mockArea);
+            setCurrentIsServiceable(true);
+            setMultipliers({
+              inspection_multiplier: serviceableCityData.inspection_multiplier,
+              repair_multiplier: serviceableCityData.repair_multiplier
+            });
+            if (detectedPincode) setPincode(detectedPincode);
+          } else {
+            setError(`Sorry, we do not currently service ${city}.`);
+            setPostalData([]);
+            setCurrentIsServiceable(false);
+          }
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Failed to detect location.');
+          setPostalData([]);
+          setCurrentIsServiceable(false);
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      (err) => {
+        console.error("GPS Error:", err);
+        setError('Unable to retrieve your location. Please check browser permissions.');
+        setIsLoading(false);
+      },
+      { enableHighAccuracy: true }
+    );
   };
 
   const handleLocationConfirm = () => {
@@ -181,6 +252,23 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('searchButton')}
             </Button>
           </div>
+
+          <div className="relative flex py-1 items-center">
+            <div className="flex-grow border-t border-gray-200"></div>
+            <span className="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase font-bold">Or</span>
+            <div className="flex-grow border-t border-gray-200"></div>
+          </div>
+
+          <Button
+            onClick={handleGPSLocation}
+            disabled={isLoading}
+            variant="outline"
+            className="w-full rounded-xl h-11 border-dashed border-2 font-bold text-xs uppercase tracking-widest hover:bg-muted/50 hover:text-black dark:hover:text-white transition-all"
+          >
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Crosshair className="h-4 w-4 mr-2" />}
+            Detect my location
+          </Button>
+
           {error && <p className="text-sm text-destructive">{error}</p>}
           {postalData.length > 0 && currentIsServiceable && (
             <div className="space-y-2">

@@ -1260,7 +1260,7 @@ export async function getTechniciansByPincodeAction(pincode: string) {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/technicians?pincode=eq.${pincode}&is_active=eq.true&is_verified=eq.true&select=id,full_name,primary_skill,selfie_url,total_experience,service_area,other_skills`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/technicians?pincode=eq.${pincode}&is_active=eq.true&is_verified=eq.true&select=id,full_name,primary_skill,selfie_url,total_experience,service_area,other_skills,slug`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -1269,7 +1269,7 @@ export async function getTechniciansByPincodeAction(pincode: string) {
       },
       cache: 'no-store',
     });
-
+    // console.log(await response.json());
     if (!response.ok) {
       console.error('Technicians by pincode fetch error:', await response.text());
       return [];
