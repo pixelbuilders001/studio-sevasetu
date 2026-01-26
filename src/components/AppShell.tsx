@@ -26,7 +26,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <LocationProvider>
           <BookingProvider>
             <SplashScreen />
-            <SessionDebugger />
+            {/* <SessionDebugger /> */}
             <OfflineDetector />
             <OfflineDetector />
             {pathname === '/' && <IntroductionModal />}
