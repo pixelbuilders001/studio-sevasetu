@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import {
   User,
   Mail,
@@ -233,6 +234,7 @@ const ProfileSkeleton = () => (
 function ProfileContent({ isOpen }: { isOpen: boolean }) {
   const router = useRouter();
   const { toast } = useToast();
+  const { loading: authLoading, session: authSession } = useAuth();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -246,9 +248,10 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
 
   useEffect(() => {
     const init = async () => {
-      if (!isOpen) return;
+      if (!isOpen || authLoading) return;
       try {
         setLoading(true);
+        console.log('ProfileSheet/Content: Initializing profile data, authLoading is false');
         const result = await getInitialProfileDataAction();
 
         if (result.success) {
@@ -279,6 +282,32 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
           setWalletBalance(balance);
         } else {
           console.error("Profile data error:", result.error);
+          if (result.error === "Not authenticated") {
+            // One-time retry after a short delay (PWA hydration catch-up)
+            console.log('ProfileSheet/Content: Not authenticated, retrying in 1.5s...');
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            const retryResult = await getInitialProfileDataAction();
+            if (retryResult.success) {
+              console.log('ProfileSheet/Content: Retry successful!');
+              const { profile: p, walletBalance: balance, referralCode: refCode, user: authUser } = retryResult;
+              if (p) {
+                setProfile({ ...p, referral_code: refCode || p.referral_code || '' });
+              } else if (authUser) {
+                setProfile({
+                  id: authUser.id,
+                  email: authUser.email || '',
+                  full_name: authUser.user_metadata?.full_name || '',
+                  role: 'user',
+                  phone: authUser.phone || '',
+                  created_at: authUser.created_at || new Date().toISOString(),
+                  referral_code: refCode || '',
+                } as UserProfile);
+              }
+              setWalletBalance(balance);
+              return;
+            }
+          }
+
           if (result.error !== "Not authenticated") {
             toast({
               title: "Error",

@@ -207,7 +207,7 @@ export default function DesktopProblemSelection({
                                                     <HelpCircle className="w-8 h-8 text-slate-300" />
                                                 ) : (
                                                     <Image
-                                                        src={problem.image.imageUrl}
+                                                        src={problem.image.imageUrl ? problem.image.imageUrl : '/logo-image.png'}
                                                         alt={problem.name}
                                                         fill
                                                         className="object-contain p-3"

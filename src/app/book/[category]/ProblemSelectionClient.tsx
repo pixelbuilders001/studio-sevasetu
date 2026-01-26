@@ -359,7 +359,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                           isSelected ? "bg-primary/10" : "group-hover:bg-primary/5"
                         )}>
                           <Image
-                            src={problem.image.imageUrl}
+                            src={problem.image.imageUrl ? problem.image.imageUrl : '/logo-image.png'}
                             alt={problem.name}
                             width={40}
                             height={40}

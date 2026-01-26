@@ -202,10 +202,20 @@ const nextConfig: NextConfig = {
   // Note that the cloud IDE domains are temporary and will change.
   allowedDevOrigins: [
     'https://6000-firebase-studio-1767068471018.cluster-ulqnojp5endvgve6krhe7klaws.cloudworkstations.dev',
+    '*.loca.lt',
+    '*.trycloudflare.com',
+    '*.devtunnels.ms'
   ],
   experimental: {
     serverActions: {
-      allowedOrigins: ['http://localhost:9002', 'https://rnbkwzl7-9002.inc1.devtunnels.ms'],
+      allowedOrigins: [
+        'localhost:9002',
+        'http://localhost:9002',
+        '*.loca.lt',
+        '*.trycloudflare.com',
+        '*.devtunnels.ms',
+        '*.cloudworkstations.dev'
+      ],
     },
   },
 };

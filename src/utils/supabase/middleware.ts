@@ -26,6 +26,9 @@ export async function updateSession(request: NextRequest) {
                     )
                 },
             },
+            cookieOptions: {
+                name: 'sb-session-auth',
+            },
         }
     )
 
@@ -38,7 +41,19 @@ export async function updateSession(request: NextRequest) {
     const isConfirmationPath = path.startsWith('/confirmation')
     const isBookingDetailsPath = /^\/book\/[^/]+\/details$/.test(path)
 
+    // Detect if this is likely a PWA/Standalone app request
+    const isStandalone = request.headers.get('sec-ch-ua-mobile') === '?1' ||
+        request.headers.get('user-agent')?.includes('Standalone') ||
+        request.nextUrl.searchParams.get('utm_source') === 'pwa';
+
     if (!user && (isConfirmationPath || isBookingDetailsPath)) {
+        // For PWA users, we skip the hard redirection in middleware
+        // This allows AuthContext.tsx to manually re-hydrate from localStorage
+        // if the session cookie is missing on the first load of a refresh.
+        if (isStandalone) {
+            return response;
+        }
+
         const url = request.nextUrl.clone()
         url.pathname = '/'
         return NextResponse.redirect(url)

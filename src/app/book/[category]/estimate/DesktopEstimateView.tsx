@@ -91,7 +91,7 @@ export default function DesktopEstimateView({
                                 <div className="flex items-center gap-5 mb-8">
                                     <div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center p-3 border border-slate-50">
                                         <Image
-                                            src={category.image.imageUrl}
+                                            src={category.image.imageUrl ? category.image.imageUrl : '/logo-image.png'}
                                             alt={category.name}
                                             width={48}
                                             height={48}
@@ -114,7 +114,7 @@ export default function DesktopEstimateView({
                                             <div key={problem.id} className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-xl border border-slate-100 group transition-colors">
                                                 <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1.5 shadow-sm border border-slate-100">
                                                     <Image
-                                                        src={problem.image.imageUrl}
+                                                        src={problem.image.imageUrl ? problem.image.imageUrl : '/logo-image.png'}
                                                         alt={problem.name}
                                                         width={28}
                                                         height={28}

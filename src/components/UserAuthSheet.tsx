@@ -83,7 +83,7 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
       setLoading(false);
       return;
     }
-
+    console.log("user", user);
     if (user) {
       // 2. Check Role
       const isRestricted = await checkRestricted(supabase, user.id);

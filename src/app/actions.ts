@@ -102,13 +102,19 @@ export async function bookService(
           }
         },
       },
+      cookieOptions: {
+        name: 'sb-session-auth',
+      },
     }
   );
 
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
   if (sessionError || !session) {
-    console.error('Authentication Error:', sessionError?.message);
+    const allCookies = cookieStore.getAll();
+    console.error('SERVER ACTION Authentication Error (bookService):', sessionError?.message || 'No session found in cookies');
+    console.log('SERVER ACTION Cookies present:', allCookies.length);
+    console.log('SERVER ACTION Cookie names:', allCookies.map(c => c.name).join(', '));
     return { message: "Error", error: "You must be logged in to create a booking." };
   }
 
@@ -202,13 +208,19 @@ export async function acceptQuote(quote: RepairQuote & { booking_id: string }) {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      console.error('Authentication Error:', sessionError?.message);
+      const allCookies = cookieStore.getAll();
+      console.error('SERVER ACTION Authentication Error (acceptQuote):', sessionError?.message || 'No session found in cookies');
+      console.log('SERVER ACTION Cookies present:', allCookies.length);
+      console.log('SERVER ACTION Cookie names:', allCookies.map(c => c.name).join(', '));
       return { message: "Error", error: "You must be logged in to create a booking." };
     }
 
@@ -299,13 +311,19 @@ export async function rejectQuote(quote: RepairQuote & { booking_id: string }) {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      console.error('Authentication Error:', sessionError?.message);
+      const allCookies = cookieStore.getAll();
+      console.error('SERVER ACTION Authentication Error (rejectQuote):', sessionError?.message || 'No session found in cookies');
+      console.log('SERVER ACTION Cookies present:', allCookies.length);
+      console.log('SERVER ACTION Cookie names:', allCookies.map(c => c.name).join(', '));
       return { message: "Error", error: "You must be logged in to create a booking." };
     }
 
@@ -373,12 +391,18 @@ export async function getUserProfile() {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
-      console.error('Authentication Error:', authError?.message);
+      const allCookies = cookieStore.getAll();
+      console.error('SERVER ACTION Authentication Error (profile):', authError?.message || 'No user found in cookies');
+      console.log('SERVER ACTION Cookies present:', allCookies.length);
+      console.log('SERVER ACTION Cookie names:', allCookies.map(c => c.name).join(', '));
       return { message: "Error", error: "You must be logged in to view your profile." };
     }
 
@@ -439,6 +463,9 @@ export async function updateUserProfile(data: { full_name: string; phone: string
             } catch {
             }
           },
+        },
+        cookieOptions: {
+          name: 'sb-session-auth',
         },
       }
     );
@@ -504,13 +531,19 @@ export async function getWalletBalance() {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      console.error('Authentication Error:', authError?.message);
+      const allCookies = cookieStore.getAll();
+      console.error('SERVER ACTION Authentication Error (wallet):', authError?.message || 'No user found in cookies');
+      console.log('SERVER ACTION Cookies present:', allCookies.length);
+      console.log('SERVER ACTION Cookie names:', allCookies.map(c => c.name).join(', '));
       return 0;
     }
 
@@ -563,8 +596,12 @@ export async function getReferralCode() {
                 cookieStore.set(name, value, options)
               )
             } catch {
+              // The is called from a Server Component.
             }
           },
+        },
+        cookieOptions: {
+          name: 'sb-session-auth',
         },
       }
     );
@@ -572,7 +609,10 @@ export async function getReferralCode() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      console.error('Authentication Error:', authError?.message);
+      const allCookies = cookieStore.getAll();
+      console.error('SERVER ACTION Authentication Error (referral):', authError?.message || 'No user found in cookies');
+      console.log('SERVER ACTION Cookies present:', allCookies.length);
+      console.log('SERVER ACTION Cookie names:', allCookies.map(c => c.name).join(', '));
       return null;
     }
 
@@ -628,11 +668,18 @@ export async function getInitialProfileDataAction() {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
+      const allCookies = cookieStore.getAll();
+      console.error('SERVER ACTION Authentication Error (initialData):', authError?.message || 'No user found in cookies');
+      console.log('SERVER ACTION Cookies present:', allCookies.length);
+      console.log('SERVER ACTION Cookie names:', allCookies.map(c => c.name).join(', '));
       return { success: false, error: "Not authenticated" };
     }
 
@@ -700,6 +747,9 @@ export async function getWalletTransactions() {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
@@ -754,13 +804,16 @@ export async function verifyReferralCode(code: string) {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      console.error('Authentication Error:', sessionError?.message);
+      console.error('Authentication Error6:', sessionError?.message);
       return null;
     }
 
@@ -806,6 +859,9 @@ export async function saveAddress(data: { full_address: string; city?: string; s
             } catch {
             }
           },
+        },
+        cookieOptions: {
+          name: 'sb-session-auth',
         },
       }
     );
@@ -872,6 +928,9 @@ export async function getSavedAddresses() {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
@@ -924,6 +983,9 @@ export async function setDefaultAddress(addressId: string) {
             } catch {
             }
           },
+        },
+        cookieOptions: {
+          name: 'sb-session-auth',
         },
       }
     );
@@ -986,6 +1048,9 @@ export async function deleteAddress(addressId: string) {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
@@ -1029,6 +1094,9 @@ export async function getBookingHistory() {
             } catch {
             }
           },
+        },
+        cookieOptions: {
+          name: 'sb-session-auth',
         },
       }
     );
@@ -1078,13 +1146,16 @@ export async function getTechnicianById(technicianId: string) {
             }
           },
         },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
       }
     );
 
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      console.error('Authentication Error:', sessionError?.message);
+      console.error('Authentication Error7:', sessionError?.message);
       return null;
     }
 
@@ -1179,6 +1250,9 @@ export async function getTechniciansByPincodeAction(pincode: string) {
             } catch {
             }
           },
+        },
+        cookieOptions: {
+          name: 'sb-session-auth',
         },
       }
     );

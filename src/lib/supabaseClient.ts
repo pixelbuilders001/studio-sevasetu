@@ -15,7 +15,6 @@ export function createSupabaseBrowserClient() {
         autoRefreshToken: true,
         detectSessionInUrl: true,
         storageKey: 'sb-session-auth',
-        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
       }
     }
   );

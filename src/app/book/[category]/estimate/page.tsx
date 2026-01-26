@@ -14,11 +14,10 @@ import Image from 'next/image';
 import { useLocation } from '@/context/LocationContext';
 import DesktopEstimateView from './DesktopEstimateView';
 import FullScreenLoader from '@/components/FullScreenLoader';
-import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
 import UserAuthSheet from '@/components/UserAuthSheet';
-import { Session } from '@supabase/supabase-js';
+import { useAuth } from '@/context/AuthContext';
 import ServiceFlowTimeline from '@/components/ServiceFlowTimeline';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import {
   Dialog,
   DialogContent,
@@ -47,11 +46,11 @@ export default function PriceEstimationPage() {
 
   const { t, getTranslatedCategory } = useTranslation();
   const { location } = useLocation();
+  const { session, loading: authLoading } = useAuth();
 
   const [category, setCategory] = useState<ServiceCategory | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true);
   const [isNavigating, setIsNavigating] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
   const [authSheetOpen, setAuthSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showRepairInfo, setShowRepairInfo] = useState(false);
@@ -65,28 +64,6 @@ export default function PriceEstimationPage() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
-
-  useEffect(() => {
-    const getInitialSession = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      if (user) {
-        console.log('Estimate page current user:', user.email);
-      }
-    };
-    getInitialSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) {
-        setAuthSheetOpen(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [supabase]);
 
   useEffect(() => {
     const fetchCategoryAndProblem = async () => {
@@ -103,7 +80,7 @@ export default function PriceEstimationPage() {
         console.error("Failed to fetch data:", error);
         notFound();
       } finally {
-        setLoading(false);
+        setDataLoading(false);
       }
     };
 
@@ -115,6 +92,16 @@ export default function PriceEstimationPage() {
     const ids = problemIds.split(',');
     return category.problems.filter((p) => ids.includes(p.id));
   }, [category, problemIds]);
+
+
+  // Close sheet when session becomes available
+  useEffect(() => {
+    if (session) {
+      setAuthSheetOpen(false);
+    }
+  }, [session]);
+
+  const loading = dataLoading || authLoading;
 
   if (loading) {
     return <PriceEstimationSkeleton />;
@@ -209,7 +196,7 @@ export default function PriceEstimationPage() {
                       <div key={problem.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
                         <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100">
                           <Image
-                            src={problem.image.imageUrl}
+                            src={problem.image.imageUrl ? problem.image.imageUrl : '/logo-image.png'}
                             alt={problem.name}
                             width={24}
                             height={24}
