@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     setIsRestricted(false);
                 }
             } catch (error) {
-                console.error('Error initializing auth:', error);
+                console.error('AuthContext: Error initializing auth:', error);
             } finally {
                 setLoading(false);
             }
