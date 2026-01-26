@@ -14,7 +14,7 @@ import OfflineDetector from '@/components/OfflineDetector';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import IntroductionModal from '@/components/IntroductionModal';
 import { AuthProvider } from '@/context/AuthContext';
-// import SessionDebugger from '@/components/SessionDebugger';
+import SessionDebugger from '@/components/SessionDebugger';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -26,7 +26,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <LocationProvider>
           <BookingProvider>
             <SplashScreen />
-            {/* <SessionDebugger /> */}
+            <SessionDebugger />
             <OfflineDetector />
             <OfflineDetector />
             {pathname === '/' && <IntroductionModal />}

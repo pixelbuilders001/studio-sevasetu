@@ -17,7 +17,7 @@ export default function SessionDebugger() {
         return () => clearInterval(interval);
     }, []);
 
-    if (process.env.NODE_ENV === 'production') return null;
+    // if (process.env.NODE_ENV === 'production') return null;
 
     return (
         <div className="fixed bottom-20 right-4 bg-black/80 text-white p-4 rounded-xl text-xs z-[100] font-mono max-w-[250px] pointer-events-none opacity-80 hover:opacity-100 transition-opacity">
