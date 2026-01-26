@@ -112,7 +112,7 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
                 <SheetHeader className="px-6 pt-6 pb-2">
-                    <SheetTitle className="text-left font-black text-2xl text-[#1e1b4b]">
+                    <SheetTitle className="text-left font-black text-xl text-[#1e1b4b]">
                         My Wallet
                     </SheetTitle>
                 </SheetHeader>
@@ -128,39 +128,38 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
                         <div className="space-y-6 max-w-md mx-auto">
 
                             {/* Balance Card */}
-                            <Card className="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white border-0 rounded-[2rem] shadow-xl overflow-hidden relative">
-                                <CardContent className="p-8">
+                            <Card className="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white border-0 rounded-3xl shadow-xl overflow-hidden relative">
+                                <CardContent className="p-5">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="space-y-1">
-                                            <p className="text-sm font-medium opacity-80 uppercase tracking-tight">Total Balance</p>
-                                            <div className="flex items-center text-4xl md:text-5xl font-black">
-                                                <IndianRupee className="w-8 h-8 md:w-10 md:h-10 -ml-1" strokeWidth={3} />
+                                            <p className="text-xs font-medium opacity-80 uppercase tracking-tight">Total Balance</p>
+                                            <div className="flex items-center text-3xl md:text-4xl font-black">
+                                                <IndianRupee className="w-6 h-6 md:w-8 md:h-8 -ml-1" strokeWidth={3} />
                                                 <span>{balance ?? 0}</span>
                                             </div>
                                         </div>
-                                        <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
-                                            <Wallet className="w-6 h-6 text-white/90" />
+                                        <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-sm border border-white/10">
+                                            <Wallet className="w-5 h-5 text-white/90" />
                                         </div>
                                     </div>
-                                    {/* Add Money Button Removed as per request */}
                                 </CardContent>
                             </Card>
 
                             {/* Refer & Earn Card */}
                             {referralCode && (
-                                <Card className="bg-indigo-50/50 border-2 border-dashed border-indigo-200 rounded-[2rem] shadow-sm overflow-hidden group">
-                                    <CardContent className="p-5 flex items-center justify-between gap-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-indigo-50 p-2">
-                                                <div className="text-3xl">🎁</div>
+                                <Card className="bg-indigo-50/50 border-2 border-dashed border-indigo-200 rounded-2xl shadow-sm overflow-hidden group">
+                                    <CardContent className="p-4 flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center border border-indigo-50 p-1.5">
+                                                <div className="text-xl">🎁</div>
                                             </div>
                                             <div>
-                                                <h3 className="text-md font-black text-indigo-950">Refer & Earn <IndianRupee className="inline w-4 h-4 mb-1" />50</h3>
-                                                <p className="text-xs text-indigo-900/60 font-medium">For every friend who books their first service with us, you get</p>
+                                                <h3 className="text-sm font-black text-indigo-950">Refer & Earn <IndianRupee className="inline w-3 h-3 mb-0.5" />50</h3>
+                                                <p className="text-[10px] text-indigo-900/60 font-medium">For every friend who books their first service.</p>
                                             </div>
                                         </div>
                                         <Button
-                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-5 py-2.5 rounded-xl h-auto shadow-lg shadow-indigo-500/20 active:scale-95 transition-all"
+                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] px-3 py-2 rounded-lg h-auto shadow-md active:scale-95 transition-all uppercase tracking-wide"
                                             onClick={() => {
                                                 if (navigator.share) {
                                                     navigator.share({
@@ -182,14 +181,14 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
                             {/* Recent Transactions Section */}
                             <section>
                                 <div className="flex justify-between items-center mb-4 px-1">
-                                    <h2 className="font-black text-lg text-[#1e1b4b]">Recent Transactions</h2>
+                                    <h2 className="font-black text-base text-[#1e1b4b]">Recent Transactions</h2>
                                     <Sheet>
                                         <SheetTrigger asChild>
                                             <Button variant="link" className="text-indigo-600 font-bold h-auto p-0 text-sm no-underline hover:text-indigo-700">See All</Button>
                                         </SheetTrigger>
                                         <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-3xl p-0 overflow-hidden">
                                             <div className="px-6 py-6 border-b flex justify-between items-center">
-                                                <h2 className="text-xl font-black text-[#1e1b4b]">Transaction History</h2>
+                                                <h2 className="text-lg font-black text-[#1e1b4b]">Transaction History</h2>
                                             </div>
                                             <div className="flex-1 overflow-y-auto px-6 py-4">
                                                 <TransactionHistorySheet />
@@ -200,32 +199,32 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
 
                                 <div className="space-y-3">
                                     {recentTransaction ? (
-                                        <Card className="rounded-3xl border border-gray-100 shadow-sm overflow-hidden hover:bg-gray-50/50 transition-colors">
-                                            <CardContent className="p-4">
-                                                <div className="flex items-center gap-4">
+                                        <Card className="rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:bg-gray-50/50 transition-colors">
+                                            <CardContent className="p-3">
+                                                <div className="flex items-center gap-3">
                                                     <div className={cn(
-                                                        "w-12 h-12 rounded-full flex items-center justify-center",
+                                                        "w-10 h-10 rounded-full flex items-center justify-center",
                                                         recentTransaction.type === 'credit' ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
                                                     )}>
                                                         {recentTransaction.type === 'credit' ? (
-                                                            <ArrowDownLeft className="w-5 h-5" />
+                                                            <ArrowDownLeft className="w-4 h-4" />
                                                         ) : (
-                                                            <ArrowUpRight className="w-5 h-5" />
+                                                            <ArrowUpRight className="w-4 h-4" />
                                                         )}
                                                     </div>
                                                     <div className="flex-grow">
-                                                        <p className="font-bold text-[#1e1b4b] capitalize leading-none mb-1">{recentTransaction.source}</p>
-                                                        <p className="text-[11px] text-[#1e1b4b]/40 font-bold uppercase tracking-wider">
+                                                        <p className="font-bold text-[#1e1b4b] capitalize leading-none mb-1 text-sm">{recentTransaction.source}</p>
+                                                        <p className="text-[10px] text-[#1e1b4b]/40 font-bold uppercase tracking-wider">
                                                             {format(new Date(recentTransaction.created_at), 'dd MMM, hh:mm a')}
                                                         </p>
                                                     </div>
                                                     <div className="text-right">
                                                         <p className={cn(
-                                                            "font-black text-lg flex items-center justify-end",
+                                                            "font-black text-base flex items-center justify-end",
                                                             recentTransaction.type === 'credit' ? "text-green-600" : "text-black"
                                                         )}>
                                                             {recentTransaction.type === 'credit' ? '+' : '-'}
-                                                            <IndianRupee className="w-4 h-4" />
+                                                            <IndianRupee className="w-3 h-3" />
                                                             {recentTransaction.amount || 0}
                                                         </p>
                                                     </div>

@@ -29,7 +29,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             {/* <SessionDebugger /> */}
             <OfflineDetector />
             <OfflineDetector />
-            {pathname === '/' && <IntroductionModal />}
+            {/* {pathname === '/' && <IntroductionModal />} */}
             <PWAInstallPrompt />
             {/* Desktop Navigation */}
             <DesktopNavbar />

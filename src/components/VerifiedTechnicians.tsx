@@ -78,13 +78,13 @@ function TechnicianCard({ technician, index }: { technician: Technician, index: 
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      className="inline-block w-[280px] md:w-[320px]"
+      className="inline-block w-[260px] md:w-[320px]"
     >
-      <div className="bg-white dark:bg-card border border-slate-100 dark:border-slate-800 rounded-[2rem] p-4 shadow-xl shadow-indigo-50/50 hover:shadow-2xl hover:border-indigo-100 transition-all duration-300 group">
-        <div className="flex items-start gap-4 mb-4">
+      <div className="bg-slate-50 dark:bg-card border border-slate-100 dark:border-slate-800 rounded-[1.5rem] p-4 shadow-sm hover:shadow-md transition-all duration-300 group">
+        <div className="flex items-start gap-3 mb-3">
           {/* Circular Image with Badge */}
           <div className="relative flex-shrink-0">
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-indigo-50 ring-4 ring-indigo-50 dark:ring-slate-800">
+            <div className="w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden bg-white ring-2 ring-white dark:ring-slate-800 shadow-sm">
               <Image
                 src={technician.imageUrl}
                 alt={technician.name}
@@ -92,17 +92,17 @@ function TechnicianCard({ technician, index }: { technician: Technician, index: 
                 className="object-cover rounded-full group-hover:scale-105 transition-transform duration-500"
               />
             </div>
-            <div className="absolute -bottom-1 -right-1 bg-indigo-600 text-white p-1 rounded-full shadow-lg border-2 border-white ring-2 ring-indigo-100">
-              <CheckCircle2 className="w-3 h-3 md:w-3.5 md:h-3.5" />
+            <div className="absolute -bottom-0.5 -right-0.5 bg-green-500 text-white p-0.5 rounded-full ring-2 ring-white">
+              <CheckCircle2 className="w-3 h-3" />
             </div>
           </div>
 
           {/* Name, Skill and Rating */}
-          <div className="flex-grow pt-1 min-w-0">
-            <h3 className="font-black text-lg md:text-xl leading-tight text-indigo-950 truncate mb-1">
+          <div className="flex-grow pt-0.5 min-w-0">
+            <h3 className="font-bold text-base md:text-lg leading-tight text-slate-800 truncate mb-0.5">
               {technician.name}
             </h3>
-            <p className="text-[10px] md:text-xs font-black text-indigo-600/70 uppercase tracking-wider mb-2">{technician.expertise}</p>
+            <p className="text-[10px] md:text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">{technician.expertise}</p>
             <div className="flex items-center gap-1.5">
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
@@ -112,33 +112,33 @@ function TechnicianCard({ technician, index }: { technician: Technician, index: 
                   />
                 ))}
               </div>
-              <span className="text-xs md:text-sm font-black text-slate-500">{technician.ratingValue}</span>
+              <span className="text-xs font-bold text-slate-600">{technician.ratingValue}</span>
             </div>
           </div>
         </div>
 
         {/* Distance / Time Info */}
-        <div className="flex items-center gap-6 mb-4 px-1">
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 opacity-50" />
-            <span className="text-[10px] md:text-xs font-bold whitespace-nowrap">10 min away</span>
+        <div className="flex items-center gap-4 mb-4 px-1">
+          <div className="flex items-center gap-1.5 text-slate-500">
+            <Clock className="w-3.5 h-3.5 opacity-70" />
+            <span className="text-[10px] md:text-xs font-medium whitespace-nowrap">10 min</span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 opacity-50" />
-            <span className="text-[10px] md:text-xs font-bold whitespace-nowrap">{technician.location}</span>
+          <div className="flex items-center gap-1.5 text-slate-500">
+            <MapPin className="w-3.5 h-3.5 opacity-70" />
+            <span className="text-[10px] md:text-xs font-medium whitespace-nowrap">{technician.location}</span>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
-          <div className="flex-1 bg-indigo-50 dark:bg-slate-800 rounded-xl px-3 py-2.5 flex items-center justify-center gap-2 text-indigo-600 transition-colors group-hover:bg-indigo-100">
-            <Briefcase className="w-3.5 h-3.5" />
-            <span className="text-[10px] md:text-xs font-black truncate">{technician.jobs} Works</span>
+          <div className="flex-1 bg-white dark:bg-slate-800 rounded-lg px-2 py-2 flex items-center justify-center gap-1.5 text-slate-600 border border-slate-200/50">
+            <Briefcase className="w-3 h-3" />
+            <span className="text-[10px] font-bold truncate">{technician.jobs} Jobs</span>
           </div>
           {!technician.isDummy && (
             <button
               onClick={() => router.push(`/book/${technician.skillSlug}`)}
-              className="flex-[1.2] bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-4 py-2.5 font-black text-xs md:text-sm shadow-lg shadow-indigo-100 dark:shadow-none transition-all active:scale-95"
+              className="flex-[1.2] bg-indigo-100/80 hover:bg-indigo-200 text-indigo-700 rounded-lg px-3 py-2 font-bold text-xs shadow-sm transition-colors"
             >
               Book Now
             </button>
@@ -149,7 +149,7 @@ function TechnicianCard({ technician, index }: { technician: Technician, index: 
   );
 }
 
-export default function VerifiedTechnicians({ t }: { t: TranslationFunc }) {
+export default function VerifiedTechnicians({ t, isMobile = false }: { t: TranslationFunc, isMobile?: boolean }) {
   const { location } = useLocation();
   const [technicians, setTechnicians] = useState<Technician[]>([]);
   console.log(technicians);
@@ -202,15 +202,15 @@ export default function VerifiedTechnicians({ t }: { t: TranslationFunc }) {
   }, [location.pincode, location.city]);
 
   return (
-    <section className="py-12 md:py-20 bg-slate-50/50 dark:bg-slate-900/20">
-      <div className="container mx-auto px-4">
+    <section className={`py-6 md:py-20 ${isMobile ? 'bg-transparent px-0' : 'bg-slate-50/50 dark:bg-slate-900/20'}`}>
+      <div className={`container mx-auto ${isMobile ? 'px-4' : 'px-4'}`}>
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-10 px-2 gap-2">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-10 px-2 gap-2">
           <div className="space-y-1">
-            <h2 className="text-2xl md:text-4xl font-black tracking-tight text-[#1e1b4b]">
-              Top Experts <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">Near {technicians?.[0]?.location ? technicians?.[0]?.location : "You"}</span>
+            <h2 className={`${isMobile ? 'text-xl text-[#1e1b4b]' : 'text-2xl md:text-4xl text-[#1e1b4b]'} font-black tracking-tight`}>
+              Top Experts <span className={isMobile ? 'text-primary' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent'}>Near {technicians?.[0]?.location ? technicians?.[0]?.location : "You"}</span>
             </h2>
-            <p className="text-[10px] md:text-xs font-bold text-indigo-400 uppercase tracking-[0.2em]">Verified professionals in your area</p>
+            {!isMobile && <p className="text-[10px] md:text-xs font-bold text-indigo-400 uppercase tracking-[0.2em]">Verified professionals in your area</p>}
           </div>
           <button className="hidden md:flex items-center gap-2 text-sm font-black text-indigo-600 hover:gap-3 transition-all">
             VIEW ALL <ChevronRight className="w-4 h-4" />

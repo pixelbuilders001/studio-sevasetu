@@ -47,10 +47,11 @@ function ServiceCardSkeleton() {
   );
 }
 
-function ServiceCard({ category }: { category: ServiceCategory }) {
+// Redesigned Service Card for Mobile Grid
+// Mobile Service Card (Circular)
+function MobileServiceCard({ category }: { category: ServiceCategory }) {
   const { location, isServiceable, setDialogOpen } = useLocation();
   const router = useRouter();
-
   const [isNavigating, setIsNavigating] = useState(false);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -59,7 +60,46 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
       setDialogOpen(true);
     } else {
       setIsNavigating(true);
-      // Small delay to ensure loader renders before navigation starts (React batching)
+      setTimeout(() => {
+        router.push(`/book/${category.slug}`);
+      }, 100);
+    }
+  };
+
+  return (
+    <>
+      {isNavigating && <FullScreenLoader />}
+      <div onClick={handleClick} className="group flex flex-col items-center cursor-pointer w-full p-1">
+        <div className="w-[4.5rem] h-[4.5rem] rounded-[1.25rem] bg-indigo-50/80 flex items-center justify-center mb-2 overflow-hidden shadow-sm border border-indigo-100/50 transition-all active:scale-95 group-hover:bg-primary/5 group-hover:shadow-md">
+          <div className="relative w-10 h-10">
+            <Image
+              src={category.image.imageUrl}
+              alt={category.name}
+              fill
+              className="object-contain"
+            />
+          </div>
+        </div>
+        <h3 className="text-[11px] font-bold text-center text-foreground leading-tight px-1 line-clamp-2">
+          {category.name}
+        </h3>
+      </div>
+    </>
+  );
+}
+
+// Desktop Service Card (Original Card Style)
+function ServiceCard({ category }: { category: ServiceCategory }) {
+  const { location, isServiceable, setDialogOpen } = useLocation();
+  const router = useRouter();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (!isServiceable) {
+      e.preventDefault();
+      setDialogOpen(true);
+    } else {
+      setIsNavigating(true);
       setTimeout(() => {
         router.push(`/book/${category.slug}`);
       }, 100);
@@ -106,10 +146,23 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
 
 import { useAuth } from '@/context/AuthContext';
 
+import useEmblaCarousel from 'embla-carousel-react';
+
 export default function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const { lang } = use(searchParams);
   const { t } = useTranslation();
   const router = useRouter();
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+
+  useEffect(() => {
+    if (emblaApi) {
+      const autoplay = setInterval(() => {
+        emblaApi.scrollNext();
+      }, 4000);
+      return () => clearInterval(autoplay);
+    }
+  }, [emblaApi]);
 
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const { session, loading: authLoading } = useAuth();
@@ -155,86 +208,102 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
       </div>
 
       {/* Mobile Hero (md hidden) */}
-      <div className="md:hidden">
-        {/* Hero Section with Integrated Header */}
-        <section className="relative h-[50vh] rounded-b-[2rem] shadow-2xl overflow-hidden group">
-          {/* Main Background Video */}
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="/hero-video.webp"
-              alt="helloFixo Hero"
-              fill
-              className="object-cover"
-              unoptimized
-              priority
-            />
-            {/* Enhanced gradients for readability and depth */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 z-10" />
-            <div className="absolute inset-0 bg-primary/10 mix-blend-overlay z-10" />
+      <div className="md:hidden bg-white">
+        {/* Header / Nav */}
+        <div className="px-4 py-3 flex items-center justify-between sticky top-0 z-40 bg-white/80 backdrop-blur-md">
+          <div className="flex-1 mr-4">
+            <LocationSelector isHero={false} />
           </div>
-
-          {/* Integrated Floating Header Area */}
-          <div className="absolute top-0 left-0 right-0 z-30 px-6 pt-6">
-            <div className="container mx-auto flex items-center justify-between">
-              {/* Location Pill */}
-              <div className="flex-shrink-0">
-                <LocationSelector isHero={true} />
-              </div>
-
-              {/* Profile Action */}
-              <div className="flex items-center gap-3">
-                {session ? (
-                  <ProfileSheet isHero={true} />
-                ) : (
-                  <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-                    <SheetTrigger asChild>
-                      <div className="w-12 h-12 bg-indigo-200/90 backdrop-blur-sm rounded-full flex items-center justify-center border border-indigo-300/50 cursor-pointer active:scale-90 transition-transform shadow-lg group">
-                        <User className="h-6 w-6 text-indigo-700 group-hover:scale-110 transition-transform" />
-                      </div>
-                    </SheetTrigger>
-                    <SheetContent
-                      side="bottom"
-                      className="rounded-t-3xl h-[80dvh] inset-x-0 bottom-0 border-t bg-white p-0 flex flex-col"
-                      onOpenAutoFocus={(e) => e.preventDefault()}
-                    >
-                      <UserAuthSheet setSheetOpen={setSheetOpen} />
-                    </SheetContent>
-                  </Sheet>
-                )}
-              </div>
-            </div>
+          <div className="flex-shrink-0">
+            {session ? (
+              <ProfileSheet isHero={false} />
+            ) : (
+              <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                <SheetTrigger asChild>
+                  <div className="w-9 h-9 bg-secondary/50 rounded-full flex items-center justify-center border border-border cursor-pointer active:scale-95 transition-transform">
+                    <User className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                </SheetTrigger>
+                <SheetContent
+                  side="bottom"
+                  className="rounded-t-3xl h-[80dvh] inset-x-0 bottom-0 border-t bg-white p-0 flex flex-col"
+                  onOpenAutoFocus={(e) => e.preventDefault()}
+                >
+                  <UserAuthSheet setSheetOpen={setSheetOpen} />
+                </SheetContent>
+              </Sheet>
+            )}
           </div>
+        </div>
 
-          {/* Hero Content */}
-          <div className="relative h-full container mx-auto px-6 z-20 flex flex-col justify-end pb-12">
-            <div className="max-w-xl space-y-5">
-              {/* Headline */}
-              <div className="space-y-4">
-                <div className="drop-shadow-[0_2px_15px_rgba(0,0,0,0.6)]">
-                  <AnimatedHeroText
-                    className="text-4xl sm:text-5xl leading-tight tracking-tighter"
-                    highlightColor="text-primary"
-                  />
-                </div>
-
-                <p className="text-white/90 text-sm font-bold max-w-xl leading-relaxed drop-shadow-md">
-                  Premium doorstep repairs with Bihar&apos;s most trusted certified technicians. Affordable, fast & guaranteed.
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="pt-2">
-                <div className="scale-100 origin-left">
-                  <HeroCTA />
+        {/* Hero Banner Carousel */}
+        <div className="mx-4 mt-2 overflow-hidden rounded-2xl shadow-sm aspect-[16/9]" ref={emblaRef}>
+          <div className="flex">
+            {[1, 2, 3].map((index) => (
+              <div key={index} className="relative flex-[0_0_100%] aspect-[16/9]">
+                <Image
+                  src="/hero-mobile-new.jpg"
+                  alt={`Hero Banner ${index}`}
+                  fill
+                  className="object-cover"
+                  priority={index === 1}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center p-6">
+                  <div className="max-w-[70%] text-white">
+                    <h1 className="text-2xl font-black leading-tight mb-2">WeFix Mobile<br />At Your Door</h1>
+                    <p className="text-[10px] font-medium opacity-90 mb-3">Doorstep repair services with verified experts.</p>
+                    <HeroCTA />
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
+        </div>
+
+        {/* Popular Services */}
+        <section id="services" className="mt-8 px-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-black text-[#1e1b4b]">
+              Popular <span className="text-primary">Services</span>
+            </h2>
+            <Sheet>
+              <SheetTrigger asChild>
+                <div className="flex items-center text-xs font-bold text-primary cursor-pointer">
+                  See all <ChevronRight className="w-3 h-3 ml-0.5" />
+                </div>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[90vh] flex flex-col rounded-t-3xl">
+                <AllServicesSheet />
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          <div className="grid grid-cols-4 gap-y-6 gap-x-2">
+            {categoriesLoading
+              ? Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="flex flex-col items-center gap-2">
+                  <Skeleton className="w-14 h-14 rounded-full" />
+                  <Skeleton className="h-3 w-10" />
+                </div>
+              ))
+              : categories.slice(0, 8).map((category) => ( // Show up to 8 items in a 4x2 grid
+                <div key={category.id} className="flex flex-col items-center">
+                  <MobileServiceCard category={category} />
+                </div>
+              ))
+            }
+          </div>
+
         </section>
-      </div>
 
-      {/* Services Grid */}
-      <section id="services" className="container mx-auto px-4 md:px-8 mt-12 md:mt-24">
+        {/* Verified Technicians (Mobile) */}
+        <div className="mt-4">
+          <VerifiedTechnicians t={t} isMobile={true} />
+        </div>
+      </div >
+
+      {/* Services Grid (Desktop Only) */}
+      < section id="services-desktop" className="hidden md:block container mx-auto px-4 md:px-8 mt-12 md:mt-24" >
         <div className="flex justify-between items-end mb-6 md:mb-12">
           <div>
             <h2 className="text-2xl md:text-6xl font-black tracking-tight text-[#1e1b4b]">
@@ -262,25 +331,26 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
             ))
           }
         </div>
-      </section>
+      </section >
 
       {/* Referral Banner */}
-      <section className="container mx-auto px-4 md:px-8 mt-12 md:mt-24">
+      < section className="container mx-auto px-4 md:px-8 md:mt-24" >
         <ReferralBanner />
-      </section>
+      </section >
 
       {/* Quick Features */}
-      <section className="py-6 md:py-20">
+      {/* Quick Features */}
+      <section className="py-2 md:py-20 mb-4">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-8">
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-8">
             {featureCards.map((card, index) => (
-              <div key={index} className="flex flex-col items-center justify-center bg-white py-5 px-2 md:py-10 md:px-6 rounded-3xl md:rounded-3xl shadow-soft border border-indigo-50/50 text-center transition-all hover:shadow-glow hover:-translate-y-1">
-                <div className="w-11 h-11 md:w-16 md:h-16 rounded-2xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-6">
-                  <card.icon className="w-5 h-5 md:w-8 md:h-8" />
+              <div key={index} className="flex flex-col items-center justify-center bg-slate-50 py-3 px-1 md:py-10 md:px-6 rounded-xl md:rounded-3xl border border-slate-100/50 text-center transition-all hover:shadow-sm">
+                <div className="w-9 h-9 md:w-16 md:h-16 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 mb-2 md:mb-6">
+                  <card.icon className="w-4 h-4 md:w-8 md:h-8" />
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-[11px] md:text-xl font-black uppercase tracking-tight text-indigo-950 leading-tight">{card.title}</span>
-                  <span className="text-[8px] md:text-xs text-indigo-600 font-bold uppercase tracking-wider leading-tight">{card.description}</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[10px] md:text-xl font-extrabold uppercase tracking-tight text-indigo-950 leading-tight">{card.title}</span>
+                  <span className="text-[9px] md:text-xs text-indigo-500 font-semibold uppercase tracking-wider leading-tight">{card.description}</span>
                 </div>
               </div>
             ))}
@@ -296,31 +366,35 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         {/* Live Tracking Card */}
         <section className="container mx-auto px-4 md:px-8 mt-12 md:mt-24">
           <BookingTrackerModal asChild={true}>
-            <div className="bg-gradient-to-br from-indigo-600 to-indigo-900 rounded-3xl md:rounded-[3rem] p-6 md:p-16 shadow-2xl active:scale-98 transition-all cursor-pointer relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-110 transition-transform duration-700">
-                <Search className="w-40 h-40 md:w-64 md:h-64 -mr-10 -mt-10 text-white" />
+            <div className="bg-primary rounded-[2rem] md:rounded-[3rem] p-6 md:p-16 shadow-2xl active:scale-98 transition-all cursor-pointer relative overflow-hidden group">
+              {/* Decorative Background */}
+              <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 opacity-40 mix-blend-overlay" />
+              <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-900/40 rounded-full blur-3xl -ml-20 -mb-20 opacity-60 mix-blend-overlay" />
+
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
+                <Search className="w-32 h-32 md:w-64 md:h-64 -mr-8 -mt-8 text-white" />
               </div>
-              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
+              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-16">
                 <div className="text-center md:text-left">
-                  <div className="flex items-center justify-center md:justify-start gap-2 mb-3 md:mb-6">
-                    <span className="flex h-2 w-2 relative">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-2 md:mb-6">
+                    <span className="flex h-1.5 w-1.5 md:h-2 md:w-2 relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 md:h-2 md:w-2 bg-white"></span>
                     </span>
-                    <p className="text-[10px] md:text-base font-black uppercase tracking-[0.2em] text-white/70">Live Tracker</p>
+                    <p className="text-[9px] md:text-sm font-bold uppercase tracking-[0.2em] text-white/70">Live Tracker</p>
                   </div>
-                  <h3 className="text-2xl md:text-5xl font-black mb-3 text-white tracking-tighter">Track Your <span className="text-indigo-200">Repair</span></h3>
-                  <p className="text-white/60 text-sm md:text-lg font-medium max-w-xl">Get real-time updates on your service request status.</p>
+                  <h3 className="text-xl md:text-4xl font-black mb-2 text-white tracking-tight">Track Your <span className="text-indigo-200">Repair</span></h3>
+                  <p className="text-white/70 text-xs md:text-lg font-medium max-w-xl">Get real-time updates on your service request status.</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-2xl group-hover:bg-white transition-all duration-500 border border-white/20">
-                  <ChevronRight className="w-8 h-8 md:w-12 md:h-12 text-white group-hover:text-indigo-600" />
+                <div className="bg-white/10 backdrop-blur-md p-3 md:p-6 rounded-xl md:rounded-3xl shadow-2xl group-hover:bg-white transition-all duration-500 border border-white/20">
+                  <ChevronRight className="w-6 h-6 md:w-10 md:h-10 text-white group-hover:text-primary" />
                 </div>
               </div>
             </div>
           </BookingTrackerModal>
         </section>
 
-        <div className="mt-20 md:mt-24">
+        <div className="mt-20 md:mt-24 hidden md:block">
           <VerifiedTechnicians t={t} />
         </div>
 
@@ -359,7 +433,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           </p>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

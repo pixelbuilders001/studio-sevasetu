@@ -70,26 +70,26 @@ const TransactionHistorySheet = () => {
                 {!loading && !error && transactions.length > 0 && (
                     <div className="space-y-3 py-4">
                         {transactions.map((transaction, index) => (
-                            <Card key={index} className="rounded-2xl shadow-sm">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center">
-                                        <div className={`p-3 rounded-xl mr-4 ${transaction.type === 'credit' ? 'bg-green-100' : 'bg-red-100'}`}>
+                            <Card key={index} className="rounded-2xl shadow-sm border border-gray-100">
+                                <CardContent className="p-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${transaction.type === 'credit' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
                                             {transaction.type === 'credit' ? (
-                                                <ArrowUpRight className="w-6 h-6 text-green-600" />
+                                                <ArrowUpRight className="w-4 h-4" />
                                             ) : (
-                                                <ArrowDownLeft className="w-6 h-6 text-red-600" />
+                                                <ArrowDownLeft className="w-4 h-4" />
                                             )}
                                         </div>
                                         <div className="flex-grow">
-                                            <p className="font-bold capitalize">{transaction.source}</p>
-                                            <p className="text-sm text-muted-foreground">{transaction.note}</p>
+                                            <p className="font-bold capitalize text-sm text-[#1e1b4b] leading-none mb-1">{transaction.source}</p>
+                                            <p className="text-[10px] text-[#1e1b4b]/40 font-bold uppercase tracking-wider">{transaction.note || 'Transaction'}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className={`font-bold flex items-center justify-end ${transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
-                                                <span className="text-lg">{transaction.type === 'credit' ? '+' : '-'}</span>
-                                                <IndianRupee className="w-4 h-4" />{transaction.amount || 0}
+                                            <p className={`font-black text-base flex items-center justify-end ${transaction.type === 'credit' ? 'text-green-600' : 'text-black'}`}>
+                                                <span>{transaction.type === 'credit' ? '+' : '-'}</span>
+                                                <IndianRupee className="w-3 h-3" />{transaction.amount || 0}
                                             </p>
-                                            <p className="text-xs text-muted-foreground">{format(new Date(transaction.created_at), 'MMM d, yyyy')}</p>
+                                            <p className="text-[10px] text-muted-foreground font-medium">{format(new Date(transaction.created_at), 'dd MMM, yy')}</p>
                                         </div>
                                     </div>
                                 </CardContent>

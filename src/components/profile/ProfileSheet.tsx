@@ -70,15 +70,15 @@ const MenuItem = ({
 }) => (
   <button
     onClick={onClick}
-    className="flex items-center justify-between w-full px-4 py-3.5 bg-indigo-50/30 rounded-2xl border border-indigo-100/50 hover:bg-indigo-50 transition-colors group"
+    className="flex items-center justify-between w-full px-3 py-3 bg-indigo-50/30 rounded-xl border border-indigo-100/50 hover:bg-indigo-50 transition-colors group"
   >
-    <div className="flex items-center gap-4">
-      <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center border border-indigo-50">
-        <Icon className="w-5 h-5 text-indigo-600" />
+    <div className="flex items-center gap-3">
+      <div className="w-9 h-9 rounded-lg bg-white shadow-sm flex items-center justify-center border border-indigo-50">
+        <Icon className="w-4 h-4 text-indigo-600" />
       </div>
-      <span className="font-bold text-sm text-[#1e1b4b]">{label}</span>
+      <span className="font-bold text-xs text-[#1e1b4b]">{label}</span>
     </div>
-    <ChevronRight className="w-5 h-5 text-indigo-300 group-hover:translate-x-1 transition-transform" />
+    <ChevronRight className="w-4 h-4 text-indigo-300 group-hover:translate-x-1 transition-transform" />
   </button>
 );
 
@@ -106,31 +106,32 @@ const ReferEarnCard = ({ code }: { code: string }) => {
     toast({ title: 'Referral code copied' });
   };
 
+
   return (
-    <div className="bg-indigo-50/50 border-2 border-dashed border-indigo-200 rounded-[2rem] p-5 relative overflow-hidden group">
-      <div className="flex items-center gap-4 mb-4">
-        <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-indigo-50">
-          <Gift className="w-7 h-7 text-indigo-600" />
+    <div className="bg-indigo-50/50 border border-dashed border-indigo-200 rounded-2xl p-4 relative overflow-hidden group">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center border border-indigo-50">
+          <Gift className="w-6 h-6 text-indigo-600" />
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-black text-indigo-950">Refer & Earn ₹50</h3>
-            <button onClick={shareReferral} className="p-2 bg-white rounded-lg border border-indigo-50 text-indigo-600 active:scale-90 transition-transform">
-              <Share2 className="w-4 h-4" />
+            <h3 className="text-base font-bold text-indigo-950">Refer & Earn ₹50</h3>
+            <button onClick={shareReferral} className="p-1.5 bg-white rounded-md border border-indigo-50 text-indigo-600 active:scale-90 transition-transform">
+              <Share2 className="w-3.5 h-3.5" />
             </button>
           </div>
-          <p className="text-xs text-indigo-900/60 font-medium leading-tight">
+          <p className="text-[10px] text-indigo-900/60 font-medium leading-tight">
             Invite friends and you both get ₹50 off
           </p>
         </div>
       </div>
 
-      <div className="flex items-center justify-between bg-white rounded-xl p-2 border border-indigo-50">
-        <span className="font-black tracking-[0.2em] text-indigo-900 font-mono text-sm ml-3">{code}</span>
+      <div className="flex items-center justify-between bg-white rounded-lg p-1.5 border border-indigo-50">
+        <span className="font-bold tracking-[0.1em] text-indigo-900 font-mono text-xs ml-2">{code}</span>
         <Button
           size="sm"
           onClick={copyCode}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-5 h-9 rounded-lg shadow-lg shadow-indigo-200"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[10px] px-4 h-7 rounded-md shadow-sm"
         >
           COPY
         </Button>
@@ -169,19 +170,20 @@ const UserDetailsCard = ({ profile, onEdit }: { profile: UserProfile, onEdit: ()
     icon: any;
   }[];
 
+
   return (
-    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
-        <h3 className="text-xs font-black text-indigo-900 uppercase tracking-widest">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
+        <h3 className="text-[10px] font-bold text-indigo-900 uppercase tracking-widest">
           Personal Details
         </h3>
         <Button
           size="sm"
           variant="ghost"
-          className="h-8 text-[11px] font-black text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg px-3"
+          className="h-7 text-[10px] font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-md px-2"
           onClick={onEdit}
         >
-          <Edit className="w-3.5 h-3.5 mr-1" />
+          <Edit className="w-3 h-3 mr-1" />
           EDIT
         </Button>
       </div>
@@ -190,17 +192,17 @@ const UserDetailsCard = ({ profile, onEdit }: { profile: UserProfile, onEdit: ()
         {details.map((item, index) => (
           <div
             key={index}
-            className="flex items-center gap-4 px-5 py-3.5"
+            className="flex items-center gap-3 px-4 py-3"
           >
-            <div className="w-10 h-10 rounded-xl bg-indigo-50/50 flex items-center justify-center flex-shrink-0">
-              <item.icon className="w-4 h-4 text-indigo-600" />
+            <div className="w-8 h-8 rounded-lg bg-indigo-50/50 flex items-center justify-center flex-shrink-0">
+              <item.icon className="w-3.5 h-3.5 text-indigo-600" />
             </div>
 
             <div className="flex-1 overflow-hidden">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                 {item.label}
               </p>
-              <p className="text-sm font-bold text-[#1e1b4b] truncate">
+              <p className="text-xs font-bold text-[#1e1b4b] truncate">
                 {item.value}
               </p>
             </div>
@@ -375,7 +377,7 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
       <div className="flex-1 overflow-y-auto">
         {/* HEADER */}
         <div
-          className="relative bg-gradient-to-br from-indigo-600 to-[#1e1b4b] h-32 rounded-b-[3rem] shadow-xl"
+          className="relative bg-gradient-to-br from-indigo-600 to-[#1e1b4b] h-28 rounded-b-[2rem] shadow-lg"
           style={{
             backgroundImage: `
               linear-gradient(
@@ -393,7 +395,7 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
             <Button
               size="sm"
               variant="secondary"
-              className="rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-md border border-white/10"
+              className="rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-md border border-white/10 h-7 px-3"
               onClick={() => {
                 // Open modal on desktop, navigate on mobile for consistency
                 if (window.innerWidth >= 768) {
@@ -403,25 +405,25 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
                 }
               }}
             >
-              <Wallet className="w-4 h-4 mr-2" />
-              <span className="font-black">₹{walletBalance}</span>
+              <Wallet className="w-3.5 h-3.5 mr-2" />
+              <span className="font-bold text-xs">₹{walletBalance}</span>
             </Button>
           </div>
         </div>
 
         {/* AVATAR */}
-        <div className="flex justify-center -mt-12">
-          <Avatar className="w-24 h-24 border-4 border-white shadow-xl">
-            <AvatarFallback className="text-2xl font-black bg-indigo-50 text-indigo-600">
+        <div className="flex justify-center -mt-10">
+          <Avatar className="w-20 h-20 border-2 border-white shadow-lg">
+            <AvatarFallback className="text-xl font-bold bg-indigo-50 text-indigo-600">
               {initials(profile.full_name || profile.email)}
             </AvatarFallback>
           </Avatar>
         </div>
 
         {/* NAME */}
-        <div className="text-center mt-3">
-          <h2 className="text-xl font-black text-[#1e1b4b]">{profile.full_name || 'Guest User'}</h2>
-          <p className="text-xs font-bold text-gray-400 mt-0.5 uppercase tracking-widest">{profile.email}</p>
+        <div className="text-center mt-2">
+          <h2 className="text-lg font-bold text-[#1e1b4b]">{profile.full_name || 'Guest User'}</h2>
+          <p className="text-[10px] font-medium text-gray-500 mt-0.5 uppercase tracking-widest">{profile.email}</p>
         </div>
 
         {/* REFER & EARN */}
@@ -429,12 +431,12 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
           <ReferEarnCard code={profile.referral_code!} />
         </div>
 
-        <div className="px-4 mt-6">
+        <div className="px-4 mt-4">
           <UserDetailsCard profile={profile} onEdit={() => setIsEditModalOpen(true)} />
         </div>
 
         {/* MENU */}
-        <div className="px-4 mt-6 space-y-3">
+        <div className="px-4 mt-4 space-y-2">
           <MenuItem
             icon={History}
             label="Booking History"
@@ -453,7 +455,7 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
           <div className="pt-2">
             <ShareAppButton
               variant="indigo"
-              className="w-full h-14 rounded-2xl text-xs uppercase"
+              className="w-full h-12 rounded-xl text-xs uppercase font-bold"
               label="Share helloFixo App"
             />
           </div>
@@ -464,10 +466,10 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
           <button
             onClick={logout}
             className="w-full flex items-center justify-center gap-2 
-        text-sm text-red-500 hover:text-red-600 
-        hover:bg-red-50 rounded-lg py-3 border border-red-100 transition"
+        text-xs font-bold text-red-500 hover:text-red-600 
+        hover:bg-red-50 rounded-xl py-2.5 border border-red-100 transition"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3.5 h-3.5" />
             Logout
           </button>
         </div>
