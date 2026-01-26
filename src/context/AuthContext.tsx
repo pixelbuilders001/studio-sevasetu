@@ -26,114 +26,89 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const initializeAuth = async () => {
             console.log('AuthContext: Initializing...');
-            try {
-                // 1. Try standard cookie-based session
-                let { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                console.log('AuthContext: Initial getSession:', session ? 'Found' : 'Missing', sessionError?.message || '');
+            let hasHydratedLocally = false;
 
-                // 2. If no session, try a small delay and check again (sometimes cookies take a moment)
-                if (!session) {
-                    console.log('AuthContext: Waiting 300ms for potential hydration...');
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                    const secondCheck = await supabase.auth.getSession();
-                    session = secondCheck.data.session;
-                    if (session) console.log('AuthContext: Session found on second check');
-                }
-
-                // 3. Fallback to localStorage re-hydration (PWA helper)
-                if (!session && typeof window !== 'undefined') {
-                    const storageKey = 'sb-session-auth';
+            // 1. OPTIMISTIC RESTORE: Check localStorage immediately to unblock UI
+            if (typeof window !== 'undefined') {
+                const storageKey = 'sb-session-auth';
+                try {
                     const savedSessionContent = localStorage.getItem(storageKey);
-                    console.log('AuthContext: localStorage fallback check:', savedSessionContent ? 'Found' : 'Missing');
-
                     if (savedSessionContent) {
-                        try {
-                            const parsed = JSON.parse(savedSessionContent);
-                            if (parsed && parsed.access_token && parsed.refresh_token) {
-                                console.log('AuthContext: Manually re-hydrating from localStorage');
-                                const { data: restored, error: restoreError } = await supabase.auth.setSession({
-                                    access_token: parsed.access_token,
-                                    refresh_token: parsed.refresh_token
-                                });
-                                if (restoreError) {
-                                    console.error('AuthContext: Restore Error:', restoreError.message);
-                                } else if (restored.session) {
-                                    console.log('AuthContext: Restore Success!');
-                                    session = restored.session;
-                                }
-                            }
-                        } catch (e) {
-                            console.error('AuthContext: Failed to parse saved session', e);
+                        const parsed = JSON.parse(savedSessionContent);
+                        if (parsed && parsed.access_token && parsed.refresh_token && parsed.user) {
+                            console.log('AuthContext: Optimistic local restore success');
+                            const localSession = {
+                                access_token: parsed.access_token,
+                                refresh_token: parsed.refresh_token,
+                                expires_in: 3600,
+                                token_type: 'bearer',
+                                user: parsed.user
+                            };
+                            setSession(localSession as Session);
+                            setUser(parsed.user);
+                            setIsRestricted(false); // Validate later
+                            setLoading(false); // UI is now ready!
+                            hasHydratedLocally = true;
                         }
                     }
+                } catch (e) {
+                    console.error('AuthContext: Local restore error', e);
+                }
+            }
+
+            try {
+                // 2. NETWORK VALIDATION: Check standard cookie session
+                let { data: { session: networkSession }, error: sessionError } = await supabase.auth.getSession();
+                console.log('AuthContext: Network getSession:', networkSession ? 'Found' : 'Missing');
+
+                if (!networkSession) {
+                    // 3. Retry logic for cookies
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    const secondCheck = await supabase.auth.getSession();
+                    networkSession = secondCheck.data.session;
                 }
 
-                if (session?.user) {
-                    const restricted = await checkRestricted(supabase, session.user.id);
-                    console.log('AuthContext: Final Session User:', session.user.email, '| Restricted:', restricted);
+                // 4. Fallback or Validation
+                if (networkSession?.user) {
+                    // We found a valid network session, trust it over local storage
+                    const restricted = await checkRestricted(supabase, networkSession.user.id);
                     if (restricted) {
                         setSession(null);
                         setUser(null);
                         setIsRestricted(true);
                     } else {
-                        setSession(session);
-                        setUser(session.user);
+                        setSession(networkSession);
+                        setUser(networkSession.user);
                         setIsRestricted(false);
                     }
-                } else {
-                    // FINAL FALLBACK: Check localStorage one last time before giving up
-                    // This handles cases where cookies are missing but valid session data exists in storage
-                    if (typeof window !== 'undefined') {
-                        const storageKey = 'sb-session-auth';
-                        const savedSessionContent = localStorage.getItem(storageKey);
-                        if (savedSessionContent) {
-                            console.log('AuthContext: Last-ditch local storage check found data. Attempting restore...');
-                            try {
-                                const parsed = JSON.parse(savedSessionContent);
-                                if (parsed && parsed.access_token && parsed.refresh_token && parsed.user) {
-                                    // FORCE HYDRATION: Set state immediately from local data to unblock UI
-                                    // This bypasses the network delay of setSession which might be timing out
-                                    const localSession = {
-                                        access_token: parsed.access_token,
-                                        refresh_token: parsed.refresh_token,
-                                        expires_in: 3600, // approximate
-                                        token_type: 'bearer',
-                                        user: parsed.user
-                                    };
-
-                                    console.log('AuthContext: Force-restoring local session state immediately');
-                                    setSession(localSession as Session);
-                                    setUser(parsed.user);
-                                    setIsRestricted(false); // Assume false for initial render, validate later if needed
-                                    setLoading(false);
-
-                                    // Background validation: Sync with Supabase client
-                                    supabase.auth.setSession({
-                                        access_token: parsed.access_token,
-                                        refresh_token: parsed.refresh_token
-                                    }).then(({ data, error }) => {
-                                        if (error) console.error('AuthContext: Background validation failed', error);
-                                        if (data.session) console.log('AuthContext: Background validation success');
-                                    });
-
-                                    return;
-                                }
-                            } catch (e) {
-                                console.error('AuthContext: Failed to parse fallback session', e);
-                            }
-                        }
-                    }
-                    console.log('AuthContext: No session finalized.');
+                } else if (!hasHydratedLocally) {
+                    // If no network session AND no local hydration, then we are truly logged out
+                    console.log('AuthContext: No session finalized (Network + Local missing)');
                     setSession(null);
                     setUser(null);
                     setIsRestricted(false);
+                } else {
+                    // We hydrated locally, but network turned up nothing. 
+                    // This implies cookies are missing but we have a token.
+                    // We should try to re-sync the session if possible.
+                    console.log('AuthContext: Local session exists, but network session missing. Attempting background sync...');
+                    const savedSessionContent = localStorage.getItem('sb-session-auth');
+                    if (savedSessionContent) {
+                        const parsed = JSON.parse(savedSessionContent);
+                        await supabase.auth.setSession({
+                            access_token: parsed.access_token,
+                            refresh_token: parsed.refresh_token
+                        });
+                    }
                 }
+
             } catch (error) {
                 console.error('AuthContext: Critical initialization error:', error);
             } finally {
-                // Ensure loading is only set to false when we are absolutely done
-                console.log('AuthContext: Initialization finished, loading=false');
-                setLoading(false);
+                // Ensure loading is false essentially always by this point
+                if (!hasHydratedLocally) {
+                    setLoading(false);
+                }
             }
         };
 
