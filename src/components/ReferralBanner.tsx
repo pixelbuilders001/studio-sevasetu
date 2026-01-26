@@ -6,47 +6,24 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import UserAuthSheet from './UserAuthSheet';
 import { getReferralCode } from '@/app/actions';
-import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
-import { Session } from '@supabase/supabase-js';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 export default function ReferralBanner() {
-    const [session, setSession] = useState<Session | null>(null);
+    const { session, loading: authLoading } = useAuth();
     const [referralCode, setReferralCode] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
     const [sheetOpen, setSheetOpen] = useState(false);
     const { toast } = useToast();
-    const supabase = createSupabaseBrowserClient();
 
+    // Fetch referral code when session is available
     useEffect(() => {
-        const init = async () => {
-            const { data } = await supabase.auth.getSession();
-            setSession(data.session);
-
-            if (data.session) {
-                const code = await getReferralCode();
-                setReferralCode(code);
-            }
-            setLoading(false);
-        };
-        init();
-
-        const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            setSession(session);
-            if (session) {
-                const code = await getReferralCode();
-                setReferralCode(code);
-                setSheetOpen(false);
-            } else {
-                setReferralCode(null);
-            }
-        });
-
-        return () => {
-            authListener.subscription.unsubscribe();
-        };
-    }, [supabase.auth]);
+        if (session) {
+            getReferralCode().then(setReferralCode);
+        } else {
+            setReferralCode(null);
+        }
+    }, [session]);
 
     const handleShare = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -69,7 +46,7 @@ export default function ReferralBanner() {
         }
     };
 
-    if (loading) {
+    if (authLoading) {
         return (
             <div className="w-full h-24 bg-muted animate-pulse rounded-[2.5rem]" />
         );

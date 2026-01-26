@@ -11,6 +11,7 @@ interface AuthContextType {
     user: User | null;
     loading: boolean;
     isRestricted: boolean;
+    signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -163,8 +164,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
     }, [supabase]);
 
+    const signOut = async () => {
+        // 1. Clear Local Storage immediately
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('sb-session-auth');
+        }
+
+        // 2. Optimistic UI update
+        setSession(null);
+        setUser(null);
+        setIsRestricted(false);
+
+        // 3. Network Sign Out (Background)
+        try {
+            await supabase.auth.signOut();
+        } catch (error) {
+            console.error('AuthContext: SignOut error', error);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ session, user, loading, isRestricted }}>
+        <AuthContext.Provider value={{ session, user, loading, isRestricted, signOut }}>
             {children}
         </AuthContext.Provider>
     );

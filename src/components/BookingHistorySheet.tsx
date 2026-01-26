@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { History, Loader2, ArrowRight } from 'lucide-react';
-import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
+import { useAuth } from '@/context/AuthContext';
 import { Booking, RepairQuote } from '@/lib/types/booking';
 import BookingCard from '@/components/BookingCard';
 import UserAuthSheet from '@/components/UserAuthSheet';
@@ -22,14 +22,13 @@ import { cn } from '@/lib/utils';
 
 export default function BookingHistorySheet({ children }: { children: React.ReactNode }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [session, setSession] = useState<any>(null);
+    const { session } = useAuth();
     const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedQuote, setSelectedQuote] = useState<(RepairQuote & { booking_id: string }) | null>(null);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [bookingToCancelId, setBookingToCancelId] = useState<string | null>(null);
     const [isMobile, setIsMobile] = useState(false);
-    const supabase = createSupabaseBrowserClient();
     const { toast } = useToast();
 
     // Check Mobile
@@ -41,27 +40,6 @@ export default function BookingHistorySheet({ children }: { children: React.Reac
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
-
-    // Auth State Listener
-    useEffect(() => {
-        const getInitialSession = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            const { data: { session: currentSession } } = await supabase.auth.getSession();
-            setSession(currentSession);
-            if (user) {
-                console.log('BookingHistorySheet current user:', user.email);
-            }
-        };
-        getInitialSession();
-
-        const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-        });
-
-        return () => {
-            authListener.subscription.unsubscribe();
-        };
-    }, [supabase.auth]);
 
     // Fetch Booking History when session is available and sheet is open
     useEffect(() => {

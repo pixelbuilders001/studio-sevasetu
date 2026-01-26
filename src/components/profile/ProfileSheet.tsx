@@ -234,7 +234,7 @@ const ProfileSkeleton = () => (
 function ProfileContent({ isOpen }: { isOpen: boolean }) {
   const router = useRouter();
   const { toast } = useToast();
-  const { loading: authLoading, session: authSession } = useAuth();
+  const { loading: authLoading, session: authSession, signOut } = useAuth();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -341,19 +341,11 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
     // Add small delay to show loader 
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    try {
-      await Promise.race([
-        supabase.auth.signOut(),
-        new Promise(resolve => setTimeout(resolve, 2000))
-      ]);
-    } catch (e) {
-      console.warn('Profile logout timed out', e);
-    }
+    await signOut();
 
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('sb-session-auth');
-      window.location.reload();
-    }
+    toast({ title: 'Logged out successfully' });
+    router.push('/');
+    setLoggingOut(false);
   };
 
   const initials = (name: string) =>

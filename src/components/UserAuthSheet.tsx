@@ -35,7 +35,7 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: boolean) => void; }) {
   const [currentView, setCurrentView] = useState<AuthView>('signIn');
-  const { session, isRestricted } = useAuth();
+  const { session, isRestricted, signOut } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -125,25 +125,10 @@ export default function UserAuthSheet({ setSheetOpen }: { setSheetOpen: (open: b
 
   const handleLogout = async () => {
     setLoading(true);
-
-    // 1. Attempt server-side signout with timeout
-    try {
-      await Promise.race([
-        supabase.auth.signOut(),
-        new Promise(resolve => setTimeout(resolve, 2000))
-      ]);
-    } catch (e) {
-      console.warn('Logout timed out or failed', e);
-    }
-
-    // 2. FORCE CLIENT CLEANUP
-    // Even if server request failed, we must nuke the session locally
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('sb-session-auth');
-      // Also clear Supabase's internal storage if possible, though hard to access directly
-      // The most effective way to reset AuthContext and all state is a hard reload
-      window.location.reload();
-    }
+    // Use robust signOut from AuthContext (no reload needed)
+    await signOut();
+    setSheetOpen(false);
+    setLoading(false);
   };
 
   const UserAccountView = () => {

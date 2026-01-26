@@ -15,7 +15,7 @@ const dummyTechnicians = [
     imageUrl: 'https://picsum.photos/seed/tech1/300/300',
     ratingValue: 4.9,
     jobs: '1.2k+',
-    location: 'Indiranagar',
+    location: 'Patna',
     tags: ['FAST', 'SMART']
   },
   {
@@ -24,7 +24,7 @@ const dummyTechnicians = [
     imageUrl: 'https://picsum.photos/seed/tech2/300/300',
     ratingValue: 4.8,
     jobs: '850+',
-    location: 'Koramangala',
+    location: 'Gaya',
     tags: ['EXPERT', 'POLITE']
   },
   {
@@ -33,7 +33,7 @@ const dummyTechnicians = [
     imageUrl: 'https://picsum.photos/seed/tech3/300/300',
     ratingValue: 4.7,
     jobs: '2k+',
-    location: 'HSR Layout',
+    location: 'Muzaffarpur',
     tags: ['QUICK', 'RELIABLE']
   },
   {
@@ -42,7 +42,7 @@ const dummyTechnicians = [
     imageUrl: 'https://picsum.photos/seed/tech4/300/300',
     ratingValue: 4.9,
     jobs: '900+',
-    location: 'Whitefield',
+    location: 'Bhagalpur',
     tags: ['CERTIFIED', 'PROFESSIONAL']
   },
   {
@@ -176,11 +176,12 @@ export default function VerifiedTechnicians({ t }: { t: TranslationFunc }) {
     <section className="py-12 md:py-20 bg-slate-50/50 dark:bg-slate-900/20">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="flex items-end justify-between mb-8 md:mb-10 px-2">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-10 px-2 gap-2">
           <div className="space-y-1">
             <h2 className="text-2xl md:text-4xl font-black tracking-tight text-[#1e1b4b]">
-              Top Experts <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">Near You</span>
+              Top Experts <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">Near {location.city}</span>
             </h2>
+            <p className="text-[10px] md:text-xs font-bold text-indigo-400 uppercase tracking-[0.2em]">Verified professionals in your area</p>
           </div>
           <button className="hidden md:flex items-center gap-2 text-sm font-black text-indigo-600 hover:gap-3 transition-all">
             VIEW ALL <ChevronRight className="w-4 h-4" />

@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { History, Wallet, Sparkles, ArrowUpRight, ArrowDownLeft, Gift, Copy, Share2, IndianRupee, Loader2 } from 'lucide-react';
 import WalletLoader from './WalletLoader';
-import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
+import { useAuth } from '@/context/AuthContext';
 import UserAuthSheet from '@/components/UserAuthSheet';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -30,7 +30,7 @@ type Transaction = {
 
 export default function WalletSheet({ children }: { children: React.ReactNode }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [session, setSession] = useState<any>(null);
+    const { session } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [balance, setBalance] = useState<number>(0);
     const [referralCode, setReferralCode] = useState<string | null>(null);
@@ -38,7 +38,6 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
     const [mobileNumber, setMobileNumber] = useState<string>(''); // Needed for distinct TransactionHistorySheet if it requires it
     const [isMobile, setIsMobile] = useState(false);
 
-    const supabase = createSupabaseBrowserClient();
     const { toast } = useToast();
 
     // Check Mobile
@@ -51,26 +50,6 @@ export default function WalletSheet({ children }: { children: React.ReactNode })
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // Auth State Listener
-    useEffect(() => {
-        const getInitialSession = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            const { data: { session: currentSession } } = await supabase.auth.getSession();
-            setSession(currentSession);
-            if (user) {
-                console.log('WalletSheet current user:', user.email);
-            }
-        };
-        getInitialSession();
-
-        const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-        });
-
-        return () => {
-            authListener.subscription.unsubscribe();
-        };
-    }, [supabase.auth]);
 
     // Fetch Wallet Data
     useEffect(() => {
