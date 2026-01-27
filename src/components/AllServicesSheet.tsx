@@ -14,6 +14,7 @@ import React from 'react';
 import { useLocation } from '@/context/LocationContext';
 import { useRouter } from 'next/navigation';
 import FullScreenLoader from './FullScreenLoader';
+import { useQuery } from '@tanstack/react-query';
 
 
 function ServicesSheetSkeleton() {
@@ -87,23 +88,11 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
 
 export default function AllServicesSheet() {
     const { t, language } = useTranslation();
-    const [categories, setCategories] = useState<ServiceCategory[]>([]);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            setLoading(true);
-            try {
-                const originalCategories = await getServiceCategoriesAction();
-                setCategories(originalCategories);
-            } catch (error) {
-                console.error("Failed to fetch service categories", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchCategories();
-    }, [language]);
+    const { data: categories = [], isLoading: loading } = useQuery({
+        queryKey: ['service-categories'],
+        queryFn: getServiceCategoriesAction,
+    });
 
 
     return (

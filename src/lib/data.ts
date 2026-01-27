@@ -4,7 +4,6 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Smartphone, Laptop, AirVent, Refrigerator, Fan, LucideIcon, Tv, WashingMachine } from 'lucide-react';
 import type { TranslationFunc } from '@/context/LanguageContext';
 import { createClient } from '@supabase/supabase-js'
-import { unstable_cache } from "next/cache";
 
 export const ICONS: Record<string, LucideIcon> = {
     "Smartphone": Smartphone,
@@ -58,7 +57,7 @@ const mapCategoryIcon = (slug: string): string => {
     return iconMap[slug] || 'Smartphone';
 }
 
-const fetchServiceCategoriesInternal = async (): Promise<ServiceCategory[]> => {
+export const getServiceCategories = async (): Promise<ServiceCategory[]> => {
     console.log('🔥 FETCHING FROM DB');
     const { data, error } = await supabase
         .from("categories")
@@ -97,22 +96,7 @@ const fetchServiceCategoriesInternal = async (): Promise<ServiceCategory[]> => {
     }));
 };
 
-export const getServiceCategoriesCached = unstable_cache(
-    fetchServiceCategoriesInternal,
-    ["service-categories"], // cache key
-    {
-        revalidate: 60 * 60 * 24 * 30, // 30 days
-    }
-);
-
-export async function getServiceCategories(): Promise<ServiceCategory[]> {
-    if (typeof window === 'undefined') {
-        return getServiceCategoriesCached();
-    }
-    return fetchServiceCategoriesInternal();
-}
-
-const fetchServiceCategoryInternal = async (slug: string): Promise<ServiceCategory | null> => {
+export const getServiceCategory = async (slug: string): Promise<ServiceCategory | null> => {
     const { data: categoryData, error: categoryError } = await supabase
         .from('categories')
         .select('*')
@@ -162,21 +146,6 @@ const fetchServiceCategoryInternal = async (slug: string): Promise<ServiceCatego
         problems: problems as Problem[],
     };
 };
-
-export const getServiceCategoryCached = unstable_cache(
-    fetchServiceCategoryInternal,
-    ["service-category"], // cache key base
-    {
-        revalidate: 60 * 60 * 24 * 30, // 30 days
-    }
-);
-
-export async function getServiceCategory(slug: string): Promise<ServiceCategory | null> {
-    if (typeof window === 'undefined') {
-        return getServiceCategoryCached(slug);
-    }
-    return fetchServiceCategoryInternal(slug);
-}
 
 
 export const getTranslatedCategory = (category: ServiceCategory, t: TranslationFunc): ServiceCategory => {

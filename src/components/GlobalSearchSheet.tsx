@@ -17,6 +17,7 @@ import FullScreenLoader from './FullScreenLoader';
 import { cn } from '@/lib/utils';
 import { Input } from './ui/input';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 
 interface SearchResult {
     type: 'category' | 'problem';
@@ -35,8 +36,6 @@ export default function GlobalSearchSheet() {
     const { isServiceable, setDialogOpen } = useLocation();
 
     const [searchQuery, setSearchQuery] = useState('');
-    const [categories, setCategories] = useState<ServiceCategory[]>([]);
-    const [loading, setLoading] = useState(true);
     const [isNavigating, setIsNavigating] = useState(false);
     const [isListening, setIsListening] = useState(false);
 
@@ -75,20 +74,10 @@ export default function GlobalSearchSheet() {
         recognition.start();
     };
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            setLoading(true);
-            try {
-                const data = await getServiceCategoriesAction();
-                setCategories(data);
-            } catch (error) {
-                console.error("Failed to fetch categories for search", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchCategories();
-    }, [language]);
+    const { data: categories = [], isLoading: loading } = useQuery({
+        queryKey: ['service-categories'],
+        queryFn: getServiceCategoriesAction,
+    });
 
     const results = useMemo(() => {
         if (!searchQuery.trim() || categories.length === 0) return [];

@@ -14,6 +14,7 @@ import FullScreenLoader from '@/components/FullScreenLoader';
 import { useBooking } from '@/context/BookingContext';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
 import { getTechniciansByCategoryAction } from '@/app/actions';
+import { useQuery } from '@tanstack/react-query';
 
 
 type ClientCategory = Omit<ServiceCategory, 'icon'> & { iconName: string };
@@ -27,10 +28,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
   const [selectedProblems, setSelectedProblems] = useState<Problem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [photoPreviews, setPhotoPreviews] = useState<(string | null)[]>([null, null]);
-  const [technicians, setTechnicians] = useState<any[]>([]);
-  const [isTechniciansLoading, setIsTechniciansLoading] = useState(true);
   const photoInputsRef = useRef<(HTMLInputElement | null)[]>([]);
-
 
   useEffect(() => {
     // Sync previews with context media on mount
@@ -51,26 +49,19 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
     };
   }, [media, secondaryMedia]);
 
-
-  useEffect(() => {
-    async function fetchTechnicians() {
-      if (!category?.id) {
-        setIsTechniciansLoading(false);
-        return;
-      }
-
+  const { data: technicians = [], isLoading: isTechniciansLoading } = useQuery({
+    queryKey: ['technicians-by-category', category?.id],
+    queryFn: async () => {
+      if (!category?.id) return [];
       try {
-        const technicianList = await getTechniciansByCategoryAction(category.id);
-        setTechnicians(technicianList);
+        return await getTechniciansByCategoryAction(category.id);
       } catch (err) {
         console.error('Failed to fetch technicians:', err);
-      } finally {
-        setIsTechniciansLoading(false);
+        return [];
       }
-    }
-
-    fetchTechnicians();
-  }, [category?.id]);
+    },
+    enabled: !!category?.id,
+  });
 
 
   if (!category) {

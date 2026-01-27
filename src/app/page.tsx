@@ -36,6 +36,7 @@ import { User, Bell } from 'lucide-react';
 import { checkRestricted } from '@/utils/auth';
 import AppDownloadBanner from '@/components/AppDownloadBanner';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
 
 
 function ServiceCardSkeleton() {
@@ -204,23 +205,13 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
     }
   ];
 
-  const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const { session, loading: authLoading } = useAuth();
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setCategoriesLoading(true);
-      try {
-        const data = await getServiceCategoriesAction();
-        setCategories(data);
-      } finally {
-        setCategoriesLoading(false);
-      }
-    };
-    fetchCategories();
-  }, []);
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['service-categories'],
+    queryFn: getServiceCategoriesAction,
+  });
 
   const featureCards = [
     {

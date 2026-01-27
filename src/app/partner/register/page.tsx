@@ -31,6 +31,7 @@ import type { ServiceCategory } from '@/lib/data';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from '@/context/LocationContext';
+import { useQuery } from '@tanstack/react-query';
 
 const validationSchema = z.object({
   full_name: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
@@ -138,9 +139,13 @@ export default function PartnerOnboardingPage() {
   const { location } = useLocation();
 
   const [step, setStep] = useState(1);
-  const [categories, setCategories] = useState<Omit<ServiceCategory, 'problems' | 'icon'>[]>([]);
   const [isValidating, setIsValidating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['service-categories'],
+    queryFn: getServiceCategoriesAction,
+  });
 
   const form = useForm<FormData>({
     resolver: zodResolver(validationSchema),
@@ -169,14 +174,6 @@ export default function PartnerOnboardingPage() {
       form.setValue('service_area', location.city); // Or location.area?.District
     }
   }, [location, form]);
-
-  useEffect(() => {
-    async function fetchSkills() {
-      const skills = await getServiceCategoriesAction();
-      setCategories(skills);
-    }
-    fetchSkills();
-  }, []);
 
   const experienceLevels = [
     '0-1 Year',

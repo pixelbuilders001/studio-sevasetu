@@ -23,21 +23,18 @@ import { User, ChevronDown } from 'lucide-react';
 import { getServiceCategoriesAction } from '@/app/actions';
 import { ServiceCategory } from '@/lib/data';
 import ServicesMegaMenu from './ServicesMegaMenu';
+import { useQuery } from '@tanstack/react-query';
 
 export function DesktopNavbar() {
     const pathname = usePathname();
     const { session } = useAuth();
     const [authOpen, setAuthOpen] = useState(false);
     const [megaMenuOpen, setMegaMenuOpen] = useState(false);
-    const [categories, setCategories] = useState<ServiceCategory[]>([]);
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const cats = await getServiceCategoriesAction();
-            setCategories(cats);
-        };
-        fetchCategories();
-    }, []);
+    const { data: categories = [] } = useQuery({
+        queryKey: ['service-categories'],
+        queryFn: getServiceCategoriesAction,
+    });
 
     const toggleServices = (e: React.MouseEvent) => {
         e.preventDefault();

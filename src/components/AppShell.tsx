@@ -15,33 +15,36 @@ import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import IntroductionModal from '@/components/IntroductionModal';
 import { AuthProvider } from '@/context/AuthContext';
 import SessionDebugger from '@/components/SessionDebugger';
+import ReactQueryProvider from '@/components/providers/ReactQueryProvider';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const showBottomNav = ['/', '/wallet', '/history'].includes(pathname);
 
   return (
-    <AuthProvider>
-      <LanguageProvider>
-        <LocationProvider>
-          <BookingProvider>
-            <SplashScreen />
-            {/* <SessionDebugger /> */}
-            <OfflineDetector />
-            <OfflineDetector />
-            {/* {pathname === '/' && <IntroductionModal />} */}
-            <PWAInstallPrompt />
-            {/* Desktop Navigation */}
-            <DesktopNavbar />
+    <ReactQueryProvider>
+      <AuthProvider>
+        <LanguageProvider>
+          <LocationProvider>
+            <BookingProvider>
+              <SplashScreen />
+              {/* <SessionDebugger /> */}
+              <OfflineDetector />
+              <OfflineDetector />
+              {/* {pathname === '/' && <IntroductionModal />} */}
+              <PWAInstallPrompt />
+              {/* Desktop Navigation */}
+              <DesktopNavbar />
 
-            {pathname !== '/' && <Header />}
-            <main className={`flex-grow ${pathname === '/' ? 'pt-0 md:pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
-            <Footer />
-            {showBottomNav && <BottomNavBar />}
-            <Toaster />
-          </BookingProvider>
-        </LocationProvider>
-      </LanguageProvider>
-    </AuthProvider>
+              {pathname !== '/' && <Header />}
+              <main className={`flex-grow ${pathname === '/' ? 'pt-0 md:pt-0' : 'pt-16 md:pt-20'} pb-24`}>{children}</main>
+              <Footer />
+              {showBottomNav && <BottomNavBar />}
+              <Toaster />
+            </BookingProvider>
+          </LocationProvider>
+        </LanguageProvider>
+      </AuthProvider>
+    </ReactQueryProvider>
   );
 }

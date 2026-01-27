@@ -8,6 +8,7 @@ import { useLocation } from '@/context/LocationContext';
 import { getTechniciansByPincodeAction } from '@/app/actions';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 const dummyTechnicians = [
   {
@@ -151,24 +152,19 @@ function TechnicianCard({ technician, index }: { technician: Technician, index: 
 
 export default function VerifiedTechnicians({ t, isMobile = false }: { t: TranslationFunc, isMobile?: boolean }) {
   const { location } = useLocation();
-  const [technicians, setTechnicians] = useState<Technician[]>([]);
-  console.log(technicians);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchTechnicians = async () => {
+  const { data: technicians = dummyTechnicians, isLoading: loading } = useQuery({
+    queryKey: ['technicians', location.pincode],
+    queryFn: async () => {
       // Don't fetch if pincode is not a valid 6-digit number
       if (!location.pincode || location.pincode.length !== 6 || isNaN(Number(location.pincode))) {
-        setTechnicians(dummyTechnicians);
-        setLoading(false);
-        return;
+        return dummyTechnicians;
       }
 
-      setLoading(true);
       try {
         const data = await getTechniciansByPincodeAction(location.pincode);
         if (data && data.length > 0) {
-          const mappedData: Technician[] = data.map((item: any) => {
+          return data.map((item: any) => {
             const formatSkill = (skill: string) =>
               skill.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
 
@@ -186,20 +182,15 @@ export default function VerifiedTechnicians({ t, isMobile = false }: { t: Transl
                 : ['CERTIFIED', 'TRUSTED']
             };
           });
-          setTechnicians(mappedData);
-        } else {
-          setTechnicians(dummyTechnicians);
         }
+        return dummyTechnicians;
       } catch (error) {
         console.error('Failed to fetch technicians:', error);
-        setTechnicians(dummyTechnicians);
-      } finally {
-        setLoading(false);
+        return dummyTechnicians;
       }
-    };
-
-    fetchTechnicians();
-  }, [location.pincode, location.city]);
+    },
+    enabled: !!location.pincode,
+  });
 
   return (
     <section className={`py-6 md:py-20 ${isMobile ? 'bg-transparent px-0' : 'bg-slate-50/50 dark:bg-slate-900/20'}`}>
@@ -225,7 +216,7 @@ export default function VerifiedTechnicians({ t, isMobile = false }: { t: Transl
             </div>
           ) : (
             <div className="flex overflow-x-auto no-scrollbar gap-4 pb-8 snap-x snap-mandatory">
-              {technicians.map((technician, index) => (
+              {technicians.map((technician: Technician, index: number) => (
                 <div key={index} className="snap-center first:pl-2 last:pr-4">
                   <TechnicianCard technician={technician} index={index} />
                 </div>
