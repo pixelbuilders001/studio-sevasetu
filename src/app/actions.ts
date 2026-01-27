@@ -1104,7 +1104,7 @@ export async function getBookingHistory() {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError || !session) return [];
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking?select=id,order_id,status,technician_id,created_at,media_url,completion_code,final_amount_to_be_paid,user_name,full_address,final_amount_paid,payment_method,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking?select=id,order_id,status,technician_id,user_rating,created_at,media_url,completion_code,final_amount_to_be_paid,user_name,full_address,final_amount_paid,payment_method,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
@@ -1180,6 +1180,68 @@ export async function getTechnicianById(technicianId: string) {
   } catch (error) {
     console.error('Technician fetch failed:', error);
     return null;
+  }
+}
+
+export async function submitRating(technicianId: string, rating: number, bookingId: string) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+      console.error('Authentication Error (submitRating):', sessionError?.message);
+      return { success: false, error: "You must be logged in to submit a rating." };
+    }
+
+    const accessToken = session.access_token;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/submit-ratings`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        technician_id: technicianId,
+        rating: rating,
+        booking_id: bookingId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Rating submission API error:', errorData);
+      return { success: false, error: errorData.message || 'Failed to submit rating' };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Rating submission failed:', error);
+    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred." };
   }
 }
 

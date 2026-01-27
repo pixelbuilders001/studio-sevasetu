@@ -18,9 +18,10 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Booking, RepairQuote } from '@/lib/types/booking';
-import { getTechnicianById } from '@/app/actions';
+import { getTechnicianById, submitRating } from '@/app/actions';
 import { Technician } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
 
 const iconMap: { [key: string]: React.ElementType } = {
     'MOBILE PHONES': Laptop,
@@ -100,8 +101,13 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare,
     const isCancelable = ['pending', 'confirmed', 'assigned'].includes(booking.status.toLowerCase());
     const isRepairCompleted = booking.status.toLowerCase() === 'repair_completed';
     const showTechnicianDetails = ['assigned', 'accepted', 'on_the_way'].includes(booking.status.toLowerCase());
-
+    console.log(booking);
     const [technician, setTechnician] = useState<Technician | null>(null);
+    const [selectedRating, setSelectedRating] = useState<number>(0);
+    const [hoveredRating, setHoveredRating] = useState<number>(0);
+    const [isSubmittingRating, setIsSubmittingRating] = useState(false);
+    const [hasSubmittedRating, setHasSubmittedRating] = useState(!!booking.user_rating);
+    const { toast } = useToast();
 
     useEffect(() => {
         if (showTechnicianDetails && booking.technician_id && !technician) {
@@ -110,6 +116,41 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare,
             });
         }
     }, [showTechnicianDetails, booking.technician_id, technician]);
+
+    const handleRatingSubmit = async () => {
+        if (!booking.technician_id || selectedRating === 0) {
+            toast({
+                title: "Error",
+                description: "Please select a rating",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        setIsSubmittingRating(true);
+        try {
+            const result = await submitRating(booking.technician_id, selectedRating, booking.id);
+
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to submit rating');
+            }
+
+            setHasSubmittedRating(true);
+            toast({
+                title: "Success",
+                description: "Thank you for your rating!",
+            });
+        } catch (error) {
+            console.error('Error submitting rating:', error);
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : "Failed to submit rating. Please try again.",
+                variant: "destructive"
+            });
+        } finally {
+            setIsSubmittingRating(false);
+        }
+    };
 
     return (
         <Card className={cn(
@@ -269,6 +310,78 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare,
                             <div className="text-3xl font-black tracking-[0.25em] text-white font-mono mb-1">{booking.completion_code}</div>
                             <p className="text-[9px] text-gray-500 font-bold">Show this to start repair</p>
                         </div>
+                    </div>
+                )}
+
+                {isRepairCompleted && !hasSubmittedRating && (
+                    <div className="mb-5 p-5 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border-2 border-purple-100">
+                        <div className="text-center mb-4">
+                            <h3 className="text-sm font-black text-[#1e1b4b] mb-1">Rate Your Experience</h3>
+                            <p className="text-[10px] text-gray-500 font-medium">How was the service?</p>
+                        </div>
+
+                        <div className="flex justify-center gap-2 mb-4">
+                            {[1, 2, 3, 4, 5].map((rating) => (
+                                <button
+                                    key={rating}
+                                    onClick={() => setSelectedRating(rating)}
+                                    onMouseEnter={() => setHoveredRating(rating)}
+                                    onMouseLeave={() => setHoveredRating(0)}
+                                    className="transition-all duration-200 hover:scale-110 active:scale-95"
+                                    disabled={isSubmittingRating}
+                                >
+                                    <Star
+                                        className={cn(
+                                            "w-10 h-10 transition-all duration-200",
+                                            (hoveredRating >= rating || selectedRating >= rating)
+                                                ? "fill-yellow-400 text-yellow-400"
+                                                : "fill-gray-200 text-gray-300"
+                                        )}
+                                    />
+                                </button>
+                            ))}
+                        </div>
+
+                        {selectedRating > 0 && (
+                            <Button
+                                onClick={handleRatingSubmit}
+                                disabled={isSubmittingRating}
+                                className="w-full font-black text-xs h-12 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xl hover:from-purple-700 hover:to-indigo-700 hover:scale-[1.02] active:scale-95 transition-all"
+                            >
+                                {isSubmittingRating ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                        Submitting...
+                                    </>
+                                ) : (
+                                    <>Submit Rating</>
+                                )}
+                            </Button>
+                        )}
+                    </div>
+                )}
+
+                {(isRepairCompleted || isCompleted) && hasSubmittedRating && (
+                    <div className="mb-5 p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-2 border-green-100 text-center">
+                        <div className="flex justify-center gap-1 mb-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                    key={star}
+                                    className={cn(
+                                        "w-6 h-6",
+                                        (booking.user_rating || selectedRating) >= star
+                                            ? "fill-yellow-400 text-yellow-400"
+                                            : "fill-gray-200 text-gray-300"
+                                    )}
+                                />
+                            ))}
+                        </div>
+                        <h3 className="text-sm font-black text-green-800 mb-1">
+                            {booking.user_rating ? "You rated this work" : "Thank You!"}
+                        </h3>
+                        {/* <p className="text-[10px] text-green-600 font-medium">
+                            {booking.user_rating ? `You rated this service ${booking.user_rating} stars` : "Your rating has been submitted"}
+                        </p> */}
                     </div>
                 )}
 

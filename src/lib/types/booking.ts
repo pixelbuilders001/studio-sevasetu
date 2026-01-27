@@ -15,6 +15,7 @@ export type Booking = {
     created_at: string;
     media_url: string | null;
     completion_code?: string;
+    user_rating?: number;
     categories: {
         id: string;
         name: string;
