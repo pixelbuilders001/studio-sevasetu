@@ -1,16 +1,15 @@
 
 'use client';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { getServiceCategoriesAction } from '@/app/actions';
 import { Card, CardContent } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import TrustIndicators from '@/components/TrustIndicators';
 import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { getTranslations } from '@/lib/get-translation';
 import VerifiedTechnicians from '@/components/VerifiedTechnicians';
-import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase, ChevronRight, Search, IndianRupee, Star } from 'lucide-react';
+import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase, ChevronRight, Search, IndianRupee, Star, Mic } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import BecomePartner from '@/components/BecomePartner';
 import HeroCTA from '@/components/HeroCTA';
@@ -20,6 +19,7 @@ import BookingTrackerModal from '@/components/BookingTrackerModal';
 import { useLocation } from '@/context/LocationContext';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
+import GlobalSearchSheet from '@/components/GlobalSearchSheet';
 import { useTranslation } from '@/hooks/useTranslation';
 import AnimatedHeroText from '@/components/AnimatedHeroText';
 import FullScreenLoader from '@/components/FullScreenLoader';
@@ -148,8 +148,9 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
 import { useAuth } from '@/context/AuthContext';
 
 import useEmblaCarousel from 'embla-carousel-react';
-import type { EmblaCarouselType } from 'embla-carousel-react';
 import { useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const { lang } = use(searchParams);
@@ -158,8 +159,26 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [searchSheetOpen, setSearchSheetOpen] = useState(false);
+  const [currentSearchTermIndex, setCurrentSearchTermIndex] = useState(0);
 
-  const onSelect = useCallback((api: EmblaCarouselType) => {
+  const searchPlaceholderTerms = [
+    'AC Repair',
+    'Mobile Phones',
+    'TV Repair',
+    'Fridge Repair',
+    'Laptops',
+    'Air Cooler'
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSearchTermIndex((prev) => (prev + 1) % searchPlaceholderTerms.length);
+    }, 2500);
+    return () => clearInterval(timer);
+  }, []);
+
+  const onSelect = useCallback((api: any) => {
     setSelectedIndex(api.selectedScrollSnap());
   }, []);
 
@@ -257,12 +276,51 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           </div>
         </div>
 
+        <div className="px-4 mb-2 mt-1">
+          <Sheet open={searchSheetOpen} onOpenChange={setSearchSheetOpen}>
+            <SheetTrigger asChild>
+              <div
+                className="relative group cursor-pointer"
+              >
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-hover:text-primary transition-colors z-10" />
+                <div className="w-full rounded-xl h-11 pl-11 pr-11 bg-slate-50 border border-slate-100 flex items-center text-slate-400 text-[11px] font-medium shadow-sm relative overflow-hidden">
+                  <span className="flex-shrink-0 mr-1.5 mt-[-1px]">Search for</span>
+                  <div className="relative h-4 w-full">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={searchPlaceholderTerms[currentSearchTermIndex]}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -20, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                        className="absolute inset-0 flex items-center"
+                      >
+                        <span className="text-primary font-black uppercase tracking-wider">
+                          {searchPlaceholderTerms[currentSearchTermIndex]}
+                        </span>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                </div>
+                <Mic className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-80" />
+              </div>
+            </SheetTrigger>
+            <SheetContent
+              side="bottom"
+              className="h-full sm:h-[95vh] p-0 border-none bg-white rounded-t-[2.5rem] overflow-hidden"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
+              <GlobalSearchSheet />
+            </SheetContent>
+          </Sheet>
+        </div>
+
         {/* Hero Banner Carousel */}
         <div className="relative group overflow-hidden">
-          <div className="mx-4 mt-2 overflow-hidden rounded-[2rem] shadow-xl shadow-blue-100/50 aspect-[16/10]" ref={emblaRef}>
+          <div className="mx-4 mt-0 overflow-hidden rounded-xl shadow-xl shadow-blue-100/50 aspect-[16/8]" ref={emblaRef}>
             <div className="flex">
               {banners.map((banner, index) => (
-                <div key={index} className="relative flex-[0_0_100%] aspect-[16/10]">
+                <div key={index} className="relative flex-[0_0_100%] aspect-[16/8]">
                   <Image
                     src={banner.img}
                     alt={banner.title}
@@ -272,18 +330,18 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
                   />
                   {/* Modern Glassy Overlay */}
                   <div className={cn(
-                    "absolute inset-0 bg-gradient-to-t from-[#1e1b4b]/90 via-[#1e1b4b]/40 to-transparent flex items-end p-6 pb-10",
+                    "absolute inset-0 bg-gradient-to-t from-[#1e1b4b]/90 via-[#1e1b4b]/20 to-transparent flex items-end p-4 pb-6",
                   )}>
                     <div className="max-w-[95%] text-white animate-in fade-in slide-in-from-bottom-2 duration-700">
-                      <div className="mb-2">
-                        <span className="bg-indigo-600/40 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border border-white/20">
+                      <div className="mb-1.5">
+                        <span className="bg-indigo-600/40 backdrop-blur-md px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-[0.1em] border border-white/20">
                           {banner.highlight}
                         </span>
                       </div>
-                      <h1 className="text-xl font-black leading-tight mb-1.5 [text-shadow:_0_2px_4px_rgba(0,0,0,0.5)]">
+                      <h1 className="text-lg font-black leading-tight mb-1 [text-shadow:_0_1px_3px_rgba(0,0,0,0.6)]">
                         {banner.title}
                       </h1>
-                      <p className="text-[11px] font-bold opacity-95 mb-4 leading-tight [text-shadow:_0_1px_2px_rgba(0,0,0,0.5)]">
+                      <p className="text-[10px] font-bold opacity-90 mb-3 leading-tight [text-shadow:_0_1px_2px_rgba(0,0,0,0.6)]">
                         {banner.desc}
                       </p>
                       <HeroCTA />
@@ -293,7 +351,6 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
               ))}
             </div>
           </div>
-
         </div>
 
         {/* Popular Services */}
