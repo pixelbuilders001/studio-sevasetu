@@ -18,6 +18,7 @@ export const ICONS: Record<string, LucideIcon> = {
 export type Problem = {
     id: string;
     name: string;
+    description: string;
     image: {
         imageUrl: string;
         imageHint: string;
@@ -31,6 +32,7 @@ export type ServiceCategory = {
     slug: string;
     name: string;
     icon: string;
+    description: string;
     image: {
         imageUrl: string;
         imageHint: string;
@@ -74,6 +76,7 @@ export const getServiceCategories = async (): Promise<ServiceCategory[]> => {
         id: category.id,
         slug: category.slug,
         name: category.name,
+        description: category.description,
         icon: mapCategoryIcon(category.slug),
         base_inspection_fee: category.base_inspection_fee || 199,
         image: {
@@ -127,6 +130,7 @@ export const getServiceCategory = async (slug: string): Promise<ServiceCategory 
         name: p.title,
         category_id: p.category_id,
         base_min_fee: p.base_min_fee,
+        description: p.description,
         image: {
             imageUrl: p.icon_url,
             imageHint: p.title.toLowerCase()
@@ -137,6 +141,7 @@ export const getServiceCategory = async (slug: string): Promise<ServiceCategory 
         id: category.id,
         slug: category.slug,
         name: category.name,
+        description: category.description,
         icon: mapCategoryIcon(category.slug),
         base_inspection_fee: category.base_inspection_fee || 199,
         image: {

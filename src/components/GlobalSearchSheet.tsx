@@ -25,6 +25,7 @@ interface SearchResult {
     name: string;
     categoryName: string;
     categorySlug: string;
+    description?: string;
     icon?: string;
     categoryIcon: string;
     problemId?: string;
@@ -93,6 +94,7 @@ export default function GlobalSearchSheet() {
                     id: cat.id,
                     name: cat.name,
                     categoryName: cat.name,
+                    description: cat.description,
                     categorySlug: cat.slug,
                     categoryIcon: cat.image.imageUrl
                 });
@@ -107,6 +109,7 @@ export default function GlobalSearchSheet() {
                         name: prob.name,
                         categoryName: cat.name,
                         categorySlug: cat.slug,
+                        description: prob.description,
                         categoryIcon: cat.image.imageUrl,
                         problemId: prob.id
                     });
