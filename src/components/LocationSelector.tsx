@@ -232,7 +232,10 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100vw-1.5rem)] sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-6">
+      <DialogContent
+        className="max-w-[calc(100vw-1.5rem)] sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-6"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>{t('selectYourLocation')}</DialogTitle>
           <DialogDescription>
