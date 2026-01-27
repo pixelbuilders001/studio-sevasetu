@@ -248,6 +248,8 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
 
+  const editProfileData = useMemo(() => profile ? { full_name: profile.full_name, phone: profile.phone } : null, [profile?.full_name, profile?.phone]);
+
   useEffect(() => {
     const init = async () => {
       if (!isOpen || authLoading) return;
@@ -477,7 +479,7 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
       <EditProfileModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        currentProfile={profile ? { full_name: profile.full_name, phone: profile.phone } : null}
+        currentProfile={editProfileData}
         onProfileUpdated={refreshProfile}
       />
       <AddressManagementModal

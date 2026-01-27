@@ -65,7 +65,7 @@ export function EditProfileModal({
                 phone: currentProfile.phone || '',
             });
         }
-    }, [isOpen, currentProfile, reset]);
+    }, [isOpen, reset]); // Removed currentProfile from dependencies to prevent reset loop
 
     const onSubmit = async (data: ProfileFormValues) => {
         setLoading(true);
