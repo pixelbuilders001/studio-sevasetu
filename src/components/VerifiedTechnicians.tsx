@@ -16,7 +16,7 @@ const dummyTechnicians = [
     imageUrl: 'https://picsum.photos/seed/tech1/300/300',
     ratingValue: 4.9,
     jobs: '1.2k+',
-    location: 'Near you',
+    location: 'You',
     tags: ['FAST', 'SMART'],
     skillSlug: 'phone',
     isDummy: true
@@ -27,7 +27,7 @@ const dummyTechnicians = [
     imageUrl: 'https://picsum.photos/seed/tech2/300/300',
     ratingValue: 4.8,
     jobs: '850+',
-    location: 'Near you',
+    location: 'You',
     tags: ['EXPERT', 'POLITE'],
     skillSlug: 'ac',
     isDummy: true
@@ -38,7 +38,7 @@ const dummyTechnicians = [
     imageUrl: 'https://picsum.photos/seed/tech3/300/300',
     ratingValue: 4.7,
     jobs: '2k+',
-    location: 'Near you',
+    location: 'You',
     tags: ['QUICK', 'RELIABLE'],
     skillSlug: 'fridge',
     isDummy: true
@@ -49,7 +49,7 @@ const dummyTechnicians = [
     imageUrl: 'https://picsum.photos/seed/tech4/300/300',
     ratingValue: 4.9,
     jobs: '900+',
-    location: 'Near you',
+    location: 'You',
     tags: ['CERTIFIED', 'PROFESSIONAL'],
     skillSlug: 'tv',
     isDummy: true
@@ -60,7 +60,7 @@ const dummyTechnicians = [
     imageUrl: 'https://picsum.photos/seed/tech5/300/300',
     ratingValue: 4.8,
     jobs: '1.5k+',
-    location: 'Near you',
+    location: 'You',
     tags: ['TRUSTED'],
     skillSlug: 'washing-machine',
     isDummy: true
@@ -208,7 +208,7 @@ export default function VerifiedTechnicians({ t, isMobile = false }: { t: Transl
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-10 px-2 gap-2">
           <div className="space-y-1">
             <h2 className={`${isMobile ? 'text-xl text-[#1e1b4b]' : 'text-2xl md:text-4xl text-[#1e1b4b]'} font-black tracking-tight`}>
-              Top Experts <span className={isMobile ? 'text-primary' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent'}>Near {technicians?.[0]?.location ? technicians?.[0]?.location : "You"}</span>
+              Top Experts <span className={isMobile ? 'text-primary' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent'}>Near {technicians?.[0]?.location}</span>
             </h2>
             {!isMobile && <p className="text-[10px] md:text-xs font-bold text-indigo-400 uppercase tracking-[0.2em]">Verified professionals in your area</p>}
           </div>

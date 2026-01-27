@@ -68,6 +68,8 @@ export function LocationProvider({ children }: { children: ReactNode }) {
         .eq("is_active", true)
         .maybeSingle();
 
+
+
       if (error) {
         console.error('Serviceability check error:', error);
         return null;
