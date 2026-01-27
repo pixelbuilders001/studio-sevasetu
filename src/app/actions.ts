@@ -1343,3 +1343,60 @@ export async function getTechniciansByPincodeAction(pincode: string) {
     return [];
   }
 }
+
+export async function getTechniciansByCategoryAction(categoryId: string) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+            }
+          },
+        },
+        cookieOptions: {
+          name: 'sb-session-auth',
+        },
+      }
+    );
+
+    const { data, error } = await supabase
+      .from('technician_categories')
+      .select(`
+        technicians (
+          id,
+          full_name,
+          total_experience,
+          is_active,
+          verification_status,
+          service_area,
+          pincode,
+          selfie_url
+        )
+      `)
+      .eq('category_id', categoryId)
+      .eq('technicians.is_active', true)
+      .eq('technicians.verification_status', 'approved')
+      .limit(2);
+
+    if (error) {
+      console.error('Error fetching technicians by category:', error);
+      return [];
+    }
+
+    return data?.map((item: any) => (item as any).technicians).filter(Boolean) || [];
+  } catch (err) {
+    console.error('Failed to fetch technicians by category:', err);
+    return [];
+  }
+}

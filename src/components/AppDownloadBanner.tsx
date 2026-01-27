@@ -95,30 +95,13 @@ function MobileBanner() {
                                 {/* Screen Content */}
                                 <div className="relative h-full w-full bg-slate-900">
                                     <Image
-                                        src="/hero-mobile-new.jpg"
+                                        src="/app-preview.jpg"
                                         alt="App Screen"
                                         fill
-                                        className="object-cover opacity-80"
+                                        className="object-cover"
                                     />
-                                    {/* Overlay UI elements to make it look like an app */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent opacity-90" />
-
-                                    {/* Fake App UI */}
-                                    <div className="absolute top-4 left-4 right-4 flex justify-between items-center text-white/80">
-                                        <div className="w-8 h-1 bg-white/30 rounded-full" />
-                                    </div>
-
-                                    <div className="absolute bottom-8 inset-x-4">
-                                        <div className="bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10 mb-2 flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                                                <Smartphone className="w-4 h-4 text-white" />
-                                            </div>
-                                            <div>
-                                                <div className="h-2 w-16 bg-white/40 rounded-full mb-1" />
-                                                <div className="h-1.5 w-10 bg-white/20 rounded-full" />
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {/* Subtle Overlay to blend with frame */}
+                                    <div className="absolute inset-0 bg-black/5" />
                                 </div>
                             </div>
                         </motion.div>
@@ -211,30 +194,13 @@ function DesktopBanner() {
                                 {/* Screen Content */}
                                 <div className="relative h-full w-full bg-slate-900">
                                     <Image
-                                        src="/hero-mobile-new.jpg" // Using existing hero image as placeholder app screen
+                                        src="/app-preview.jpg"
                                         alt="App Screen"
                                         fill
-                                        className="object-cover opacity-80"
+                                        className="object-cover"
                                     />
-                                    {/* Overlay UI elements to make it look like an app */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent opacity-90" />
-
-                                    {/* Fake App UI */}
-                                    <div className="absolute top-4 left-4 right-4 flex justify-between items-center text-white/80">
-                                        <div className="w-8 h-1 bg-white/30 rounded-full" />
-                                    </div>
-
-                                    <div className="absolute bottom-8 inset-x-4">
-                                        <div className="bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10 mb-2 flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                                                <Smartphone className="w-4 h-4 text-white" />
-                                            </div>
-                                            <div>
-                                                <div className="h-2 w-16 bg-white/40 rounded-full mb-1" />
-                                                <div className="h-1.5 w-10 bg-white/20 rounded-full" />
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {/* Subtle Overlay */}
+                                    <div className="absolute inset-0 bg-black/5" />
                                 </div>
                             </div>
                         </motion.div>

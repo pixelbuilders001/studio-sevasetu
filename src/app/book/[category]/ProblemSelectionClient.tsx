@@ -13,6 +13,7 @@ import DesktopProblemSelection from './DesktopProblemSelection';
 import FullScreenLoader from '@/components/FullScreenLoader';
 import { useBooking } from '@/context/BookingContext';
 import { createSupabaseBrowserClient } from '@/lib/supabaseClient';
+import { getTechniciansByCategoryAction } from '@/app/actions';
 
 
 type ClientCategory = Omit<ServiceCategory, 'icon'> & { iconName: string };
@@ -50,38 +51,17 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
     };
   }, [media, secondaryMedia]);
 
+
   useEffect(() => {
     async function fetchTechnicians() {
-      if (!category?.id) return;
+      if (!category?.id) {
+        setIsTechniciansLoading(false);
+        return;
+      }
 
-      const supabase = createSupabaseBrowserClient();
       try {
-        const { data, error } = await supabase
-          .from('technician_categories')
-          .select(`
-            technicians (
-              id,
-              full_name,
-              total_experience,
-              is_active,
-              verification_status,
-              service_area,
-              pincode,
-              selfie_url
-            )
-          `)
-          .eq('category_id', category.id)
-          .eq('technicians.is_active', true)
-          .eq('technicians.verification_status', 'approved')
-          .limit(2);
-
-
-        if (error) {
-          console.error('Error fetching technicians:', error);
-        } else {
-          const technicianList = data?.map((item: any) => item.technicians).filter(Boolean) || [];
-          setTechnicians(technicianList);
-        }
+        const technicianList = await getTechniciansByCategoryAction(category.id);
+        setTechnicians(technicianList);
       } catch (err) {
         console.error('Failed to fetch technicians:', err);
       } finally {
@@ -394,68 +374,80 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
             </section>
 
             {/* Available pros */}
-            <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Available Pros Nearby</p>
-                  <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            {(isTechniciansLoading || technicians.length > 0) && (
+              <section className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      {category.name} Expert Near You
+                    </p>
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> Live near you
                   </span>
                 </div>
-                <span className="text-[11px] text-slate-400 flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> Live near you
-                </span>
-              </div>
 
-              <div className="flex gap-3 overflow-x-auto pb-1 hide-scrollbar">
-                {isTechniciansLoading ? (
-                  [1, 2].map((i) => (
-                    <div key={i} className="min-w-[230px] bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3 animate-pulse">
-                      <div className="w-14 h-14 rounded-2xl bg-slate-200" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-slate-200 rounded w-24" />
-                        <div className="h-3 bg-slate-200 rounded w-16" />
-                      </div>
-                    </div>
-                  ))
-                ) : technicians.length > 0 ? (
-                  technicians.map((tech) => (
-                    <div key={tech.id} className="min-w-[220px] bg-white rounded-2xl border border-gray-100 shadow-sm p-3 flex items-center gap-3">
-                      <div className="relative">
-                        <div
-                          className="w-12 h-12 rounded-xl bg-gray-100 shadow-md overflow-hidden"
-                          style={{
-                            backgroundImage: `url(${tech.selfie_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                          }}
-                        />
-                        <span className="absolute -right-1 -bottom-1 flex h-3 w-3">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                        </span>
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-xs text-[#1e1b4b] line-clamp-1">{tech.full_name}</p>
-                          <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-500">
-                            <Star className="w-3 h-3 fill-amber-400" />
-                            4.8
-                          </span>
+                <div className="flex gap-3 overflow-x-auto pb-1 hide-scrollbar">
+                  {isTechniciansLoading ? (
+                    [1, 2].map((i) => (
+                      <div key={i} className="min-w-[230px] bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3 animate-pulse">
+                        <div className="w-14 h-14 rounded-2xl bg-slate-200" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-slate-200 rounded w-24" />
+                          <div className="h-3 bg-slate-200 rounded w-16" />
                         </div>
-                        <p className="text-[10px] text-gray-500">{tech.total_experience}+ yrs exp</p>
                       </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="w-full text-center py-4 bg-white rounded-2xl border border-slate-100 italic text-slate-400 text-sm">
-                    No active technicians found for this category nearby.
-                  </div>
-                )}
-              </div>
-
-            </section>
+                    ))
+                  ) : (
+                    technicians.map((tech) => (
+                      <div key={tech.id} className="min-w-[240px] bg-white rounded-3xl border border-slate-100 shadow-sm p-4 flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div className="w-12 h-12 rounded-full ring-2 ring-white shadow-md overflow-hidden bg-slate-100 flex-shrink-0">
+                              <Image
+                                src={tech.selfie_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'}
+                                alt={tech.full_name}
+                                fill
+                                className="object-cover rounded-full"
+                              />
+                            </div>
+                            <span className="absolute -right-0.5 -bottom-0.5 bg-primary text-white p-0.5 rounded-full ring-2 ring-white">
+                              <CheckCircle className="w-2.5 h-2.5" />
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-black text-sm text-[#1e1b4b] truncate">{tech.full_name}</h4>
+                            <div className="flex items-center gap-1">
+                              <div className="flex">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} className={cn("w-2.5 h-2.5", i < 4 ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200")} />
+                                ))}
+                              </div>
+                              <span className="text-[10px] font-bold text-slate-500">4.8</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between border-t border-slate-50 pt-3">
+                          <div className="flex items-center gap-1.5 text-slate-500">
+                            <div className="w-5 h-5 rounded-full bg-slate-50 flex items-center justify-center">
+                              <Star className="w-3 h-3 text-indigo-500" />
+                            </div>
+                            <span className="text-[10px] font-bold">{tech.total_experience}+ Yrs Exp</span>
+                          </div>
+                          <div className="px-2 py-1 rounded-full bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-wider">
+                            Verified
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
+            )}
 
           </div>
         </div>

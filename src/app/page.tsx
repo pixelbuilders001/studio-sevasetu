@@ -177,25 +177,11 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
 
   const banners = [
     {
-      title: "Mobile Repair at Your Door",
+      title: "Fast Doorstep Repair",
       highlight: "Save Time",
       desc: "Get your phone fixed in 60 minutes with Bihar's top verified experts.",
-      img: "/hero-mobile-new.jpg",
+      img: "/hero-video.webp",
       gradient: "from-blue-600/80 to-transparent"
-    },
-    {
-      title: "Expert Screen Replacement",
-      highlight: "Genuine Parts",
-      desc: "Fix cracked screens with original spare parts and 30 days warranty.",
-      img: "/hero-screen.png",
-      gradient: "from-indigo-600/80 to-transparent"
-    },
-    {
-      title: "Professional Tech Support",
-      highlight: "Verified Pros",
-      desc: "Expert diagnosis and repair for all your mobile hardware issues.",
-      img: "/hero-battery.png",
-      gradient: "from-emerald-600/80 to-transparent"
     }
   ];
 
@@ -286,21 +272,18 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
                   />
                   {/* Modern Glassy Overlay */}
                   <div className={cn(
-                    "absolute inset-0 bg-gradient-to-tr flex items-center p-6",
-                    banner.gradient
+                    "absolute inset-0 bg-gradient-to-t from-[#1e1b4b]/90 via-[#1e1b4b]/40 to-transparent flex items-end p-6 pb-10",
                   )}>
-                    <div className="max-w-[80%] text-white animate-in fade-in slide-in-from-left-4 duration-700">
+                    <div className="max-w-[95%] text-white animate-in fade-in slide-in-from-bottom-2 duration-700">
                       <div className="mb-2">
-                        <span className="bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/20">
+                        <span className="bg-indigo-600/40 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border border-white/20">
                           {banner.highlight}
                         </span>
                       </div>
-                      <h1 className="text-2xl font-black leading-tight mb-2 drop-shadow-md">
-                        {banner.title.split(' ').map((word, i) => (
-                          i === 1 ? <span key={i} className="text-blue-200">{word} </span> : word + ' '
-                        ))}
+                      <h1 className="text-xl font-black leading-tight mb-1.5 [text-shadow:_0_2px_4px_rgba(0,0,0,0.5)]">
+                        {banner.title}
                       </h1>
-                      <p className="text-[11px] font-medium opacity-90 mb-4 leading-relaxed line-clamp-2">
+                      <p className="text-[11px] font-bold opacity-95 mb-4 leading-tight [text-shadow:_0_1px_2px_rgba(0,0,0,0.5)]">
                         {banner.desc}
                       </p>
                       <HeroCTA />
@@ -311,22 +294,6 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
             </div>
           </div>
 
-          {/* Indicators */}
-          <div className="flex justify-center gap-1.5 mt-3">
-            {banners.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => emblaApi?.scrollTo(i)}
-                className={cn(
-                  "h-1 rounded-full transition-all duration-300",
-                  selectedIndex === i
-                    ? "w-6 bg-primary"
-                    : "w-1.5 bg-gray-200"
-                )}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
-          </div>
         </div>
 
         {/* Popular Services */}

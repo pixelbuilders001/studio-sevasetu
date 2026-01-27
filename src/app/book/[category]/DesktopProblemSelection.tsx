@@ -240,67 +240,84 @@ export default function DesktopProblemSelection({
                         </div>
 
                         {/* Available Pros Nearby */}
-                        <section className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Available pros nearby</p>
-                                    <span className="relative flex h-3 w-3">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                        {(isTechniciansLoading || technicians.length > 0) && (
+                            <section className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                                            {category.name} Expert Near You
+                                        </p>
+                                        <span className="relative flex h-3 w-3">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-slate-400 flex items-center gap-1">
+                                        <MapPin className="w-3 h-3" /> Live near you
                                     </span>
                                 </div>
-                                <span className="text-xs text-slate-400 flex items-center gap-1">
-                                    <MapPin className="w-3 h-3" /> Live near you
-                                </span>
-                            </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {isTechniciansLoading ? (
-                                    [1, 2].map((i) => (
-                                        <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 animate-pulse">
-                                            <div className="w-16 h-16 rounded-2xl bg-slate-200" />
-                                            <div className="flex-1 space-y-2">
-                                                <div className="h-4 bg-slate-200 rounded w-24" />
-                                                <div className="h-3 bg-slate-200 rounded w-16" />
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : technicians.length > 0 ? (
-                                    technicians.map((tech) => (
-                                        <div key={tech.id} className="bg-white rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/40 p-5 flex items-center gap-4">
-                                            <div className="relative">
-                                                <div
-                                                    className="w-16 h-16 rounded-2xl bg-slate-200 shadow-lg overflow-hidden"
-                                                    style={{
-                                                        backgroundImage: `url(${tech.selfie_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'})`,
-                                                        backgroundSize: 'cover',
-                                                        backgroundPosition: 'center'
-                                                    }}
-                                                />
-                                                <span className="absolute -right-1 -bottom-1 flex h-3.5 w-3.5">
-                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                                    <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
-                                                </span>
-                                            </div>
-                                            <div className="flex-1 space-y-1">
-                                                <div className="flex items-center gap-2">
-                                                    <p className="font-bold text-sm text-slate-900 line-clamp-1">{tech.full_name}</p>
-                                                    <span className="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                                                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                                                        4.8
-                                                    </span>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {isTechniciansLoading ? (
+                                        [1, 2].map((i) => (
+                                            <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 animate-pulse">
+                                                <div className="w-16 h-16 rounded-2xl bg-slate-200" />
+                                                <div className="flex-1 space-y-2">
+                                                    <div className="h-4 bg-slate-200 rounded w-24" />
+                                                    <div className="h-3 bg-slate-200 rounded w-16" />
                                                 </div>
-                                                <p className="text-xs text-slate-500">{tech.total_experience}+ yrs exp</p>
                                             </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="col-span-1 md:col-span-2 text-center py-6 bg-white rounded-2xl border border-slate-100 italic text-slate-400 text-sm">
-                                        No active technicians found for this category nearby.
-                                    </div>
-                                )}
-                            </div>
-                        </section>
+                                        ))
+                                    ) : (
+                                        technicians.map((tech) => (
+                                            <div key={tech.id} className="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-5 flex flex-col gap-4 group hover:shadow-md transition-all">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="relative">
+                                                        <div className="w-16 h-16 rounded-full ring-4 ring-slate-50 shadow-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                                                            <Image
+                                                                src={tech.selfie_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'}
+                                                                alt={tech.full_name}
+                                                                fill
+                                                                className="object-cover rounded-full group-hover:scale-110 transition-transform duration-500"
+                                                            />
+                                                        </div>
+                                                        <span className="absolute -right-0.5 -bottom-0.5 bg-primary text-white p-1 rounded-full ring-2 ring-white">
+                                                            <CheckCircle className="w-3 h-3" />
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="font-black text-base text-[#1e1b4b]">{tech.full_name}</h4>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <div className="flex gap-0.5">
+                                                                {[...Array(5)].map((_, i) => (
+                                                                    <Star key={i} className={cn("w-3.5 h-3.5", i < 4 ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200")} />
+                                                                ))}
+                                                            </div>
+                                                            <span className="text-xs font-bold text-slate-600">4.8</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-between border-t border-slate-50 pt-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center">
+                                                            <Star className="w-4 h-4 text-indigo-600" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[10px] font-bold text-slate-400 uppercase leading-none mb-0.5">Experience</p>
+                                                            <p className="text-xs font-black text-slate-700">{tech.total_experience}+ Years</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                                                        <CheckCircle className="w-3 h-3" />
+                                                        Verified Pro
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </section>
+                        )}
 
                     </div>
 
