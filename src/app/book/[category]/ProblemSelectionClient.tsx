@@ -192,7 +192,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
                 <div className="flex-1 text-center">
-                  <h1 className="text-xl font-bold text-slate-900">Pick problems</h1>
+                  <h1 className="text-lg font-black text-[#1e1b4b]">Pick Problems</h1>
                 </div>
               </div>
 
@@ -214,16 +214,16 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
         </div>
 
         <div className="container mx-auto px-6 -mt-2">
-          <div className="max-w-xl mx-auto space-y-6">
+          <div className="max-w-xl mx-auto space-y-4">
 
             {/* Visual diagnosis upload */}
-            <section className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgba(15,23,42,0.05)] p-4 space-y-3">
+            <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Visual diagnosis</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Visual Diagnosis</p>
                 </div>
-                <span className="text-[11px] text-slate-400">Upload up to 2 photos</span>
+                <span className="text-[10px] text-gray-400">Up to 2 photos</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {[0, 1].map((slot) => (
@@ -286,9 +286,9 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pick problems</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Pick Problems</p>
                 </div>
-                <span className="text-[11px] text-slate-400">Select one or more</span>
+                <span className="text-[10px] text-gray-400">Select one or more</span>
               </div>
 
               <div className="space-y-3">
@@ -309,7 +309,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                           'bg-indigo-50/40'
                         )}
                       >
-                        <div className="p-4 flex items-center gap-4">
+                        <div className="p-3 flex items-center gap-3">
                           <div className={cn(
                             "relative w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300",
                             isSelected ? "bg-primary/10" : "bg-white"
@@ -319,12 +319,12 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
 
                           <div className="flex-grow space-y-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-sm text-slate-900">{problem.name}</h3>
+                              <h3 className="font-bold text-xs text-[#1e1b4b]">{problem.name}</h3>
                               <span className="text-[10px] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
                                 Recommended
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-500 leading-relaxed">
+                            <p className="text-[10px] text-gray-500 leading-snug">
                               {t('other_problem_description' as any, { defaultValue: "A technician will call to diagnose." })}
                             </p>
                           </div>
@@ -353,9 +353,9 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                           : 'border-slate-200 hover:border-primary/40 hover:shadow-[0_14px_36px_rgba(79,70,229,0.08)]'
                       )}
                     >
-                      <div className="p-4 flex items-center gap-4">
+                      <div className="p-3 flex items-center gap-3">
                         <div className={cn(
-                          "relative w-12 h-12 rounded-xl flex items-center justify-center p-2 transition-colors duration-300 bg-slate-50",
+                          "relative w-10 h-10 rounded-xl flex items-center justify-center p-2 transition-colors duration-300 bg-gray-50",
                           isSelected ? "bg-primary/10" : "group-hover:bg-primary/5"
                         )}>
                           <Image
@@ -369,12 +369,12 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
 
                         <div className="flex-grow space-y-0.5">
                           <h3 className={cn(
-                            "font-semibold text-sm transition-colors",
-                            isSelected ? "text-primary" : "text-slate-900"
+                            "font-bold text-xs transition-colors",
+                            isSelected ? "text-primary" : "text-[#1e1b4b]"
                           )}>
                             {problem.name}
                           </h3>
-                          <p className="text-[11px] text-slate-500">Tap to select this issue</p>
+                          <p className="text-[10px] text-gray-500">Tap to select</p>
                         </div>
 
                         <div className={cn(
@@ -397,7 +397,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
             <section className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Available pros nearby</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Available Pros Nearby</p>
                   <span className="relative flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
@@ -421,10 +421,10 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                   ))
                 ) : technicians.length > 0 ? (
                   technicians.map((tech) => (
-                    <div key={tech.id} className="min-w-[230px] bg-white rounded-2xl border border-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.06)] p-4 flex items-center gap-3">
+                    <div key={tech.id} className="min-w-[220px] bg-white rounded-2xl border border-gray-100 shadow-sm p-3 flex items-center gap-3">
                       <div className="relative">
                         <div
-                          className="w-14 h-14 rounded-2xl bg-slate-200 shadow-lg overflow-hidden"
+                          className="w-12 h-12 rounded-xl bg-gray-100 shadow-md overflow-hidden"
                           style={{
                             backgroundImage: `url(${tech.selfie_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'})`,
                             backgroundSize: 'cover',
@@ -438,13 +438,13 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                       </div>
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-semibold text-sm text-slate-900 line-clamp-1">{tech.full_name}</p>
+                          <p className="font-bold text-xs text-[#1e1b4b] line-clamp-1">{tech.full_name}</p>
                           <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-500">
                             <Star className="w-3 h-3 fill-amber-400" />
                             4.8
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-500">{tech.total_experience}+ yrs exp</p>
+                        <p className="text-[10px] text-gray-500">{tech.total_experience}+ yrs exp</p>
                       </div>
                     </div>
                   ))
@@ -485,7 +485,7 @@ export default function ProblemSelectionClient({ category }: { category: ClientC
                 <Button
                   onClick={handleBookRepair}
                   size="sm"
-                  className="bg-[#1e1b4b] hover:bg-primary text-white font-black rounded-full px-8 shadow-lg shadow-indigo-200 h-11 flex items-center gap-2 group transition-all uppercase text-xs tracking-widest"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-full px-8 shadow-lg shadow-primary/20 h-11 flex items-center gap-2 group transition-all uppercase text-xs tracking-widest"
                 >
                   <span>Continue</span>
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />

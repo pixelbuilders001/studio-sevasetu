@@ -92,55 +92,61 @@ export function WalletModal({
                         <ScrollArea className="h-[65vh] pr-4 pt-2">
                             <div className="space-y-6">
                                 {/* Balance Card */}
-                                <Card className="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white border-0 rounded-[2rem] shadow-xl overflow-hidden relative">
-                                    <CardContent className="p-8">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-medium opacity-80 uppercase tracking-tight">Total Balance</p>
-                                                <div className="flex items-center text-5xl font-black">
-                                                    <IndianRupee className="w-8 h-8 -ml-1" strokeWidth={3} />
+                                <Card className="bg-primary text-primary-foreground border-0 rounded-3xl shadow-lg relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+                                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-10 -mb-10 pointer-events-none" />
+
+                                    <CardContent className="p-6">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <div className="space-y-0.5">
+                                                <div className="flex items-center gap-2 mb-1 opacity-90">
+                                                    <Wallet className="w-4 h-4" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest">Available Balance</span>
+                                                </div>
+                                                <div className="flex items-center text-3xl font-black tracking-tight">
+                                                    <IndianRupee className="w-6 h-6 -ml-0.5" strokeWidth={3} />
                                                     <span>{balance}</span>
                                                 </div>
                                             </div>
-                                            <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
-                                                <Wallet className="w-6 h-6 text-white/90" />
+                                            <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20 shadow-sm">
+                                                <IndianRupee className="w-5 h-5 text-white" />
                                             </div>
                                         </div>
                                     </CardContent>
                                 </Card>
 
                                 {/* Refer & Earn Card */}
-                                {referralCode && (
-                                    <Card className="bg-indigo-50/50 border-2 border-dashed border-indigo-200 rounded-[2rem] shadow-sm overflow-hidden">
-                                        <CardContent className="p-5 flex items-center justify-between gap-4">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-indigo-50">
-                                                    <Gift className="w-6 h-6 text-indigo-600" />
+                                {/* {referralCode && (
+                                    <Card className="bg-indigo-50 border border-indigo-100 rounded-3xl overflow-hidden relative">
+                                        <CardContent className="p-4 flex items-center justify-between gap-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center border border-indigo-100 flex-shrink-0">
+                                                    <Gift className="w-5 h-5 text-indigo-600" />
                                                 </div>
-                                                <div>
-                                                    <h3 className="text-sm font-black text-indigo-950">Refer & Earn ₹50</h3>
-                                                    <p className="text-[10px] text-indigo-900/60 font-bold leading-tight">Your code: <span className="text-indigo-600 uppercase">{referralCode}</span></p>
+                                                <div className="min-w-0">
+                                                    <h3 className="text-xs font-black text-indigo-950 truncate">Refer & Earn ₹50</h3>
+                                                    <p className="text-[9px] text-indigo-600/80 font-bold truncate">Code: <span className="text-indigo-700 bg-indigo-100 px-1 py-0.5 rounded ml-0.5">{referralCode}</span></p>
                                                 </div>
                                             </div>
                                             <Button
-                                                variant="ghost"
+                                                variant="secondary"
                                                 size="sm"
-                                                className="h-9 w-9 p-0 rounded-xl hover:bg-white/80"
+                                                className="h-8 w-8 p-0 rounded-lg bg-white border border-indigo-100 shadow-sm hover:bg-indigo-50"
                                                 onClick={() => handleCopy(referralCode)}
                                             >
-                                                <Copy className="w-4 h-4 text-indigo-600" />
+                                                <Copy className="w-3.5 h-3.5 text-indigo-600" />
                                             </Button>
                                         </CardContent>
                                     </Card>
-                                )}
+                                )} */}
 
                                 {/* Recent Transactions */}
-                                <div className="space-y-4">
+                                <div className="space-y-3">
                                     <div className="flex justify-between items-center px-1">
-                                        <h2 className="font-black text-base text-[#1e1b4b]">Recent Activity</h2>
+                                        <h2 className="font-black text-sm text-[#1e1b4b]">Recent Activity</h2>
                                         <Sheet>
                                             <SheetTrigger asChild>
-                                                <Button variant="link" className="text-indigo-600 font-bold h-auto p-0 text-xs no-underline hover:text-indigo-700">SEE ALL</Button>
+                                                <Button variant="link" className="text-primary font-bold h-auto p-0 text-[10px] no-underline hover:opacity-80">View All</Button>
                                             </SheetTrigger>
                                             <SheetContent side="bottom" className="h-full max-h-[85vh] flex flex-col rounded-t-3xl p-0 overflow-hidden">
                                                 <div className="px-6 py-6 border-b flex justify-between items-center bg-white">

@@ -489,7 +489,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
             {referralStatus !== 'success' ? (
               <Button
                 type="button"
-                className="rounded-xl h-10 px-6 font-bold text-xs shadow-none hover:bg-primary/90"
+                className="rounded-xl h-10 px-6 font-bold text-xs shadow-none !bg-primary hover:!bg-primary/90 active:!bg-primary focus:!bg-primary disabled:!opacity-50 text-white"
                 disabled={referralStatus === 'verifying' || !referral.trim()}
                 onClick={verifyReferralCode}
               >
@@ -635,6 +635,24 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
           </div>
         </div>
       </form>
+
+      {/* Loading Overlay */}
+      {isLoadingAddresses && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-card rounded-3xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <User className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+            <div className="text-center space-y-1">
+              <h3 className="text-base font-black text-primary">Loading Your Details</h3>
+              <p className="text-xs text-muted-foreground">Please wait while we fetch your information...</p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

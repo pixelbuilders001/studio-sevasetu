@@ -161,7 +161,7 @@ export default function PriceEstimationPage() {
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
-          <span className="text-xl ml-2 md:text-2xl font-bold font-headline tracking-tight">Booking Estimate</span>
+          <span className="text-base ml-2 font-black text-[#1e1b4b] tracking-tight">Booking Estimate</span>
         </div>
 
         <div className="container mx-auto px-6">
@@ -170,30 +170,30 @@ export default function PriceEstimationPage() {
             <div className="bg-white rounded-3xl overflow-hidden shadow-2xl shadow-indigo-100/50 mb-6">
 
               {/* Header */}
-              <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 p-8 text-center relative overflow-hidden">
+              <div className="bg-primary p-6 text-center relative overflow-hidden">
                 {/* Decorative Elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-indigo-600/10 rounded-full -ml-12 -mb-12 blur-xl"></div>
 
                 <div className="relative z-10 flex flex-col items-center">
-                  <p className="text-indigo-100 font-medium text-xs opacity-90 uppercase tracking-widest">{category.name} Repair Service</p>
+                  <p className="text-primary-foreground/80 font-bold text-[10px] opacity-90 uppercase tracking-widest">{category.name} Repair Service</p>
                 </div>
               </div>
 
-              <div className="p-6 relative">
+              <div className="p-5 relative">
                 {/* Decorative punch holes for ticket look */}
                 <div className="absolute -left-3 top-0 w-6 h-6 bg-gray-50 rounded-full z-[1]"></div>
                 <div className="absolute -right-3 top-0 w-6 h-6 bg-gray-50 rounded-full z-[1]"></div>
 
                 {/* Problems Section */}
                 <div className="mb-6">
-                  <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Package className="w-3.5 h-3.5" />
                     Selected Issues
                   </h2>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {selectedProblems.map((problem) => (
-                      <div key={problem.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                      <div key={problem.id} className="flex items-center gap-3 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
                         <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100">
                           <Image
                             src={problem.image.imageUrl ? problem.image.imageUrl : '/logo-image.png'}
@@ -203,7 +203,7 @@ export default function PriceEstimationPage() {
                             className="object-contain"
                           />
                         </div>
-                        <span className="font-bold text-sm text-gray-700">{problem.name}</span>
+                        <span className="font-bold text-xs text-gray-700">{problem.name}</span>
                         <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
                       </div>
                     ))}
@@ -218,20 +218,20 @@ export default function PriceEstimationPage() {
 
                 {/* Price Breakdown */}
                 <div className="mb-6">
-                  <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Wallet className="w-3.5 h-3.5" />
                     Price Breakdown
                   </h2>
 
-                  <div className="space-y-3 mb-4">
-                    <div className="flex justify-between items-center text-sm">
+                  <div className="space-y-2 mb-3">
+                    <div className="flex justify-between items-center text-xs">
                       <span className="text-gray-500 font-medium">Visiting Charges</span>
                       <span className="font-bold text-gray-900 flex items-center bg-gray-50 px-2 py-0.5 rounded-lg">
                         <IndianRupee className="w-3 h-3 mr-0.5" />
                         {inspectionFee}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-sm">
+                    <div className="flex justify-between items-center text-xs">
                       <span className="text-gray-500 font-medium">GST (4%)</span>
                       <span className="font-bold text-gray-900 flex items-center bg-gray-50 px-2 py-0.5 rounded-lg">
                         <IndianRupee className="w-3 h-3 mr-0.5" />
@@ -241,10 +241,10 @@ export default function PriceEstimationPage() {
 
                     <div className="border-t-2 border-dashed border-gray-100 my-2"></div>
 
-                    <div className="flex justify-between items-start text-sm">
+                    <div className="flex justify-between items-start text-xs">
                       <span className="text-gray-500 font-medium">Repair Fee</span>
                       <div className="flex items-center gap-1.5">
-                        <p className="text-xs text-gray-400 italic font-medium">To be decided after inspection</p>
+                        <p className="text-[10px] text-gray-400 italic font-medium">To be decided after inspection</p>
                         <button
                           onClick={() => setShowRepairInfo(!showRepairInfo)}
                           className="text-gray-400 hover:text-primary transition-colors"
@@ -263,10 +263,10 @@ export default function PriceEstimationPage() {
                     )}
                   </div>
 
-                  <div className="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100">
+                  <div className="bg-primary/5 rounded-2xl p-3 border border-primary/20">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-black text-indigo-900 text-base">Payable Now</span>
-                      <div className="flex items-center text-2xl font-black text-indigo-600">
+                      <span className="font-black text-primary text-sm">Payable Now</span>
+                      <div className="flex items-center text-xl font-black text-primary">
                         <IndianRupee className="w-5 h-5 mr-0.5 stroke-[3px]" />
                         {grandTotal}
                       </div>
@@ -306,7 +306,7 @@ export default function PriceEstimationPage() {
             <Button
               onClick={handleConfirmVisit}
               size="lg"
-              className="w-full h-14 bg-[#1e1b4b] hover:bg-primary text-white font-black text-xs tracking-widest rounded-2xl shadow-xl shadow-indigo-100 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] uppercase"
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-black text-xs tracking-widest rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] uppercase"
             >
               CONFIRM BOOKING
               <ArrowRight className="w-5 h-5" />

@@ -131,7 +131,7 @@ const ReferEarnCard = ({ code }: { code: string }) => {
         <Button
           size="sm"
           onClick={copyCode}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[10px] px-4 h-7 rounded-md shadow-sm"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground font-black text-[10px] px-4 h-8 rounded-lg shadow-lg shadow-primary/20"
         >
           COPY
         </Button>
@@ -377,7 +377,7 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
       <div className="flex-1 overflow-y-auto">
         {/* HEADER */}
         <div
-          className="relative bg-gradient-to-br from-indigo-600 to-[#1e1b4b] h-28 rounded-b-[2rem] shadow-lg"
+          className="relative bg-primary h-28 rounded-b-[2rem] shadow-lg"
           style={{
             backgroundImage: `
               linear-gradient(
@@ -454,7 +454,7 @@ function ProfileContent({ isOpen }: { isOpen: boolean }) {
           />
           <div className="pt-2">
             <ShareAppButton
-              variant="indigo"
+              variant="default"
               className="w-full h-12 rounded-xl text-xs uppercase font-bold"
               label="Share helloFixo App"
             />

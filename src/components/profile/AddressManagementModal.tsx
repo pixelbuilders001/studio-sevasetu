@@ -232,61 +232,61 @@ export function AddressManagementModal({
                                 </div>
                             </div>
                         ) : (
-                            <div className="space-y-4 pt-2">
+                            <div className="space-y-3 pt-2">
                                 {addresses.map((addr) => (
                                     <div
                                         key={addr.id}
                                         className={cn(
-                                            "group relative p-4 rounded-2xl border bg-white transition-all duration-300",
+                                            "group relative p-3 rounded-2xl border bg-white transition-all duration-300",
                                             addr.is_default
-                                                ? "border-primary bg-primary/[0.02] shadow-sm"
-                                                : "border-gray-100 hover:border-primary/30 hover:shadow-md"
+                                                ? "border-primary/30 bg-primary/[0.04] shadow-sm ring-1 ring-primary/10"
+                                                : "border-gray-100 hover:border-primary/20 hover:shadow-md"
                                         )}
                                     >
                                         <div className="flex items-start justify-between gap-3">
-                                            <div className="flex gap-3">
+                                            <div className="flex gap-3 w-full">
                                                 <div className={cn(
-                                                    "mt-1 w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors",
-                                                    addr.is_default ? "bg-primary text-white" : "bg-gray-100 text-gray-400"
+                                                    "mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                                                    addr.is_default ? "bg-primary text-primary-foreground" : "bg-gray-50 text-gray-400"
                                                 )}>
-                                                    {addr.is_default ? <Home className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                                                    {addr.is_default ? <Home className="w-3.5 h-3.5" /> : <MapPin className="w-3.5 h-3.5" />}
                                                 </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <span className="font-bold text-sm tracking-tight capitalize">
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-0.5">
+                                                        <span className="font-bold text-xs text-[#1e1b4b] tracking-tight capitalize truncate">
                                                             {addr.city}, {addr.state}
                                                         </span>
                                                         {addr.is_default && (
-                                                            <Badge className="bg-primary/10 text-primary border-0 text-[10px] font-black tracking-widest uppercase py-0 px-2 h-5">
+                                                            <Badge className="bg-primary text-primary-foreground border-0 text-[9px] font-black tracking-widest uppercase py-0 px-1.5 h-4">
                                                                 DEFAULT
                                                             </Badge>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+                                                    <p className="text-[11px] text-muted-foreground leading-snug font-medium line-clamp-2">
                                                         {addr.full_address}
                                                     </p>
-                                                    <p className="text-[10px] font-bold text-gray-400 mt-1 tracking-widest uppercase">
+                                                    <p className="text-[9px] font-bold text-gray-300 mt-1 tracking-widest uppercase">
                                                         PIN: {addr.pincode}
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="mt-4 flex items-center justify-end gap-2">
+                                        <div className="mt-3 flex items-center justify-end gap-2 border-t border-dashed border-gray-100 pt-2">
                                             {!addr.is_default && (
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
                                                     onClick={() => handleSetDefault(addr.id)}
                                                     disabled={isActionLoading !== null}
-                                                    className="h-8 text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/10 rounded-lg"
+                                                    className="h-7 text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-primary hover:bg-primary/5 rounded-lg"
                                                 >
                                                     {isActionLoading === addr.id ? (
                                                         <Loader2 className="w-3 h-3 animate-spin mr-1.5" />
                                                     ) : (
                                                         <CheckCircle2 className="w-3 h-3 mr-1.5" />
                                                     )}
-                                                    Make Default
+                                                    Set Default
                                                 </Button>
                                             )}
                                             <Button
@@ -295,8 +295,8 @@ export function AddressManagementModal({
                                                 onClick={() => handleDelete(addr.id)}
                                                 disabled={isActionLoading !== null || addr.is_default}
                                                 className={cn(
-                                                    "h-8 text-[10px] font-black uppercase tracking-widest rounded-lg",
-                                                    addr.is_default ? "opacity-0 invisible" : "text-red-500 hover:text-red-600 hover:bg-red-50"
+                                                    "h-7 text-[9px] font-black uppercase tracking-widest rounded-lg",
+                                                    addr.is_default ? "hidden" : "text-gray-400 hover:text-red-500 hover:bg-red-50"
                                                 )}
                                             >
                                                 {isActionLoading === addr.id ? (

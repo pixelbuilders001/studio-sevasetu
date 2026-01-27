@@ -414,11 +414,14 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
 
         {/* Mobile-only Footer Signature */}
         <div className="md:hidden mt-8 pb-12 text-center border-t border-border/50 pt-8 px-6">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-xl font-bold text-primary-foreground">S</span>
-            </div>
-            <span className="text-lg font-bold text-foreground">helloFixo</span>
+          <div className="flex items-center justify-center mb-4">
+            <Image
+              src="/logo-image.png"
+              alt="helloFixo"
+              width={120}
+              height={40}
+              className="h-8 w-auto object-contain opacity-80 grayscale hover:grayscale-0 transition-all duration-500"
+            />
           </div>
           <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
             Leading the way in doorstep mobile and appliance repairs across Bihar. Join thousands of happy customers today.
