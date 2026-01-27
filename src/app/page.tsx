@@ -35,6 +35,7 @@ import { Session } from '@supabase/supabase-js';
 import { User, Bell } from 'lucide-react';
 import { checkRestricted } from '@/utils/auth';
 import AppDownloadBanner from '@/components/AppDownloadBanner';
+import { cn } from '@/lib/utils';
 
 
 function ServiceCardSkeleton() {
@@ -147,6 +148,8 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
 import { useAuth } from '@/context/AuthContext';
 
 import useEmblaCarousel from 'embla-carousel-react';
+import type { EmblaCarouselType } from 'embla-carousel-react';
+import { useCallback } from 'react';
 
 export default function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const { lang } = use(searchParams);
@@ -154,15 +157,47 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
   const router = useRouter();
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const onSelect = useCallback((api: EmblaCarouselType) => {
+    setSelectedIndex(api.selectedScrollSnap());
+  }, []);
 
   useEffect(() => {
-    if (emblaApi) {
-      const autoplay = setInterval(() => {
-        emblaApi.scrollNext();
-      }, 4000);
-      return () => clearInterval(autoplay);
+    if (!emblaApi) return;
+    onSelect(emblaApi);
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+
+    const autoplay = setInterval(() => {
+      emblaApi.scrollNext();
+    }, 5000);
+    return () => clearInterval(autoplay);
+  }, [emblaApi, onSelect]);
+
+  const banners = [
+    {
+      title: "Mobile Repair at Your Door",
+      highlight: "Save Time",
+      desc: "Get your phone fixed in 60 minutes with Bihar's top verified experts.",
+      img: "/hero-mobile-new.jpg",
+      gradient: "from-blue-600/80 to-transparent"
+    },
+    {
+      title: "Expert Screen Replacement",
+      highlight: "Genuine Parts",
+      desc: "Fix cracked screens with original spare parts and 30 days warranty.",
+      img: "/hero-screen.png",
+      gradient: "from-indigo-600/80 to-transparent"
+    },
+    {
+      title: "Professional Tech Support",
+      highlight: "Verified Pros",
+      desc: "Expert diagnosis and repair for all your mobile hardware issues.",
+      img: "/hero-battery.png",
+      gradient: "from-emerald-600/80 to-transparent"
     }
-  }, [emblaApi]);
+  ];
 
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const { session, loading: authLoading } = useAuth();
@@ -237,25 +272,59 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         </div>
 
         {/* Hero Banner Carousel */}
-        <div className="mx-4 mt-2 overflow-hidden rounded-2xl shadow-sm aspect-[16/9]" ref={emblaRef}>
-          <div className="flex">
-            {[1, 2, 3].map((index) => (
-              <div key={index} className="relative flex-[0_0_100%] aspect-[16/9]">
-                <Image
-                  src="/hero-mobile-new.jpg"
-                  alt={`Hero Banner ${index}`}
-                  fill
-                  className="object-cover"
-                  priority={index === 1}
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center p-6">
-                  <div className="max-w-[70%] text-white">
-                    <h1 className="text-2xl font-black leading-tight mb-2">WeFix Mobile<br />At Your Door</h1>
-                    <p className="text-[10px] font-medium opacity-90 mb-3">Doorstep repair services with verified experts.</p>
-                    <HeroCTA />
+        <div className="relative group overflow-hidden">
+          <div className="mx-4 mt-2 overflow-hidden rounded-[2rem] shadow-xl shadow-blue-100/50 aspect-[16/10]" ref={emblaRef}>
+            <div className="flex">
+              {banners.map((banner, index) => (
+                <div key={index} className="relative flex-[0_0_100%] aspect-[16/10]">
+                  <Image
+                    src={banner.img}
+                    alt={banner.title}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                  />
+                  {/* Modern Glassy Overlay */}
+                  <div className={cn(
+                    "absolute inset-0 bg-gradient-to-tr flex items-center p-6",
+                    banner.gradient
+                  )}>
+                    <div className="max-w-[80%] text-white animate-in fade-in slide-in-from-left-4 duration-700">
+                      <div className="mb-2">
+                        <span className="bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/20">
+                          {banner.highlight}
+                        </span>
+                      </div>
+                      <h1 className="text-2xl font-black leading-tight mb-2 drop-shadow-md">
+                        {banner.title.split(' ').map((word, i) => (
+                          i === 1 ? <span key={i} className="text-blue-200">{word} </span> : word + ' '
+                        ))}
+                      </h1>
+                      <p className="text-[11px] font-medium opacity-90 mb-4 leading-relaxed line-clamp-2">
+                        {banner.desc}
+                      </p>
+                      <HeroCTA />
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Indicators */}
+          <div className="flex justify-center gap-1.5 mt-3">
+            {banners.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => emblaApi?.scrollTo(i)}
+                className={cn(
+                  "h-1 rounded-full transition-all duration-300",
+                  selectedIndex === i
+                    ? "w-6 bg-primary"
+                    : "w-1.5 bg-gray-200"
+                )}
+                aria-label={`Go to slide ${i + 1}`}
+              />
             ))}
           </div>
         </div>
