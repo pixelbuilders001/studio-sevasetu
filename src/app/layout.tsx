@@ -56,9 +56,9 @@ export const metadata: Metadata = {
     description: 'Get your phone, laptop, or home appliances fixed at your doorstep by certified professionals in Your City. 60-min visits, 30-day warranty, and affordable pricing.',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.png?v=1',
         width: 1200,
-        height: 630,
+        height: 547,
         alt: 'helloFixo - Doorstep Repair Service in Your City',
         type: 'image/png',
       },
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'helloFixo - Your City\'s Most Trusted Doorstep Repair Service',
     description: 'Premium doorstep repairs for phones and appliances in Your City. Certified technicians, fast service, and guaranteed quality.',
-    images: ['/og-image.png'],
+    images: ['/og-image.png?v=1'],
     creator: '@helloFixo',
     site: '@helloFixo',
   },
@@ -85,14 +85,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico' },
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico?v=1' },
     ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-    shortcut: '/favicon.ico',
+    shortcut: '/favicon.ico?v=1',
   },
   appleWebApp: {
     capable: true,
@@ -253,19 +248,19 @@ export default function RootLayout({
         />
         {/* Additional Meta Tags for WhatsApp, Facebook, Instagram */}
         <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
+        <meta property="og:image:height" content="547" />
         <meta property="og:image:type" content="image/png" />
-        <meta property="og:image:secure_url" content="https://hellofixo.in/og-image.png" />
+        <meta property="og:image:secure_url" content="https://hellofixo.in/og-image.png?v=1" />
         <meta name="twitter:image:alt" content="helloFixo - Doorstep Repair Service in Your City" />
         {/* Additional WhatsApp/Facebook meta tags */}
         <meta property="fb:app_id" content="" />
         <meta name="theme-color" content="#1e1b4b" />
         <meta name="msapplication-TileColor" content="#1e1b4b" />
         {/* WhatsApp specific */}
-        <meta property="og:image" content="https://hellofixo.in/og-image.png" />
-        <meta property="og:image:url" content="https://hellofixo.in/og-image.png" />
+        <meta property="og:image" content="https://hellofixo.in/og-image.png?v=1" />
+        <meta property="og:image:url" content="https://hellofixo.in/og-image.png?v=1" />
         {/* Fallback: Use logo-image.png if og-image.png doesn't exist */}
-        <meta name="og:image:fallback" content="https://hellofixo.in/og-image.png" />
+        <meta name="og:image:fallback" content="https://hellofixo.in/og-image.png?v=1" />
         {/* Additional SEO */}
         <meta name="geo.region" content="IN-BR" />
         <meta name="geo.placename" content="Your City" />
