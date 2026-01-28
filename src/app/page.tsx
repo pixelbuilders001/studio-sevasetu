@@ -37,6 +37,7 @@ import { checkRestricted } from '@/utils/auth';
 import AppDownloadBanner from '@/components/AppDownloadBanner';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
+import FeatureCard from '@/components/FeatureCard';
 
 
 function ServiceCardSkeleton() {
@@ -345,7 +346,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         </div>
 
         {/* Popular Services */}
-        <section id="services" className="mt-8 px-4">
+        <section id="services" className="mt-12 px-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-black text-[#1e1b4b]">
               Popular <span className="text-primary">Services</span>
@@ -381,7 +382,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         </section>
 
         {/* Verified Technicians (Mobile) */}
-        <div className="mt-4">
+        <div className="mt-12">
           <VerifiedTechnicians t={t} isMobile={true} />
         </div>
       </div >
@@ -422,27 +423,25 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         <ReferralBanner />
       </section >
 
+
       {/* Quick Features */}
-      {/* Quick Features */}
-      <section className="py-2 md:py-20 mb-4">
+      <section className="mt-12 md:mt-24">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-8">
+          <div className="grid grid-cols-3 gap-3 md:gap-10">
             {featureCards.map((card, index) => (
-              <div key={index} className="flex flex-col items-center justify-center bg-slate-50 py-3 px-1 md:py-10 md:px-6 rounded-xl md:rounded-3xl border border-slate-100/50 text-center transition-all hover:shadow-sm">
-                <div className="w-9 h-9 md:w-16 md:h-16 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 mb-2 md:mb-6">
-                  <card.icon className="w-4 h-4 md:w-8 md:h-8" />
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] md:text-xl font-extrabold uppercase tracking-tight text-indigo-950 leading-tight">{card.title}</span>
-                  <span className="text-[9px] md:text-xs text-indigo-500 font-semibold uppercase tracking-wider leading-tight">{card.description}</span>
-                </div>
-              </div>
+              <FeatureCard
+                key={index}
+                icon={card.icon}
+                title={card.title}
+                description={card.description}
+                index={index}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      <div className="bg-white dark:bg-card rounded-t-3xl md:rounded-t-[5rem] shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-8 pb-12 md:pt-20 md:pb-24">
+      <div className="bg-white dark:bg-card rounded-t-[2.5rem] md:rounded-t-[5rem] shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)] pt-12 md:pt-24 pb-12 md:pb-24 mt-12 md:mt-24">
         <div id="how-it-works" className="container mx-auto px-4 md:px-8">
           <HowItWorks t={t} />
         </div>
@@ -478,17 +477,17 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           </BookingTrackerModal>
         </section>
 
-        <div className="mt-20 md:mt-24 hidden md:block">
+        <div className="mt-12 md:mt-24 hidden md:block">
           <VerifiedTechnicians t={t} />
         </div>
 
-        <section id="why-choose-us" className="py-12 md:py-24">
+        <section id="why-choose-us" className="mt-12 md:mt-24">
           <div className="container mx-auto px-4 md:px-8">
             <TrustIndicators t={t} />
           </div>
         </section>
 
-        <div className="mt-12 md:mt-0">
+        <div className="mt-12 md:mt-24">
           <Testimonials t={t} />
         </div>
 

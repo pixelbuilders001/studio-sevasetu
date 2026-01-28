@@ -8,106 +8,93 @@ import ShareAppButton from '@/components/ShareAppButton';
 
 function MobileBanner() {
     return (
-        <section className="container mx-auto px-4 mt-6 mb-8 block md:hidden">
-            <div className="relative overflow-hidden rounded-[2rem] bg-[#1e1b4b] text-white p-6 shadow-lg">
-                {/* Decorative Elements */}
-                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/30 rounded-full blur-[60px] -mr-16 -mt-16 mix-blend-screen" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-500/20 rounded-full blur-[60px] -ml-16 -mb-16 mix-blend-screen" />
+        <section className="container mx-auto px-4 mt-12 mb-12 block md:hidden">
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#4f46e5] to-[#7c3aed] text-white p-7 shadow-2xl">
+                {/* Decorative Glows */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-[50px] -mr-10 -mt-10" />
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-200/10 rounded-full blur-[50px] -ml-10 -mb-10" />
 
-                <div className="relative z-10 flex flex-col-reverse items-center gap-6">
-
+                <div className="relative z-10 flex flex-col gap-6">
                     {/* Text Content */}
-                    <div className="flex-1 text-center z-20 w-full">
+                    <div className="z-10">
                         <motion.div
-                            initial={{ opacity: 0, y: 15 }}
+                            initial={{ opacity: 0, y: 5 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 mb-4 text-primary"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/20 mb-4"
                         >
-                            <BellRing className="w-3 h-3 animate-bounce text-white" />
-                            <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-white">Launching Soon</span>
+                            <BellRing className="w-3 h-3 text-white animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white">Launching Soon</span>
                         </motion.div>
 
                         <motion.h2
-                            initial={{ opacity: 0, y: 15 }}
+                            initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="text-2xl font-black mb-3 leading-tight tracking-tight"
+                            className="text-3xl font-black mb-3 leading-[1.1] tracking-tight"
                         >
                             Everything Fix, <br />
-                            <span className="text-indigo-200">In Your Pocket.</span>
+                            In Your Pocket.
                         </motion.h2>
 
-                        <motion.p
-                            initial={{ opacity: 0, y: 15 }}
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="text-indigo-200/80 text-xs font-medium max-w-md mx-auto mb-6 leading-relaxed line-clamp-2"
+                            className="flex flex-col gap-3 mt-6"
                         >
-                            Book repairs, track status, and get instant support. All in one app.
-                        </motion.p>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 15 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.2 }}
-                            className="flex items-center justify-center gap-3"
-                        >
-                            {/* Play Store Button */}
-                            <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white text-[#1e1b4b] shadow-lg hover:bg-indigo-50 active:scale-95 transition-all duration-200 min-w-[130px]">
+                            {/* Google Play Button */}
+                            <button className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/90 border border-white/10 text-white backdrop-blur-md active:scale-95 transition-all w-full max-w-[170px]">
                                 <Image
                                     src="https://www.vectorlogo.zone/logos/google_play/google_play-icon.svg"
                                     alt="Play Store"
-                                    width={24}
-                                    height={24}
-                                    className="w-5 h-5"
+                                    width={22}
+                                    height={22}
                                 />
                                 <div className="text-left flex flex-col leading-none">
                                     <span className="text-[8px] font-bold uppercase tracking-wider opacity-60">Get it on</span>
-                                    <span className="text-xs font-black tracking-tight">Google Play</span>
+                                    <span className="text-sm font-black">Google Play</span>
                                 </div>
                             </button>
 
-                            {/* App Store Button - Darker variant for contrast */}
-                            <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-950/50 border border-indigo-400/30 text-white shadow-lg hover:bg-indigo-900/60 active:scale-95 transition-all duration-200 min-w-[130px]">
-                                <Apple className="w-5 h-5 fill-current" />
+                            {/* App Store Button */}
+                            <button className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/90 border border-white/10 text-white backdrop-blur-md active:scale-95 transition-all w-full max-w-[170px]">
+                                <Apple className="w-[22px] h-[22px] fill-current" />
                                 <div className="text-left flex flex-col leading-none">
                                     <span className="text-[8px] font-bold uppercase tracking-wider opacity-60">Download on</span>
-                                    <span className="text-xs font-black tracking-tight">App Store</span>
+                                    <span className="text-sm font-black">App Store</span>
                                 </div>
                             </button>
                         </motion.div>
                     </div>
 
-                    {/* Phone Mockup Image */}
-                    <div className="relative w-full flex justify-center">
+                    {/* Phone Mockup - Aligned to bottom right for overlap */}
+                    <div className="absolute top-4 -right-12 w-[160px] opacity-90">
                         <motion.div
-                            initial={{ opacity: 0, y: 30, rotate: 6 }}
-                            whileInView={{ opacity: 1, y: 0, rotate: 6 }}
+                            initial={{ opacity: 0, scale: 0.8, rotate: 12 }}
+                            whileInView={{ opacity: 1, scale: 1, rotate: 12 }}
                             viewport={{ once: true }}
-                            transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-                            className="relative z-10 w-[180px] aspect-[1/2] -mb-20 rotate-6"
+                            transition={{ type: "spring", stiffness: 100 }}
+                            className="relative aspect-[1/2] rotate-12"
                         >
-                            {/* Phone Frame */}
-                            <div className="absolute inset-0 bg-[#0f172a] rounded-[2rem] border-[6px] border-[#1e1b4b] shadow-2xl overflow-hidden ring-1 ring-white/10">
-                                {/* Screen Content */}
+                            <div className="absolute inset-0 bg-[#0f172a] rounded-[2rem] border-[4px] border-[#1e1b4b] shadow-[0_20px_40px_rgba(0,0,0,0.4)] overflow-hidden">
                                 <div className="relative h-full w-full bg-slate-900">
                                     <Image
-                                        src="/app-preview.jpg"
+                                        src="/app-screen.jpg"
                                         alt="App Screen"
                                         fill
                                         className="object-cover"
                                     />
-                                    {/* Subtle Overlay to blend with frame */}
-                                    <div className="absolute inset-0 bg-black/5" />
+                                    {/* App Icon Branding overlay if needed */}
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/5">
+                                        <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                                            <Zap className="w-6 h-6 text-white" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>
-
-                        {/* Glow behind phone */}
-                        <div className="absolute inset-0 bg-indigo-500/30 blur-[40px] rounded-full z-0 transform translate-y-10 scale-75" />
                     </div>
                 </div>
             </div>
@@ -117,96 +104,100 @@ function MobileBanner() {
 
 function DesktopBanner() {
     return (
-        <section className="container mx-auto px-4 md:px-8 mt-6 md:mt-16 mb-8 hidden md:block">
-            <div className="relative overflow-hidden rounded-[2rem] md:rounded-[3rem] bg-[#1e1b4b] text-white p-6 md:p-10 group shadow-lg">
+        <section className="container mx-auto px-8 mt-24 mb-24 hidden md:block">
+            <div className="relative overflow-hidden rounded-[4rem] bg-gradient-to-br from-[#4f46e5] to-[#7c3aed] text-white p-12 lg:p-16 shadow-2xl group">
                 {/* Decorative Elements */}
-                <div className="absolute top-0 right-0 w-48 h-48 md:w-96 md:h-96 bg-primary/30 rounded-full blur-[60px] md:blur-[120px] -mr-16 -mt-16 md:-mr-32 md:-mt-32 mix-blend-screen" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 md:w-96 md:h-96 bg-indigo-500/20 rounded-full blur-[60px] md:blur-[120px] -ml-16 -mb-16 md:-ml-32 md:-mb-32 mix-blend-screen" />
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/5 rounded-full blur-[100px] -mr-32 -mt-32" />
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-200/5 rounded-full blur-[100px] -ml-32 -mb-32" />
 
-                <div className="relative z-10 flex flex-col-reverse md:flex-row items-center justify-between gap-6 md:gap-12">
-
+                <div className="relative z-10 flex items-center justify-between gap-12">
                     {/* Text Content */}
-                    <div className="flex-1 text-center md:text-left z-20 w-full md:w-auto">
-                        <motion.h2
-                            initial={{ opacity: 0, y: 15 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                    <div className="flex-1">
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="text-2xl md:text-5xl font-black mb-3 md:mb-6 leading-tight tracking-tight"
+                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20 mb-8"
+                        >
+                            <BellRing className="w-4 h-4 text-white animate-pulse" />
+                            <span className="text-xs font-black uppercase tracking-widest text-white">Launching Soon</span>
+                        </motion.div>
+
+                        <motion.h2
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            className="text-5xl lg:text-7xl font-black mb-8 leading-tight tracking-tight"
                         >
                             Everything Fix, <br />
-                            <span className="text-indigo-200">In Your Pocket.</span>
+                            In Your Pocket.
                         </motion.h2>
 
                         <motion.p
-                            initial={{ opacity: 0, y: 15 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="text-indigo-200/80 text-xs md:text-lg font-medium max-w-md mx-auto md:mx-0 mb-6 md:mb-8 leading-relaxed line-clamp-2 md:line-clamp-none"
+                            className="text-white/80 text-lg font-medium max-w-lg mb-12 leading-relaxed"
                         >
-                            Book repairs, track status, and get instant support. All in one app.
+                            Experience professional repairs with a single tap. Book repairs, track status, and get instant support.
                         </motion.p>
 
                         <motion.div
-                            initial={{ opacity: 0, y: 15 }}
+                            initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="flex items-center justify-center md:justify-start gap-3"
+                            className="flex items-center gap-6"
                         >
                             {/* Play Store Button */}
-                            <button className="flex items-center gap-2 px-3 py-2 md:px-5 md:py-3 rounded-xl bg-white text-[#1e1b4b] shadow-lg hover:bg-indigo-50 active:scale-95 transition-all duration-200 min-w-[130px] md:min-w-[160px]">
+                            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-black/90 border border-white/10 text-white shadow-xl hover:bg-black active:scale-95 transition-all duration-300 min-w-[200px]">
                                 <Image
                                     src="https://www.vectorlogo.zone/logos/google_play/google_play-icon.svg"
                                     alt="Play Store"
-                                    width={24}
-                                    height={24}
-                                    className="w-5 h-5 md:w-7 md:h-7"
+                                    width={28}
+                                    height={28}
                                 />
                                 <div className="text-left flex flex-col leading-none">
-                                    <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-wider opacity-60">Get it on</span>
-                                    <span className="text-xs md:text-base font-black tracking-tight">Google Play</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">Get it on</span>
+                                    <span className="text-xl font-black">Google Play</span>
                                 </div>
                             </button>
 
-                            {/* App Store Button - Darker variant for contrast */}
-                            <button className="flex items-center gap-2 px-3 py-2 md:px-5 md:py-3 rounded-xl bg-indigo-950/50 border border-indigo-400/30 text-white shadow-lg hover:bg-indigo-900/60 active:scale-95 transition-all duration-200 min-w-[130px] md:min-w-[160px]">
-                                <Apple className="w-5 h-5 md:w-7 md:h-7 fill-current" />
+                            {/* App Store Button */}
+                            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-black/90 border border-white/10 text-white shadow-xl hover:bg-black active:scale-95 transition-all duration-300 min-w-[200px]">
+                                <Apple className="w-[28px] h-[28px] fill-current" />
                                 <div className="text-left flex flex-col leading-none">
-                                    <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-wider opacity-60">Download on</span>
-                                    <span className="text-xs md:text-base font-black tracking-tight">App Store</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">Download on</span>
+                                    <span className="text-xl font-black">App Store</span>
                                 </div>
                             </button>
                         </motion.div>
                     </div>
 
-                    {/* Phone Mockup Image */}
-                    <div className="relative w-full md:w-auto flex justify-center md:block">
+                    {/* Phone Mockup Desktop */}
+                    <div className="relative h-[550px] w-[300px] flex-shrink-0 mr-8 hidden lg:block">
                         <motion.div
-                            initial={{ opacity: 0, y: 30, rotate: 6 }}
-                            whileInView={{ opacity: 1, y: 0, rotate: 6 }}
+                            initial={{ opacity: 0, y: 40, rotate: 5 }}
+                            whileInView={{ opacity: 1, y: 0, rotate: 5 }}
                             viewport={{ once: true }}
-                            transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-                            className="relative z-10 w-[180px] md:w-[320px] aspect-[1/2] -mb-20 md:-mb-32 md:-mr-10 rotate-6"
+                            transition={{ type: "spring", stiffness: 60, delay: 0.2 }}
+                            className="relative z-10 h-full w-full rotate-5"
                         >
-                            {/* Phone Frame */}
-                            <div className="absolute inset-0 bg-[#0f172a] rounded-[2rem] md:rounded-[3rem] border-[6px] md:border-[10px] border-[#1e1b4b] shadow-2xl overflow-hidden ring-1 ring-white/10">
-                                {/* Screen Content */}
+                            <div className="absolute inset-0 bg-[#0f172a] rounded-[3.5rem] border-[12px] border-[#1e1b4b] shadow-[0_40px_80px_rgba(0,0,0,0.5)] overflow-hidden ring-1 ring-white/20">
                                 <div className="relative h-full w-full bg-slate-900">
                                     <Image
-                                        src="/app-preview.jpg"
+                                        src="/app-screen.jpg"
                                         alt="App Screen"
                                         fill
                                         className="object-cover"
                                     />
-                                    {/* Subtle Overlay */}
-                                    <div className="absolute inset-0 bg-black/5" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                                 </div>
                             </div>
                         </motion.div>
-
-                        {/* Glow behind phone */}
-                        <div className="absolute inset-0 bg-indigo-500/30 blur-[40px] rounded-full z-0 transform translate-y-10 scale-75" />
+                        {/* Shadow Glow */}
+                        <div className="absolute inset-0 bg-white/5 blur-[100px] rounded-full -z-10 transform translate-y-12" />
                     </div>
                 </div>
             </div>

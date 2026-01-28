@@ -83,36 +83,56 @@ export default function GlobalSearchSheet() {
     const results = useMemo(() => {
         if (!searchQuery.trim() || categories.length === 0) return [];
 
-        const query = searchQuery.toLowerCase();
+        const query = searchQuery.toLowerCase().trim();
+        const keywords = query.split(/\s+/).filter(word => word.length > 2);
+
         const foundResults: SearchResult[] = [];
+        const seenIds = new Set<string>();
+
+        const matchesQuery = (text: string | undefined) => {
+            if (!text) return false;
+            const lowerText = text.toLowerCase();
+            // Traditional full match check
+            if (lowerText.includes(query)) return true;
+            // Keyword based check
+            return keywords.some(word => lowerText.includes(word));
+        };
 
         categories.forEach(cat => {
             // Match Category
-            if (cat.name.toLowerCase().includes(query)) {
-                foundResults.push({
-                    type: 'category',
-                    id: cat.id,
-                    name: cat.name,
-                    categoryName: cat.name,
-                    description: cat.description,
-                    categorySlug: cat.slug,
-                    categoryIcon: cat.image.imageUrl
-                });
+            if (matchesQuery(cat.name) || matchesQuery(cat.slug) || matchesQuery(cat.description)) {
+                const resultId = `category-${cat.id}`;
+                if (!seenIds.has(resultId)) {
+                    foundResults.push({
+                        type: 'category',
+                        id: cat.id,
+                        name: cat.name,
+                        categoryName: cat.name,
+                        description: cat.description,
+                        categorySlug: cat.slug,
+                        categoryIcon: cat.image.imageUrl
+                    });
+                    seenIds.add(resultId);
+                }
             }
 
             // Match Problems
             cat.problems?.forEach(prob => {
-                if (prob.name.toLowerCase().includes(query)) {
-                    foundResults.push({
-                        type: 'problem',
-                        id: prob.id,
-                        name: prob.name,
-                        categoryName: cat.name,
-                        categorySlug: cat.slug,
-                        description: prob.description,
-                        categoryIcon: cat.image.imageUrl,
-                        problemId: prob.id
-                    });
+                if (matchesQuery(prob.name) || matchesQuery(prob.description)) {
+                    const resultId = `problem-${prob.id}`;
+                    if (!seenIds.has(resultId)) {
+                        foundResults.push({
+                            type: 'problem',
+                            id: prob.id,
+                            name: prob.name,
+                            categoryName: cat.name,
+                            categorySlug: cat.slug,
+                            description: prob.description,
+                            categoryIcon: cat.image.imageUrl,
+                            problemId: prob.id
+                        });
+                        seenIds.add(resultId);
+                    }
                 }
             });
         });
