@@ -45,21 +45,21 @@ export default function DesktopHero() {
             {/* Cinematic Background */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <Image
-                    src="/hero-video.webp"
+                    src="/hero-clean-welcome.webp"
                     alt="Hellofixo Premium Service"
                     fill
-                    className="object-cover opacity-60"
+                    className="object-cover opacity-80"
                     unoptimized
                     priority
                 />
                 {/* Dynamic Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1e1b4b] via-[#1e1b4b]/80 to-transparent z-10" />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#1e1b4b]/20 z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e1b4b] via-[#1e1b4b]/40 to-transparent z-10" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#1e1b4b]/20 z-10" />
             </div>
 
             <div className="container relative z-[50] mx-auto px-12 h-full flex flex-col items-center justify-center text-center">
                 {/* Headline Area */}
-                <div className="max-w-4xl space-y-6 mb-8">
+                {/* <div className="max-w-4xl space-y-6 mb-8">
                     <motion.div
                         initial={{ opacity: 0, y: -30 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -81,26 +81,17 @@ export default function DesktopHero() {
                         Premium doorstep home services & repairs for your <span className="text-white">appliances, electronics & vehicles</span>.
                         Professional technicians at your convenience.
                     </motion.p>
-                </div>
+                </div> */}
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
-                    className="w-full max-w-2xl flex flex-col items-center"
+                    className="w-full max-w-2xl flex flex-col items-center mt-10"
                 >
                     <div className="w-full">
                         <DesktopSearch />
                     </div>
-
-                    {/* <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-4">
-                        {['30 Days Warranty', 'Spare Parts Included', 'Fix at Home'].map((item, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                <span className="text-white/40 text-[10px] font-bold uppercase tracking-wider">{item}</span>
-                            </div>
-                        ))}
-                    </div> */}
 
                     <div className="w-full max-w-4xl mt-6 overflow-hidden relative marquee-mask pb-6">
                         <div className="flex gap-6 animate-marquee hover:pause-animation whitespace-nowrap px-4">

@@ -201,7 +201,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
       title: "Fast Doorstep Repair",
       highlight: "Save Time",
       desc: "Get your phone fixed in 60 minutes with Your City's top verified experts.",
-      img: "/hero-video.webp",
+      img: "/welcome-hero.png",
       gradient: "from-blue-600/80 to-transparent"
     }
   ];
@@ -325,23 +325,22 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
                   <div className={cn(
                     "absolute inset-0 bg-gradient-to-t from-[#1e1b4b]/90 via-[#1e1b4b]/20 to-transparent flex items-end p-4 pb-6",
                   )}>
-                    <div className="max-w-[95%] text-white animate-in fade-in slide-in-from-bottom-2 duration-700">
-                      <div className="mb-1.5">
-                        <span className="bg-indigo-600/40 backdrop-blur-md px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-[0.1em] border border-white/20">
-                          {banner.highlight}
-                        </span>
-                      </div>
-                      <h1 className="text-lg font-black leading-tight mb-1 [text-shadow:_0_1px_3px_rgba(0,0,0,0.6)]">
+                    <div className="w-full text-white flex item-center justify-center animate-in fade-in slide-in-from-bottom-2 duration-700">
+
+                      {/* <h1 className="text-lg font-black leading-tight mb-1 [text-shadow:_0_1px_3px_rgba(0,0,0,0.6)]">
                         {banner.title}
                       </h1>
                       <p className="text-[10px] font-bold opacity-90 mb-3 leading-tight [text-shadow:_0_1px_2px_rgba(0,0,0,0.6)]">
                         {banner.desc}
-                      </p>
+                      </p> */}
                       <HeroCTA />
                     </div>
+
                   </div>
+
                 </div>
               ))}
+
             </div>
           </div>
         </div>
@@ -508,7 +507,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
             />
           </div>
           <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-            Leading the way in doorstep mobile and appliance repairs across Your City. Join thousands of happy customers today.
+            Leading the way in doorstep mobile and appliance repairs across your city or town. Join thousands of happy customers today.
           </p>
           <div className="flex justify-center gap-6 mb-6">
             <Link href="/privacy" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary">Privacy</Link>

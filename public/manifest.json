@@ -1,7 +1,7 @@
 {
     "name": "helloFixo",
     "short_name": "helloFixo",
-    "description": "Your City's Most Trusted Doorstep Repair Service",
+    "description": "Most Trusted Doorstep Repair Service in Your City",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

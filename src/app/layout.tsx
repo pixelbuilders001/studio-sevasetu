@@ -18,26 +18,23 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'helloFixo - Your City\'s Most Trusted Doorstep Repair Service',
+    default: 'helloFixo - Most Trusted Doorstep Repair & home Service in Your City',
     template: '%s | helloFixo',
   },
-  description: 'Premium doorstep mobile, laptop, and appliance repairs across Your City. Certified technicians, 60-min visits, and 30-day warranty. Book now for affordable and reliable service.',
+  description: 'Premium doorstep mobile, laptop, and appliance repairs across your city. Certified technicians, 60-min visits, and 30-day warranty. Book now for reliable service.',
   keywords: [
-    'mobile repair Your City',
-    'laptop repair Patna',
-    'AC service Your City',
+    'mobile repair',
+    'laptop repair',
+    'AC service',
     'fridge repair',
     'washing machine service',
     'home appliance repair',
     'certified technicians',
     'doorstep repair',
     'phone repair service',
-    'appliance repair Your City',
+    'appliance repair',
     'technician near me',
-    'home service Your City',
-    'repair service Patna',
-    'mobile repair service',
-    'laptop repair service',
+    'home service',
   ],
   authors: [{ name: 'helloFixo', url: 'https://hellofixo.in' }],
   creator: 'helloFixo',
@@ -52,22 +49,22 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     url: 'https://hellofixo.in',
     siteName: 'helloFixo',
-    title: 'helloFixo - Your City\'s Most Trusted Doorstep Repair Service',
-    description: 'Get your phone, laptop, or home appliances fixed at your doorstep by certified professionals in Your City. 60-min visits, 30-day warranty, and affordable pricing.',
+    title: 'helloFixo - Most Trusted Doorstep Repair & home Service in Your City',
+    description: 'Get your phone, laptop, or home appliances fixed at your doorstep by certified professionals in your city. 60-min visits and guaranteed quality.',
     images: [
       {
         url: '/og-image.png?v=2',
         width: 1200,
         height: 630,
-        alt: 'helloFixo - Doorstep Repair Service in Your City',
+        alt: 'helloFixo - Doorstep Repair & home Service',
         type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'helloFixo - Your City\'s Most Trusted Doorstep Repair Service',
-    description: 'Premium doorstep repairs for phones and appliances in Your City. Certified technicians, fast service, and guaranteed quality.',
+    title: 'helloFixo - Doorstep Repair & home Service in Your City',
+    description: 'Premium doorstep repairs for phones and appliances. Certified technicians and fast service.',
     images: ['/og-image.png?v=2'],
     creator: '@helloFixo',
     site: '@helloFixo',
@@ -85,9 +82,20 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico?v=2' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/icons/icon-192.png', type: 'image/png', sizes: '192x192' },
     ],
-    shortcut: '/favicon.ico?v=2',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/icons/icon-maskable-512.png',
+      },
+    ],
   },
   appleWebApp: {
     capable: true,
@@ -100,12 +108,6 @@ export const metadata: Metadata = {
     address: false,
     email: false,
     url: false,
-  },
-  verification: {
-    // Add your verification codes here when available
-    // google: 'your-google-verification-code',
-    // yandex: 'your-yandex-verification-code',
-    // bing: 'your-bing-verification-code',
   },
   category: 'Home Services',
   classification: 'Repair Service',
@@ -131,10 +133,10 @@ export default function RootLayout({
     "telephone": "+917461824651",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "vishwakarma chowk",
-      "addressLocality": "samastipur",
+      "streetAddress": "Vishwakarma Chowk",
+      "addressLocality": "Your Town",
       "addressRegion": "Your City",
-      "postalCode": "8418101",
+      "postalCode": "848101",
       "addressCountry": "IN"
     },
     "geo": {
@@ -193,8 +195,8 @@ export default function RootLayout({
       "name": "helloFixo"
     },
     "areaServed": {
-      "@type": "State",
-      "name": "Your City"
+      "@type": "Country",
+      "name": "India"
     },
     "description": "Doorstep mobile, laptop, and appliance repair services across Your City"
   };
@@ -268,6 +270,7 @@ export default function RootLayout({
         <meta name="ICBM" content="25.5941, 85.1376" />
         <link rel="alternate" hrefLang="en" href="https://hellofixo.in" />
         <link rel="alternate" hrefLang="hi" href="https://hellofixo.in?lang=hi" />
+
       </head>
       <body className={`${poppins.variable} font-body antialiased flex flex-col min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-primary`}>
         <AppShell>{children}</AppShell>
