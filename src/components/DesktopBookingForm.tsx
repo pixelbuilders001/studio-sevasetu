@@ -130,6 +130,35 @@ export function DesktopBookingForm({
         fetchInitialData();
     }, []);
 
+    const isPast6PM = new Date().getHours() >= 18;
+
+    const getMinDate = () => {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        if (currentHour >= 18) {
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            return tomorrow;
+        }
+        return today;
+    };
+
+    const isDateDisabled = ({ date, view }: { date: Date, view: string }) => {
+        if (view === 'month') {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            if (date < today) return true;
+            if (currentHour >= 18) {
+                return date.getTime() === today.getTime();
+            }
+        }
+        return false;
+    };
+
     useEffect(() => {
         if (state?.error) {
             toast({
@@ -437,10 +466,17 @@ export function DesktopBookingForm({
                                         <Calendar
                                             onChange={(d) => { setDate(d as Date); setIsCalendarOpen(false); }}
                                             value={date}
-                                            minDate={new Date()}
+                                            minDate={getMinDate()}
+                                            tileDisabled={isDateDisabled}
                                         />
                                     </PopoverContent>
                                 </Popover>
+                                {isPast6PM && (
+                                    <p className="mt-2 text-[10px] font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 flex items-center gap-1.5">
+                                        <Clock className="w-3 h-3" />
+                                        Same-day service unavailable after 6 PM,please book for tomorrow or future dates.
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">

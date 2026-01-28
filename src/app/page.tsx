@@ -305,6 +305,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
               <GlobalSearchSheet />
             </SheetContent>
           </Sheet>
+
         </div>
 
         {/* Hero Banner Carousel */}

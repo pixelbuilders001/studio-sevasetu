@@ -93,16 +93,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
     fetchInitialData();
   }, []);
 
-  useEffect(() => {
-    const now = new Date();
-    const currentHour = now.getHours();
-    if (currentHour >= 18) {
-      toast({
-        title: "Booking for Today Closed",
-        description: "Same-day service is unavailable after 6 PM. Please select a booking for tomorrow or a future date.",
-      });
-    }
-  }, [toast]);
+  const isPast6PM = new Date().getHours() >= 18;
 
 
   useEffect(() => {
@@ -285,12 +276,32 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
   const getMinDate = () => {
     const now = new Date();
     const currentHour = now.getHours();
+    // Normalize to start of day for accurate comparison
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
     if (currentHour >= 18) {
-      const tomorrow = new Date(now);
-      tomorrow.setDate(now.getDate() + 1);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
       return tomorrow;
     }
-    return now;
+    return today;
+  };
+
+  const isDateDisabled = ({ date, view }: { date: Date, view: string }) => {
+    if (view === 'month') {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      // Disable everything before today
+      if (date < today) return true;
+
+      // If it's after 6 PM, disable today's date
+      if (currentHour >= 18) {
+        return date.getTime() === today.getTime();
+      }
+    }
+    return false;
   };
 
   return (
@@ -433,7 +444,8 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
                 <Calendar
                   onChange={onDateChange}
                   value={date}
-                  minDate={getMinDate()} // Prevents selecting past dates
+                  minDate={getMinDate()}
+                  tileDisabled={isDateDisabled}
                 />
               </PopoverContent>
             </Popover>
@@ -442,12 +454,18 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
                 <SelectValue placeholder="Select time" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="9 AM-12 PM">9 AM - 12 PM</SelectItem>
-                <SelectItem value="12 PM-2 PM">12 PM - 2 PM</SelectItem>
-                <SelectItem value="2 PM-5 PM">2 PM - 5 PM</SelectItem>
+                <SelectItem value="9 AM-12 PM">Morning(9 AM - 12 PM)</SelectItem>
+                <SelectItem value="12 PM-2 PM">Afternoon(12 PM - 2 PM)</SelectItem>
+                <SelectItem value="2 PM-5 PM">Evening(2 PM - 5 PM)</SelectItem>
               </SelectContent>
             </Select>
           </div>
+          {isPast6PM && (
+            <p className="mt-2 text-[10px] font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 flex items-center gap-1.5">
+              <Clock className="w-3 h-3" />
+              Same-day service unavailable after 6 PM,please book for tomorrow or future dates.
+            </p>
+          )}
           <input type="hidden" name="preferred_service_date" value={date ? date.toISOString().split('T')[0] : ''} />
           <input type="hidden" name="preferred_time_slot" value={selectedTimeSlot} />
         </div>

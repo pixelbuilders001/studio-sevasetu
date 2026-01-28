@@ -7,7 +7,8 @@ const services = [
   'Ac',
   'Mobile',
   'Laptop',
-  'Bike'
+  'Bike',
+  '& more'
 ];
 
 interface AnimatedHeroTextProps {
