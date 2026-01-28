@@ -56,9 +56,9 @@ export const metadata: Metadata = {
     description: 'Get your phone, laptop, or home appliances fixed at your doorstep by certified professionals in Your City. 60-min visits, 30-day warranty, and affordable pricing.',
     images: [
       {
-        url: '/og-image.png?v=1',
+        url: '/og-image.png?v=2',
         width: 1200,
-        height: 547,
+        height: 630,
         alt: 'helloFixo - Doorstep Repair Service in Your City',
         type: 'image/png',
       },
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'helloFixo - Your City\'s Most Trusted Doorstep Repair Service',
     description: 'Premium doorstep repairs for phones and appliances in Your City. Certified technicians, fast service, and guaranteed quality.',
-    images: ['/og-image.png?v=1'],
+    images: ['/og-image.png?v=2'],
     creator: '@helloFixo',
     site: '@helloFixo',
   },
@@ -85,9 +85,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico?v=1' },
+      { url: '/favicon.ico?v=2' },
     ],
-    shortcut: '/favicon.ico?v=1',
+    shortcut: '/favicon.ico?v=2',
   },
   appleWebApp: {
     capable: true,
@@ -248,22 +248,22 @@ export default function RootLayout({
         />
         {/* Additional Meta Tags for WhatsApp, Facebook, Instagram */}
         <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="547" />
+        <meta property="og:image:height" content="630" />
         <meta property="og:image:type" content="image/png" />
-        <meta property="og:image:secure_url" content="https://hellofixo.in/og-image.png?v=1" />
+        <meta property="og:image:secure_url" content="https://hellofixo.in/og-image.png?v=2" />
         <meta name="twitter:image:alt" content="helloFixo - Doorstep Repair Service in Your City" />
         {/* Additional WhatsApp/Facebook meta tags */}
         <meta property="fb:app_id" content="" />
         <meta name="theme-color" content="#1e1b4b" />
         <meta name="msapplication-TileColor" content="#1e1b4b" />
         {/* WhatsApp specific */}
-        <meta property="og:image" content="https://hellofixo.in/og-image.png?v=1" />
-        <meta property="og:image:url" content="https://hellofixo.in/og-image.png?v=1" />
+        <meta property="og:image" content="https://hellofixo.in/og-image.png?v=2" />
+        <meta property="og:image:url" content="https://hellofixo.in/og-image.png?v=2" />
         {/* Fallback: Use logo-image.png if og-image.png doesn't exist */}
-        <meta name="og:image:fallback" content="https://hellofixo.in/og-image.png?v=1" />
+        <meta name="og:image:fallback" content="https://hellofixo.in/og-image.png?v=2" />
         {/* Additional SEO */}
         <meta name="geo.region" content="IN-BR" />
-        <meta name="geo.placename" content="Your City" />
+        <meta name="geo.placename" content="Samastipur" />
         <meta name="geo.position" content="25.5941;85.1376" />
         <meta name="ICBM" content="25.5941, 85.1376" />
         <link rel="alternate" hrefLang="en" href="https://hellofixo.in" />

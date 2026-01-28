@@ -4,7 +4,7 @@ const withPWA = require('@ducanh2912/next-pwa').default;
 const pwaConfig = withPWA({
   dest: 'public',
   cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
+  aggressiveFrontEndNavCaching: false, // Disabled to prevent serving stale content
   reloadOnOnline: true,
   swcMinify: true,
   disable: process.env.NODE_ENV === 'development',
@@ -53,12 +53,12 @@ const pwaConfig = withPWA({
       },
       {
         urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
-        handler: 'CacheFirst',
+        handler: 'StaleWhileRevalidate', // Changed from CacheFirst to ensure updates
         options: {
           cacheName: 'images',
           expiration: {
-            maxEntries: 100,
-            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+            maxEntries: 60,
+            maxAgeSeconds: 24 * 60 * 60, // Reduced to 24 hours
           },
         },
       },
@@ -68,8 +68,8 @@ const pwaConfig = withPWA({
         options: {
           cacheName: 'static-resources',
           expiration: {
-            maxEntries: 100,
-            maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+            maxEntries: 50,
+            maxAgeSeconds: 24 * 60 * 60, // Reduced to 24 hours
           },
         },
       },
@@ -86,10 +86,10 @@ const pwaConfig = withPWA({
         options: {
           cacheName: 'pages',
           expiration: {
-            maxEntries: 50,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+            maxEntries: 30,
+            maxAgeSeconds: 1 * 60 * 60, // Reduced to 1 hour
           },
-          networkTimeoutSeconds: 10,
+          networkTimeoutSeconds: 5, // Reduced timeout
         },
       },
     ],
