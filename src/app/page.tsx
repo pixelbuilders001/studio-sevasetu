@@ -200,7 +200,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
     {
       title: "Fast Doorstep Repair",
       highlight: "Save Time",
-      desc: "Get your phone fixed in 60 minutes with Bihar's top verified experts.",
+      desc: "Get your phone fixed in 60 minutes with Your City's top verified experts.",
       img: "/hero-video.webp",
       gradient: "from-blue-600/80 to-transparent"
     }
@@ -507,7 +507,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
             />
           </div>
           <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-            Leading the way in doorstep mobile and appliance repairs across Bihar. Join thousands of happy customers today.
+            Leading the way in doorstep mobile and appliance repairs across Your City. Join thousands of happy customers today.
           </p>
           <div className="flex justify-center gap-6 mb-6">
             <Link href="/privacy" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary">Privacy</Link>

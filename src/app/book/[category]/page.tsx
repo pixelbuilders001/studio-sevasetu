@@ -17,15 +17,15 @@ export async function generateMetadata(
     };
   }
 
-  const title = `${category.name} Repair Service in Bihar | helloFixo`;
-  const description = `Professional ${category.name.toLowerCase()} repair services at your doorstep in Bihar. Certified technicians, fast visit, and guaranteed quality. Book your ${category.name.toLowerCase()} service today!`;
+  const title = `${category.name} Repair Service in Your City | helloFixo`;
+  const description = `Professional ${category.name.toLowerCase()} repair services at your doorstep in Your City. Certified technicians, fast visit, and guaranteed quality. Book your ${category.name.toLowerCase()} service today!`;
 
   return {
     title,
     description,
     keywords: [
       `${category.name} repair`,
-      `${category.name} service Bihar`,
+      `${category.name} service Your City`,
       `${category.name} repair near me`,
       `doorstep ${category.name} repair`,
       `professional ${category.name} service`,

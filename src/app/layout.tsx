@@ -18,23 +18,23 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'helloFixo - Bihar\'s Most Trusted Doorstep Repair Service',
+    default: 'helloFixo - Your City\'s Most Trusted Doorstep Repair Service',
     template: '%s | helloFixo',
   },
-  description: 'Premium doorstep mobile, laptop, and appliance repairs across Bihar. Certified technicians, 60-min visits, and 30-day warranty. Book now for affordable and reliable service.',
+  description: 'Premium doorstep mobile, laptop, and appliance repairs across Your City. Certified technicians, 60-min visits, and 30-day warranty. Book now for affordable and reliable service.',
   keywords: [
-    'mobile repair Bihar',
+    'mobile repair Your City',
     'laptop repair Patna',
-    'AC service Bihar',
+    'AC service Your City',
     'fridge repair',
     'washing machine service',
     'home appliance repair',
     'certified technicians',
     'doorstep repair',
     'phone repair service',
-    'appliance repair Bihar',
+    'appliance repair Your City',
     'technician near me',
-    'home service Bihar',
+    'home service Your City',
     'repair service Patna',
     'mobile repair service',
     'laptop repair service',
@@ -52,22 +52,22 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     url: 'https://hellofixo.in',
     siteName: 'helloFixo',
-    title: 'helloFixo - Bihar\'s Most Trusted Doorstep Repair Service',
-    description: 'Get your phone, laptop, or home appliances fixed at your doorstep by certified professionals in Bihar. 60-min visits, 30-day warranty, and affordable pricing.',
+    title: 'helloFixo - Your City\'s Most Trusted Doorstep Repair Service',
+    description: 'Get your phone, laptop, or home appliances fixed at your doorstep by certified professionals in Your City. 60-min visits, 30-day warranty, and affordable pricing.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'helloFixo - Doorstep Repair Service in Bihar',
+        alt: 'helloFixo - Doorstep Repair Service in Your City',
         type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'helloFixo - Bihar\'s Most Trusted Doorstep Repair Service',
-    description: 'Premium doorstep repairs for phones and appliances in Bihar. Certified technicians, fast service, and guaranteed quality.',
+    title: 'helloFixo - Your City\'s Most Trusted Doorstep Repair Service',
+    description: 'Premium doorstep repairs for phones and appliances in Your City. Certified technicians, fast service, and guaranteed quality.',
     images: ['/og-image.png'],
     creator: '@helloFixo',
     site: '@helloFixo',
@@ -138,7 +138,7 @@ export default function RootLayout({
       "@type": "PostalAddress",
       "streetAddress": "vishwakarma chowk",
       "addressLocality": "samastipur",
-      "addressRegion": "Bihar",
+      "addressRegion": "Your City",
       "postalCode": "8418101",
       "addressCountry": "IN"
     },
@@ -164,7 +164,7 @@ export default function RootLayout({
     "sameAs": [
       "https://facebook.com/helloFixo",
       "https://twitter.com/helloFixo",
-      "https://instagram.com/helloFixo"
+      "https://instagram.com/hellofixo.in"
     ]
   };
 
@@ -185,7 +185,7 @@ export default function RootLayout({
     "sameAs": [
       "https://facebook.com/hellofixo",
       "https://twitter.com/helloFixo",
-      "https://instagram.com/helloFixo"
+      "https://instagram.com/hellofixo.in"
     ]
   };
 
@@ -199,9 +199,9 @@ export default function RootLayout({
     },
     "areaServed": {
       "@type": "State",
-      "name": "Bihar"
+      "name": "Your City"
     },
-    "description": "Doorstep mobile, laptop, and appliance repair services across Bihar"
+    "description": "Doorstep mobile, laptop, and appliance repair services across Your City"
   };
 
   const breadcrumbSchema = {
@@ -256,7 +256,7 @@ export default function RootLayout({
         <meta property="og:image:height" content="630" />
         <meta property="og:image:type" content="image/png" />
         <meta property="og:image:secure_url" content="https://hellofixo.in/og-image.png" />
-        <meta name="twitter:image:alt" content="helloFixo - Doorstep Repair Service in Bihar" />
+        <meta name="twitter:image:alt" content="helloFixo - Doorstep Repair Service in Your City" />
         {/* Additional WhatsApp/Facebook meta tags */}
         <meta property="fb:app_id" content="" />
         <meta name="theme-color" content="#1e1b4b" />
@@ -268,7 +268,7 @@ export default function RootLayout({
         <meta name="og:image:fallback" content="https://hellofixo.in/og-image.png" />
         {/* Additional SEO */}
         <meta name="geo.region" content="IN-BR" />
-        <meta name="geo.placename" content="Bihar" />
+        <meta name="geo.placename" content="Your City" />
         <meta name="geo.position" content="25.5941;85.1376" />
         <meta name="ICBM" content="25.5941, 85.1376" />
         <link rel="alternate" hrefLang="en" href="https://hellofixo.in" />

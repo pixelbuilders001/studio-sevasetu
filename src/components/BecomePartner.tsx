@@ -47,7 +47,7 @@ export default function BecomePartner() {
                 className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full mb-6 border border-white/10"
               >
                 <Briefcase className="w-3.5 h-3.5 text-indigo-300" />
-                <span className="text-[10px] font-black tracking-widest uppercase text-indigo-100">Join Bihar's #1 Fleet</span>
+                <span className="text-[10px] font-black tracking-widest uppercase text-indigo-100">Join Your City's #1 Fleet</span>
               </motion.div>
 
               <motion.h2

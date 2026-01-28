@@ -142,7 +142,7 @@ export default function DesktopEstimateView({
                         {/* Feature Highlights Grid */}
                         <div className="grid grid-cols-3 gap-4">
                             {[
-                                { icon: Clock, title: "60 Min Visit", desc: " Bihar's fastest response", color: "text-indigo-600", bg: "bg-indigo-50/50" },
+                                { icon: Clock, title: "60 Min Visit", desc: "Your City's fastest response", color: "text-indigo-600", bg: "bg-indigo-50/50" },
                                 { icon: Shield, title: "Spare Warranty", desc: "Genuine parts coverage", color: "text-emerald-600", bg: "bg-emerald-50/50" },
                                 { icon: Zap, title: "Transparent", desc: "No hidden costs guaranteed", color: "text-amber-600", bg: "bg-amber-50/50" }
                             ].map((f, i) => (

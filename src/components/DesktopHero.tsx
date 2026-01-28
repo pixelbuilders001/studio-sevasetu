@@ -61,7 +61,7 @@ export default function DesktopHero() {
                         >
                             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full">
                                 <Award className="w-4 h-4 text-amber-400" />
-                                <span className="text-white text-xs font-black uppercase tracking-[0.2em]">Bihar's Most Trusted</span>
+                                <span className="text-white text-xs font-black uppercase tracking-[0.2em]">Your City's Most Trusted</span>
                             </div>
                             <LocationSelector isHero={true} />
                             <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full h-10 px-1">

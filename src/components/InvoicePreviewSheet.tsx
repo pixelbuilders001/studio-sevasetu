@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useReactToPrint } from 'react-to-print';
 import type { Booking } from '@/lib/types/booking';
 import { Button } from './ui/button';
@@ -12,13 +13,14 @@ import { Badge } from './ui/badge';
 
 const Logo = () => (
     <div className="flex items-center gap-2 flex-shrink-0">
-        <div className="w-10 h-10 bg-primary rounded-md flex items-center justify-center">
-            <span className="text-2xl font-bold text-primary-foreground">S</span>
-        </div>
-        <div>
-            <h5 className="text-lg font-bold text-primary leading-tight">helloFixo</h5>
-            <span className="text-xs font-semibold text-muted-foreground leading-tight tracking-wide">REPAIR & SOLUTIONS</span>
-        </div>
+        <Image
+            src="/logo-image.png"
+            alt="hellofixo"
+            width={120}
+            height={38}
+            className="object-contain h-10 w-auto"
+            priority
+        />
     </div>
 );
 

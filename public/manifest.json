@@ -1,7 +1,7 @@
 {
     "name": "helloFixo",
     "short_name": "helloFixo",
-    "description": "Bihar's Most Trusted Doorstep Repair Service",
+    "description": "Your City's Most Trusted Doorstep Repair Service",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

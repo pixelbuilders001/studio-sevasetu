@@ -15,7 +15,7 @@ To enable proper preview images on WhatsApp, Facebook, Instagram, and Twitter, y
 2. **Logo**: Include your helloFixo logo prominently
 3. **Text**: 
    - Main headline: "helloFixo"
-   - Subheadline: "Bihar's Most Trusted Doorstep Repair Service"
+   - Subheadline: "Your City's Most Trusted Doorstep Repair Service"
    - Tagline: "Premium Repairs at Your Doorstep"
 4. **Visual Elements**: 
    - Include icons representing services (mobile, laptop, appliances)
