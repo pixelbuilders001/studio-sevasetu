@@ -29,7 +29,7 @@ export default function ServicesMegaMenu({ isOpen, categories, onClose }: Servic
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-slate-900/5 backdrop-blur-[1px] z-40"
+                        className="fixed inset-0 bg-slate-900/5 backdrop-blur-[1px] z-[110]"
                     />
 
                     {/* Menu Content Container - Centered and matching header style */}
@@ -38,7 +38,7 @@ export default function ServicesMegaMenu({ isOpen, categories, onClose }: Servic
                         animate={{ opacity: 1, y: 0, x: "-50%" }}
                         exit={{ opacity: 0, y: -10, x: "-50%" }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="fixed left-1/2 top-[24px] w-full max-w-6xl bg-white rounded-b-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] z-50 overflow-hidden border border-slate-100"
+                        className="fixed left-1/2 top-[24px] w-full max-w-6xl bg-white rounded-b-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] z-[1000] overflow-hidden border border-slate-100"
                     >
                         <div className="px-8 pb-10 pt-[80px] max-h-[calc(100vh-40px)] overflow-y-auto">
                             {/* Categories Grid - Myntra style (compact columns) */}

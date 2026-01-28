@@ -26,10 +26,10 @@ const AnimatedHeroText = ({ className, highlightColor = "text-primary" }: Animat
   }, []);
 
   return (
-    <div className={cn("flex flex-col font-black leading-[1.05] tracking-tighter", className)}>
-      <div className="flex items-center flex-nowrap gap-2 text-white whitespace-nowrap">
+    <div className={cn("flex flex-col items-center justify-center font-black tracking-tighter text-white leading-none", className)}>
+      <div className="flex items-center gap-4">
         <span>We Fix</span>
-        <div className="relative h-[1.1em] w-40 md:w-80 overflow-hidden">
+        <div className="relative h-[1.2em] w-24 md:w-44 overflow-hidden flex items-center">
           <div
             key={services[wordIndex]}
             className={cn("animate-fade-in-up absolute left-0 whitespace-nowrap drop-shadow-[0_0_8px_rgba(79,70,229,0.3)]", highlightColor)}
@@ -41,7 +41,7 @@ const AnimatedHeroText = ({ className, highlightColor = "text-primary" }: Animat
           </div>
         </div>
       </div>
-      <span className="text-white">At Your Door</span>
+      <span className="mt-2 opacity-90">At Your Doorstep</span>
     </div>
   );
 };
