@@ -21,6 +21,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useBooking } from '@/context/BookingContext';
+import { OtherPincodeModal } from './OtherPincodeModal';
 
 
 const initialState = {
@@ -48,12 +49,26 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
 
   const { media, secondaryMedia, clearMedia } = useBooking();
 
+  const [bookingFor, setBookingFor] = useState<'self' | 'others'>('self');
+  const [otherPincode, setOtherPincode] = useState<string | undefined>(undefined);
+  const [isOtherPincodeModalOpen, setIsOtherPincodeModalOpen] = useState(false);
+
   // grandTotal includes GST
   const initialPayable = Math.max(grandTotal - discount, 0);
   const walletDeduction = useWallet ? Math.min(walletBalance, initialPayable) : 0;
   const finalPayable = Math.max(initialPayable - walletDeduction, 0);
 
-  const boundBookService = bookService.bind(null, categoryId, problemIds, location.pincode, referralStatus === 'success' ? referral : undefined, totalEstimatedPrice, finalPayable, useWallet ? walletDeduction : null);
+  const boundBookService = bookService.bind(
+    null,
+    categoryId,
+    problemIds,
+    bookingFor === 'others' && otherPincode ? otherPincode : location.pincode,
+    referralStatus === 'success' ? referral : undefined,
+    totalEstimatedPrice,
+    finalPayable,
+    useWallet ? walletDeduction : null,
+    bookingFor
+  );
   const [state, formAction, isPending] = useActionState(boundBookService, initialState);
 
   const [date, setDate] = useState<Date | null>(null);
@@ -319,6 +334,52 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
         if (secondaryMedia) formData.append('secondary_media', secondaryMedia);
         formAction(formData);
       }} className="space-y-6 pb-36">
+
+        {/* Booking For Section */}
+        <div className="animate-fade-in-up" style={{ animationDelay: '25ms' }}>
+          <div className="flex items-center justify-between px-1 mb-2">
+            <div className="flex items-center gap-2">
+              <User className="w-3.5 h-3.5 text-primary" />
+              <h2 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Booking For</h2>
+            </div>
+            {bookingFor === 'others' && otherPincode && (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-50 border border-emerald-100 rounded-full">
+                <MapPin className="w-2.5 h-2.5 text-emerald-600" />
+                <span className="text-[9px] font-black text-emerald-700">{otherPincode}</span>
+              </div>
+            )}
+          </div>
+          <div className="flex bg-muted/40 rounded-xl p-1 gap-1 border">
+            <button
+              type="button"
+              onClick={() => {
+                setBookingFor('self');
+                setOtherPincode(undefined);
+              }}
+              className={cn(
+                "flex-1 h-8 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                bookingFor === 'self' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:bg-muted/50"
+              )}
+            >
+              For Myself
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsOtherPincodeModalOpen(true)}
+              className={cn(
+                "flex-1 h-8 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                bookingFor === 'others' ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:bg-muted/50"
+              )}
+            >
+              For Others
+            </button>
+          </div>
+          {bookingFor === 'others' && otherPincode && (
+            <div className="mt-2 flex justify-end">
+              <button type="button" onClick={() => setIsOtherPincodeModalOpen(true)} className="text-[9px] font-black text-primary uppercase underline tracking-tighter">Change Location</button>
+            </div>
+          )}
+        </div>
 
         {/* Contact Section */}
         <div className="animate-fade-in-up" style={{ animationDelay: '50ms' }}>
@@ -671,6 +732,21 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
           </div>
         </div>
       )}
+      {/* Other Pincode Modal */}
+      <OtherPincodeModal
+        isOpen={isOtherPincodeModalOpen}
+        onClose={(pincode) => {
+          setIsOtherPincodeModalOpen(false);
+          if (pincode) {
+            setBookingFor('others');
+            setOtherPincode(pincode);
+            toast({
+              title: "Address Updated",
+              description: `Booking will be done for pincode: ${pincode}`,
+            });
+          }
+        }}
+      />
     </>
   );
 }

@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { AirVent, Laptop, Clock, Calendar, Download, Tag, CheckCircle, XCircle, Image as ImageIcon, KeyRound, IndianRupee, Gift, CreditCard, User, Phone, MessageSquare, Star, ChevronRight } from 'lucide-react';
+import { AirVent, Laptop, Clock, Calendar, Download, Tag, CheckCircle, XCircle, Image as ImageIcon, KeyRound, IndianRupee, Gift, CreditCard, User, Phone, MessageSquare, Star, ChevronRight, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import Image from 'next/image';
@@ -152,6 +152,55 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare,
         }
     };
 
+    const handleShareBooking = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isRepairCompleted =
+            booking.status.toLowerCase() === "repair_completed" ||
+            booking.status.toLowerCase() === "completed";
+
+        const paymentDetails = isRepairCompleted
+            ? `💰 *Final Amount Paid*: ₹${booking.final_amount_paid || booking.final_amount_to_be_paid || 0}
+💳 *Payment Method*: ${booking.payment_method || "N/A"}`
+            : `🔍 *Inspection Fee*: ₹${booking.net_inspection_fee || 0}
+💳 *Payment Status*: ${booking.payment_method ? "Paid" : "Pending"}`;
+
+        const maskedMobile = booking.mobile_number
+            ? `${booking.mobile_number.slice(0, 2)}XXXXXX${booking.mobile_number.slice(-2)}`
+            : 'N/A';
+
+        const message = `🛠️ *helloFixo – Service Booking Summary*
+━━━━━━━━━━━━━━━━━━━━
+
+📦 *Order ID*: #HF-${booking.order_id}
+👤 *Customer*: ${booking.user_name || 'Valued Customer'} (${maskedMobile})
+🧰 *Service*: ${booking.categories.name}
+🔧 *Issue*: ${booking.issues.title}
+
+📅 *Scheduled On*: ${booking.preferred_service_date}
+⏰ *Time Slot*: ${booking.preferred_time_slot}
+
+📌 *Current Status*: ${booking.status.replace(/_/g, " ").toUpperCase()}
+
+💳 *Payment Details*
+${paymentDetails}
+
+📍 *Service Address*
+${booking.full_address || "Provided at visit"}
+
+━━━━━━━━━━━━━━━━━━━━
+✨ *Trusted Home Services by helloFixo*
+📞 Easy • Reliable • Doorstep Repair
+
+🔗 Book or track your service:
+${window.location.origin}`;
+
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, "_blank");
+    };
+
+
     return (
         <Card className={cn(
             "rounded-[2rem] shadow-sm border-2 border-gray-200 bg-white overflow-hidden relative transition-all duration-300 hover:shadow-xl group",
@@ -169,7 +218,16 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare,
                         <h2 className="text-sm font-black text-[#1e1b4b] capitalize leading-tight">{booking.categories.name.toLowerCase()} Service</h2>
                     </div>
                 </div>
-                <div className="relative z-10">
+                <div className="relative z-10 flex items-center gap-2">
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={handleShareBooking}
+                        className="h-8 w-8 rounded-full hover:bg-indigo-50 text-indigo-600 transition-colors"
+                        title="Share on WhatsApp"
+                    >
+                        <Share2 className="h-4 w-4" />
+                    </Button>
                     <StatusBadge status={booking.status} />
                 </div>
             </div>
@@ -183,7 +241,9 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare,
                         </div>
                         <div>
                             <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Date</p>
-                            <p className="text-xs font-bold text-gray-700">{format(new Date(booking.created_at), 'dd MMM yyyy')}</p>
+                            {/* <p className="text-xs font-bold text-gray-700">{format(new Date(booking.created_at), 'dd MMM yyyy')}</p> */}
+                            <p className="text-xs font-bold text-gray-700">{booking.preferred_service_date}</p>
+
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 border border-gray-100/50">
@@ -192,7 +252,7 @@ export default function BookingCard({ booking, onQuoteAction, onCancel, onShare,
                         </div>
                         <div>
                             <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Time</p>
-                            <p className="text-xs font-bold text-gray-700">{format(new Date(booking.created_at), 'hh:mm a')}</p>
+                            <p className="text-xs font-bold text-gray-700">{booking.preferred_time_slot}</p>
                         </div>
                     </div>
                 </div>

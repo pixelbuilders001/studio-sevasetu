@@ -16,6 +16,9 @@ export type Booking = {
     media_url: string | null;
     completion_code?: string;
     user_rating?: number;
+    preferred_service_date: string;
+    preferred_time_slot: string;
+    booking_for: string;
     categories: {
         id: string;
         name: string;
@@ -32,6 +35,7 @@ export type Booking = {
     final_amount_to_be_paid?: number;
     net_inspection_fee?: number;
     user_name?: string;
+    mobile_number?: string;
     full_address?: string;
     technician_id?: string | null;
     technicians?: {

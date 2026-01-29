@@ -21,6 +21,7 @@ import {
     bookService, verifyReferralCode as verifyReferralCodeAction,
     saveAddress, getSavedAddresses, getWalletBalance, getUserProfile
 } from '@/app/actions';
+import { OtherPincodeModal } from './OtherPincodeModal';
 import Image from 'next/image';
 import { Card, CardContent } from './ui/card';
 import { cn } from '@/lib/utils';
@@ -76,6 +77,10 @@ export function DesktopBookingForm({
     const [walletBalance, setWalletBalance] = useState<number>(0);
     const [useWallet, setUseWallet] = useState(false);
 
+    const [bookingFor, setBookingFor] = useState<'self' | 'others'>('self');
+    const [otherPincode, setOtherPincode] = useState<string | undefined>(undefined);
+    const [isOtherPincodeModalOpen, setIsOtherPincodeModalOpen] = useState(false);
+
     // grandTotal already includes GST (inspectionFee + gstAmount)
     const initialPayable = Math.max(grandTotal - discount, 0);
     const walletDeduction = useWallet ? Math.min(walletBalance, initialPayable) : 0;
@@ -85,11 +90,12 @@ export function DesktopBookingForm({
         null,
         categoryId,
         problemIds,
-        location.pincode,
+        bookingFor === 'others' && otherPincode ? otherPincode : location.pincode,
         referralStatus === 'success' ? referral : undefined,
         totalEstimatedPrice,
         finalPayable,
-        useWallet ? walletDeduction : null
+        useWallet ? walletDeduction : null,
+        bookingFor
     );
 
     const [state, formAction, isPending] = useActionState(boundBookService, initialState);
@@ -308,6 +314,77 @@ export function DesktopBookingForm({
 
             {/* Form Fields Column */}
             <div className="lg:col-span-7 space-y-8">
+
+                {/* Booking For */}
+                <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm overflow-hidden relative">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center">
+                                <User className="w-4 h-4 text-indigo-600" />
+                            </div>
+                            <div>
+                                <h2 className="text-base font-bold text-slate-900 leading-tight">Booking For</h2>
+                                <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Select service recipient</p>
+                            </div>
+                        </div>
+
+                        <div className="flex bg-slate-50/80 p-1 rounded-xl border border-slate-100 gap-1 min-w-[300px]">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setBookingFor('self');
+                                    setOtherPincode(undefined);
+                                }}
+                                className={cn(
+                                    "flex-1 h-9 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                    bookingFor === 'self'
+                                        ? "bg-white text-indigo-600 shadow-sm border border-slate-200/50"
+                                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-100/50"
+                                )}
+                            >
+                                <User className="w-3.5 h-3.5" />
+                                For Myself
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setIsOtherPincodeModalOpen(true)}
+                                className={cn(
+                                    "flex-1 h-9 rounded-lg text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                    bookingFor === 'others'
+                                        ? "bg-white text-indigo-600 shadow-sm border border-slate-200/50"
+                                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-100/50"
+                                )}
+                            >
+                                <Plus className="w-3.5 h-3.5" />
+                                For Others
+                            </button>
+                        </div>
+                    </div>
+
+                    {bookingFor === 'others' && otherPincode && (
+                        <div className="mt-4 p-3 bg-emerald-50/50 border border-emerald-100/80 rounded-xl flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center">
+                                    <MapPin className="w-4 h-4 text-emerald-600" />
+                                </div>
+                                <div>
+                                    <p className="text-[9px] font-black text-emerald-600/80 uppercase tracking-widest leading-none mb-1">Service Location</p>
+                                    <p className="text-sm font-black text-emerald-900 tracking-tight">Pincode: {otherPincode}</p>
+                                </div>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsOtherPincodeModalOpen(true)}
+                                className="h-8 rounded-lg text-[10px] font-black text-indigo-600 border-indigo-100 bg-white hover:bg-indigo-50 transition-all uppercase tracking-widest"
+                            >
+                                Change
+                            </Button>
+                        </div>
+                    )}
+                </section>
 
                 {/* Contact Information */}
                 <section className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
@@ -722,6 +799,21 @@ export function DesktopBookingForm({
 
             <input type="hidden" name="preferred_service_date" value={date ? date.toISOString().split('T')[0] : ''} />
             <input type="hidden" name="preferred_time_slot" value={selectedTimeSlot} />
+
+            <OtherPincodeModal
+                isOpen={isOtherPincodeModalOpen}
+                onClose={(pincode) => {
+                    setIsOtherPincodeModalOpen(false);
+                    if (pincode) {
+                        setBookingFor('others');
+                        setOtherPincode(pincode);
+                        toast({
+                            title: "Address Updated",
+                            description: `Booking will be done for pincode: ${pincode}`,
+                        });
+                    }
+                }}
+            />
         </form >
     );
 }

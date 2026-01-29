@@ -48,7 +48,7 @@ export default function BookingHistorySheet({ children }: { children: React.Reac
 
             setIsLoading(true);
             try {
-                const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?select=id,order_id,status,user_name,created_at,media_url,completion_code,final_amount_to_be_paid,technician_id,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
+                const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?select=id,order_id,status,user_name,mobile_number,full_address,net_inspection_fee,preferred_service_date,preferred_time_slot,booking_for,created_at,media_url,completion_code,final_amount_to_be_paid,technician_id,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${session.access_token}`,
@@ -117,7 +117,7 @@ export default function BookingHistorySheet({ children }: { children: React.Reac
         // simple way:
         const fetchHistory = async () => {
             if (!session?.access_token) return;
-            const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?select=id,order_id,status,created_at,user_name,media_url,completion_code,final_amount_to_be_paid,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
+            const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?select=id,order_id,status,created_at,full_address,net_inspection_fee,preferred_service_date,preferred_time_slot,booking_for,user_name,mobile_number,media_url,completion_code,final_amount_to_be_paid,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`,
@@ -125,8 +125,10 @@ export default function BookingHistorySheet({ children }: { children: React.Reac
                     'Content-Type': 'application/json'
                 }
             });
+
             if (response.ok) {
                 const data = await response.json();
+                console.log("tehehehe", data)
                 setBookingHistory(data);
             }
         }

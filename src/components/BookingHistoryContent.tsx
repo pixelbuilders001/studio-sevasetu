@@ -74,7 +74,7 @@ export default function BookingHistoryContent() {
         setError('');
 
         try {
-            const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,user_name,technician_id,user_rating,status,created_at,media_url,completion_code,final_amount_to_be_paid,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
+            const response = await fetch(`https://upoafhtidiwsihwijwex.supabase.co/rest/v1/booking?mobile_number=eq.${mobileNumber}&select=id,order_id,user_name,mobile_number,full_address,net_inspection_fee,technician_id,preferred_service_date,user_rating,status,created_at,media_url,completion_code,final_amount_to_be_paid,booking_for,preferred_time_slot,categories(id,name),issues(id,title),repair_quotes(*)&order=created_at.desc`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
@@ -88,6 +88,7 @@ export default function BookingHistoryContent() {
             }
 
             const data = await response.json();
+            console.log("tehehehe", data)
             setBookingHistory(data);
             setIsAuthenticated(true);
 
