@@ -53,11 +53,11 @@ export const metadata: Metadata = {
     description: 'Get your phone, laptop, or home appliances fixed at your doorstep by certified professionals in your city. 60-min visits and guaranteed quality.',
     images: [
       {
-        url: '/og-image.png?v=2',
+        url: 'https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/og-final.jpeg',
         width: 1200,
         height: 630,
         alt: 'helloFixo - Doorstep Repair & home Service',
-        type: 'image/png',
+        type: 'image/jpeg',
       },
     ],
   },
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'helloFixo - Doorstep Repair & home Service in Your City',
     description: 'Premium doorstep repairs for phones and appliances. Certified technicians and fast service.',
-    images: ['/og-image.png?v=2'],
+    images: ['https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/og-final.jpeg'],
     creator: '@helloFixo',
     site: '@helloFixo',
   },
@@ -251,18 +251,16 @@ export default function RootLayout({
         {/* Additional Meta Tags for WhatsApp, Facebook, Instagram */}
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/png" />
-        <meta property="og:image:secure_url" content="https://hellofixo.in/og-image.png?v=2" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:secure_url" content="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/og-final.jpeg" />
         <meta name="twitter:image:alt" content="helloFixo - Doorstep Repair Service in Your City" />
         {/* Additional WhatsApp/Facebook meta tags */}
         <meta property="fb:app_id" content="" />
         <meta name="theme-color" content="#1e1b4b" />
         <meta name="msapplication-TileColor" content="#1e1b4b" />
         {/* WhatsApp specific */}
-        <meta property="og:image" content="https://hellofixo.in/og-image.png?v=2" />
-        <meta property="og:image:url" content="https://hellofixo.in/og-image.png?v=2" />
-        {/* Fallback: Use logo-image.png if og-image.png doesn't exist */}
-        <meta name="og:image:fallback" content="https://hellofixo.in/og-image.png?v=2" />
+        <meta property="og:image" content="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/og-final.jpeg" />
+        <meta property="og:image:url" content="https://dv09dhgcrv5ld6ct.public.blob.vercel-storage.com/og-final.jpeg" />
         {/* Additional SEO */}
         <meta name="geo.region" content="IN-BR" />
         <meta name="geo.placename" content="Samastipur" />
