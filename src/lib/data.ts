@@ -64,6 +64,7 @@ export const getServiceCategories = async (): Promise<ServiceCategory[]> => {
     const { data, error } = await supabase
         .from("categories")
         .select("*, issues(*)")
+        .eq("is_active", true)
         .order("sort_order", { ascending: true })
         .eq("issues.is_active", true);
 
@@ -104,6 +105,7 @@ export const getServiceCategory = async (slug: string): Promise<ServiceCategory 
         .from('categories')
         .select('*')
         .eq('slug', slug)
+        .eq('is_active', true)
         .single();
 
     if (categoryError || !categoryData) {
