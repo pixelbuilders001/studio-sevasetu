@@ -46,7 +46,12 @@ export function AddressManagementModal({
         setIsLoading(true);
         try {
             const data = await getSavedAddresses();
-            setAddresses(data);
+            // Sort addresses: Default first, then by other criteria (optional, e.g. creation date if available, otherwise implicit)
+            const sortedData = data.sort((a: Address, b: Address) => {
+                if (a.is_default === b.is_default) return 0;
+                return a.is_default ? -1 : 1;
+            });
+            setAddresses(sortedData);
         } catch (error) {
             toast({
                 title: 'Error',

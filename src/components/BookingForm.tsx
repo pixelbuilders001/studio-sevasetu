@@ -376,7 +376,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
           </div>
           {bookingFor === 'others' && otherPincode && (
             <div className="mt-2 flex justify-end">
-              <button type="button" onClick={() => setIsOtherPincodeModalOpen(true)} className="text-[9px] font-black text-primary uppercase underline tracking-tighter">Change Location</button>
+              <button type="button" onClick={() => setIsOtherPincodeModalOpen(true)} className="text-[9px] font-black text-primary uppercase underline">Change  Location</button>
             </div>
           )}
         </div>
