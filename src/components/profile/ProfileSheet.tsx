@@ -87,16 +87,17 @@ const ReferEarnCard = ({ code }: { code: string }) => {
   const { toast } = useToast();
 
   const shareReferral = async () => {
-    const text = `Hey! Use my referral code ${code} and get ₹50 off on doorstep repairs with helloFixo. Book now 👉 https://hellofixo.in`;
+    const referralUrl = `https://hellofixo.in?ref=${code}`;
+    const text = `Hey! 🎁 Get ₹50 OFF on your first doorstep repair with helloFixo!\n\nUse my referral code: ${code}\n\n✅ Certified technicians\n✅ 60-min doorstep service\n✅ 30-day warranty\n\nBook now:`;
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'helloFixo Referral',
+          title: 'Get ₹50 OFF with helloFixo! 🛠️',
           text: text,
-          url: 'https://hellofixo.in',
+          url: referralUrl,
         });
       } else {
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + referralUrl)}`, '_blank');
       }
     } catch { }
   };

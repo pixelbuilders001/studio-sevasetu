@@ -23,8 +23,8 @@ export default function ShareAppButton({
 
     const handleShare = async () => {
         const shareData = {
-            title: 'helloFixo - Doorstep Repair Service',
-            text: 'Check out helloFixo for doorstep repairs in Your City! 🛠️📱 Fast, reliable, and verified technicians. Install the app now:',
+            title: 'helloFixo - Most Trusted Doorstep Repair Service 🛠️',
+            text: '🔧 Get your phone, laptop & appliances fixed at your doorstep!\n\n✅ Certified technicians\n✅ 60-min service\n✅ 30-day warranty\n\nBook now:',
             url: 'https://hellofixo.in',
         };
 
