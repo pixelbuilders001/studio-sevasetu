@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Download, Share, PlusSquare, Smartphone, Monitor } from 'lucide-react';
+import { X, Download, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -139,6 +139,23 @@ export default function PWAInstallPrompt() {
         }
     };
 
+    const handleIOSShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'helloFixo',
+                    text: 'Install helloFixo App for faster bookings & real-time updates',
+                    url: window.location.origin,
+                });
+            } catch (error) {
+                console.log('Error sharing:', error);
+            }
+        } else {
+            // Fallback for browsers that don't support navigator.share
+            alert('To install: Tap the share button in your browser and select "Add to Home Screen"');
+        }
+    };
+
     const handleDismiss = () => {
         setShowPrompt(false);
         if (pathname === '/confirmation') {
@@ -207,10 +224,14 @@ export default function PWAInstallPrompt() {
                                 Install
                             </Button>
                         ) : platform === 'ios' ? (
-                            <div className="flex items-center gap-1.5 bg-indigo-50 dark:bg-slate-800 px-3 py-2 rounded-xl border border-indigo-100 dark:border-slate-700">
-                                <Share className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                                <span className="text-[9px] md:text-[10px] font-black text-indigo-900 dark:text-indigo-200 uppercase tracking-tighter">Tap Share & Add to Home</span>
-                            </div>
+                            <Button
+                                onClick={handleIOSShare}
+                                size="sm"
+                                className="bg-primary hover:bg-primary/90 text-white rounded-xl px-4 md:px-5 py-0 h-9 md:h-10 text-[10px] md:text-xs font-black uppercase tracking-wider shadow-lg shadow-primary/20"
+                            >
+                                <Download className="w-3 h-3 md:w-4 md:h-4 mr-1.5" />
+                                Install Now
+                            </Button>
                         ) : null}
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
     SheetHeader,
     SheetTitle,
@@ -39,6 +39,7 @@ export default function GlobalSearchSheet() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isNavigating, setIsNavigating] = useState(false);
     const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef<any>(null);
 
     // Voice recognition logic
     const startVoiceSearch = () => {
@@ -48,7 +49,12 @@ export default function GlobalSearchSheet() {
             return;
         }
 
+        if (recognitionRef.current) {
+            recognitionRef.current.abort();
+        }
+
         const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
         recognition.lang = 'en-US';
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
@@ -61,18 +67,29 @@ export default function GlobalSearchSheet() {
             const transcript = event.results[0][0].transcript;
             setSearchQuery(transcript);
             setIsListening(false);
+            recognition.stop();
         };
 
         recognition.onerror = (event: any) => {
             console.error('Speech recognition error:', event.error);
             setIsListening(false);
+            recognitionRef.current = null;
         };
 
         recognition.onend = () => {
             setIsListening(false);
+            recognitionRef.current = null;
         };
 
         recognition.start();
+    };
+
+    const stopVoiceSearch = () => {
+        if (recognitionRef.current) {
+            recognitionRef.current.abort();
+            recognitionRef.current = null;
+        }
+        setIsListening(false);
     };
 
     const { data: categories = [], isLoading: loading } = useQuery({
@@ -158,6 +175,15 @@ export default function GlobalSearchSheet() {
             router.push(path);
         }, 100);
     };
+
+    // Cleanup voice recognition on unmount
+    useEffect(() => {
+        return () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.abort();
+            }
+        };
+    }, []);
 
     return (
         <div className="flex flex-col h-full bg-white">
@@ -327,7 +353,7 @@ export default function GlobalSearchSheet() {
                         <p className="text-sm text-slate-500 font-medium tracking-tight">Try saying "AC Repair" or "Mobile Screen"</p>
 
                         <button
-                            onClick={() => setIsListening(false)}
+                            onClick={stopVoiceSearch}
                             className="mt-12 px-8 py-3 rounded-full bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest active:scale-95 transition-all"
                         >
                             Cancel

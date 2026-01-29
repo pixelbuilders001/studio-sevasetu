@@ -10,6 +10,7 @@ import type { Problem, ServiceCategory } from '@/lib/data';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocation } from '@/context/LocationContext';
 import { useBooking } from '@/context/BookingContext';
+import imageCompression from 'browser-image-compression';
 
 type ClientCategory = Omit<ServiceCategory, 'icon'> & { iconName: string };
 
@@ -50,23 +51,53 @@ export default function DesktopProblemSelection({
         photoInputsRef.current[index]?.click();
     };
 
-    const handlePhotoChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePhotoChange = async (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
+        if (!file) return;
 
-        if (index === 0) {
-            setMedia(file || null);
-        } else if (index === 1) {
-            setSecondaryMedia(file || null);
-        }
+        try {
+            // Compression options
+            const options = {
+                maxSizeMB: 0.4,
+                maxWidthOrHeight: 1280,
+                useWebWorker: true,
+            };
 
-        setPhotoPreviews((prev) => {
-            const updated = [...prev];
-            if (updated[index]) {
-                URL.revokeObjectURL(updated[index] as string);
+            // Compress image
+            const compressedFile = await imageCompression(file, options);
+
+            if (index === 0) {
+                setMedia(compressedFile || null);
+            } else if (index === 1) {
+                setSecondaryMedia(compressedFile || null);
             }
-            updated[index] = file ? URL.createObjectURL(file) : null;
-            return updated;
-        });
+
+            setPhotoPreviews((prev) => {
+                const updated = [...prev];
+                if (updated[index]) {
+                    URL.revokeObjectURL(updated[index] as string);
+                }
+                updated[index] = URL.createObjectURL(compressedFile);
+                return updated;
+            });
+        } catch (error) {
+            console.error('Image compression failed:', error);
+            // Fallback to original file
+            if (index === 0) {
+                setMedia(file);
+            } else if (index === 1) {
+                setSecondaryMedia(file);
+            }
+
+            setPhotoPreviews((prev) => {
+                const updated = [...prev];
+                if (updated[index]) {
+                    URL.revokeObjectURL(updated[index] as string);
+                }
+                updated[index] = URL.createObjectURL(file);
+                return updated;
+            });
+        }
     };
 
     // Filter problems to show only 4 (3 primary + 1 "other")

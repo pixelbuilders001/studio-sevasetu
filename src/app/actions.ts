@@ -123,6 +123,8 @@ export async function bookService(
 
   const payload = new FormData();
 
+  console.log("dhddhjhd", payload)
+
   for (const [key, value] of formData.entries()) {
     payload.append(key, value);
   }

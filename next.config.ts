@@ -222,6 +222,7 @@ const nextConfig: NextConfig = {
         '*.devtunnels.ms',
         '*.cloudworkstations.dev'
       ],
+      bodySizeLimit: '10mb',
     },
   },
 };
