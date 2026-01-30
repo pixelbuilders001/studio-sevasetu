@@ -1404,3 +1404,104 @@ export async function getTechniciansByCategoryAction(categoryId: string) {
     return [];
   }
 }
+
+export async function getBookingTimeline(orderId: string) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll() },
+          setAll(cookiesToSet) {
+            try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } catch { }
+          },
+        },
+        cookieOptions: { name: 'sb-session-auth' },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session) {
+      return { success: false, error: 'Unauthenticated' };
+    }
+
+    const accessToken = session.access_token;
+
+    // Fetch directly from booking_status_history
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/booking_status_history?order_id=eq.${orderId}&order=created_at.desc`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+
+      console.error('Timeline fetch error:', await response.text());
+      return { success: false, error: 'Failed to fetch timeline' };
+    }
+
+    const data = await response.json();
+    console.error('Timeline fetch error:', data);
+    // transform to frontend expected format
+    const dateFormat = "MMM d, yyyy 'at' h:mm a";
+    const history = data.map((item: any) => ({
+      status: item.status,
+      date: format(new Date(item.created_at), dateFormat),
+      note: item.note,
+    }));
+
+    return { success: true, history };
+
+  } catch (error) {
+    console.error('getBookingTimeline failed:', error);
+    return { success: false, error: 'Internal server error' };
+  }
+}
+
+export async function getLatestBookingId() {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll() },
+          setAll(cookiesToSet) {
+            try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } catch { }
+          },
+        },
+        cookieOptions: { name: 'sb-session-auth' },
+      }
+    );
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session) {
+      return null;
+    }
+
+    const { data, error } = await supabase
+      .from('booking')
+      .select('order_id')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return data.order_id;
+
+  } catch (error) {
+    console.error('getLatestBookingId failed:', error);
+    return null;
+  }
+}

@@ -6,7 +6,7 @@ import {
     SheetTitle,
     SheetContent,
 } from '@/components/ui/sheet';
-import { Search, X, ChevronRight, Star, Clock, ShieldCheck, MapPin, ArrowLeft, Mic } from 'lucide-react';
+import { Search, X, ChevronRight, Star, Clock, ShieldCheck, MapPin, ArrowLeft, Mic, Download, Smartphone, Share, PlusSquare, MoreVertical } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getServiceCategoriesAction } from '@/app/actions';
 import { ServiceCategory } from '@/lib/data';
@@ -40,6 +40,13 @@ export default function GlobalSearchSheet() {
     const [isNavigating, setIsNavigating] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
+
+    // PWA Install Bar State
+    const [showInstallBar, setShowInstallBar] = useState(false);
+    const [showInstructions, setShowInstructions] = useState(false);
+    const [platform, setPlatform] = useState<'android' | 'ios' | 'firefox' | 'other'>('other');
+    const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+    const deferredPromptRef = useRef<any>(null);
 
     // Voice recognition logic
     const startVoiceSearch = () => {
@@ -176,6 +183,74 @@ export default function GlobalSearchSheet() {
         }, 100);
     };
 
+    // PWA Install Bar Logic
+    useEffect(() => {
+        const isStandalone = typeof window !== 'undefined' &&
+            (window.matchMedia('(display-mode: standalone)').matches ||
+                (window.navigator as any).standalone);
+
+        if (isStandalone) {
+            setShowInstallBar(false);
+            return;
+        }
+
+        const isAlreadyInstalled = localStorage.getItem('pwa-installed') === 'true';
+        if (isAlreadyInstalled) {
+            setShowInstallBar(false);
+            return;
+        }
+
+        // Detect platform
+        const ua = window.navigator.userAgent.toLowerCase();
+        const isIOS = /iphone|ipad|ipod/.test(ua);
+        const isFirefox = /firefox|fxios/.test(ua);
+
+        if (isFirefox) setPlatform('firefox');
+        else if (isIOS) setPlatform('ios');
+        else if (/android/.test(ua)) setPlatform('android');
+        else setPlatform('other');
+
+        // Check for deferred prompt
+        const globalEvent = (window as any).deferredPWAEvent;
+        if (globalEvent) {
+            deferredPromptRef.current = globalEvent;
+            setDeferredPrompt(globalEvent);
+        }
+
+        // Listen for beforeinstallprompt
+        const handleBeforeInstallPrompt = (e: Event) => {
+            e.preventDefault();
+            deferredPromptRef.current = e;
+            setDeferredPrompt(e);
+        };
+
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+        // Show install bar if iOS, Firefox, or has deferred prompt
+        if (isIOS || isFirefox || globalEvent) {
+            setShowInstallBar(true);
+        }
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        };
+    }, []);
+
+    const handleInstallClick = async () => {
+        const promptEvent = deferredPromptRef.current || deferredPrompt;
+        if (promptEvent) {
+            promptEvent.prompt();
+            const { outcome } = await promptEvent.userChoice;
+
+            if (outcome === 'accepted') {
+                setShowInstallBar(false);
+                localStorage.setItem('pwa-installed', 'true');
+            }
+        } else if (platform === 'ios' || platform === 'firefox') {
+            setShowInstructions(true);
+        }
+    };
+
     // Cleanup voice recognition on unmount
     useEffect(() => {
         return () => {
@@ -226,7 +301,7 @@ export default function GlobalSearchSheet() {
             </div>
 
             {/* Results Content */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 pb-20">
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4" style={{ paddingBottom: showInstallBar ? '100px' : '80px' }}>
                 {!searchQuery.trim() ? (
                     <div className="space-y-6">
                         <div>
@@ -358,6 +433,134 @@ export default function GlobalSearchSheet() {
                         >
                             Cancel
                         </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* PWA Install Bar */}
+            <AnimatePresence>
+                {showInstallBar && !showInstructions && (
+                    <motion.div
+                        initial={{ y: 100, opacity: 1 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-primary to-primary/90 text-white p-3 shadow-2xl border-t border-white/10"
+                    >
+                        <div className="flex items-center gap-3 bg-primary p-2 rounded-xl">
+                            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+                                <Smartphone className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex-1 overflow-hidden">
+                                <h4 className="text-xs font-black leading-tight truncate">Install helloFixo App</h4>
+                                <p className="text-[10px] font-medium leading-tight truncate">
+                                    {platform === 'ios' || platform === 'firefox'
+                                        ? "Fast access from your home screen"
+                                        : "Faster bookings & real-time updates"
+                                    }
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleInstallClick}
+                                className="px-4 py-2 bg-white text-primary rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-white/90 active:scale-95 transition-all shadow-lg"
+                            >
+                                {platform === 'ios' || platform === 'firefox' ? 'How to Install' : 'Install'}
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {showInstructions && (
+                    <motion.div
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className="absolute bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl shadow-2xl max-h-[70vh] overflow-hidden"
+                    >
+                        <div className="p-4 space-y-4">
+                            <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+                                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                                    <Smartphone className="w-5 h-5 text-primary" />
+                                </div>
+                                <h3 className="text-sm font-bold text-slate-900">
+                                    How to Install
+                                </h3>
+                                <button
+                                    onClick={() => setShowInstructions(false)}
+                                    className="ml-auto p-1 rounded-full hover:bg-slate-100 active:scale-95 transition-all"
+                                >
+                                    <X className="w-4 h-4 text-slate-600" />
+                                </button>[]
+                            </div>
+
+                            <div className="space-y-3 max-h-[50vh] overflow-y-auto">
+                                {platform === 'firefox' && /android/.test(navigator.userAgent.toLowerCase()) ? (
+                                    <>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold text-slate-600 mt-0.5">
+                                                1
+                                            </div>
+                                            <p className="text-xs text-slate-600 leading-relaxed">
+                                                Tap the <span className="inline-flex items-center bg-slate-100 p-1 rounded mx-1"><MoreVertical className="w-3 h-3 text-slate-700" /></span> <strong className="text-slate-900 font-bold">Menu</strong> button (three dots).
+                                            </p>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold text-slate-600 mt-0.5">
+                                                2
+                                            </div>
+                                            <p className="text-xs text-slate-600 leading-relaxed">
+                                                Select <strong className="text-slate-900 font-bold">Install</strong> or <strong className="text-slate-900 font-bold">Add to Home Screen</strong>.
+                                            </p>
+                                        </div>
+                                    </>
+                                ) : platform === 'firefox' && /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase()) ? (
+                                    <>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold text-slate-600 mt-0.5">
+                                                1
+                                            </div>
+                                            <p className="text-xs text-slate-600 leading-relaxed">
+                                                Tap the <span className="inline-flex items-center bg-slate-100 p-1 rounded mx-1"><MoreVertical className="w-3 h-3 text-slate-700" /></span> <strong className="text-slate-900 font-bold">Menu</strong> button at the bottom.
+                                            </p>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold text-slate-600 mt-0.5">
+                                                2
+                                            </div>
+                                            <p className="text-xs text-slate-600 leading-relaxed">
+                                                Scroll down and tap <span className="inline-flex items-center bg-slate-100 p-1 rounded mx-1"><Share className="w-3 h-3 text-blue-500" /></span> <strong className="text-slate-900 font-bold">Share</strong>, then <strong className="text-slate-900 font-bold">Add to Home Screen</strong>.
+                                            </p>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold text-slate-600 mt-0.5">
+                                                1
+                                            </div>
+                                            <p className="text-xs text-slate-600 leading-relaxed">
+                                                Tap the <span className="inline-flex items-center bg-slate-100 p-1 rounded mx-1"><Share className="w-3 h-3 text-blue-500" /></span> <strong className="text-slate-900 font-bold">Share</strong> button in Safari's toolbar.
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold text-slate-600 mt-0.5">
+                                                2
+                                            </div>
+                                            <p className="text-xs text-slate-600 leading-relaxed">
+                                                Scroll down and select <span className="inline-flex items-center bg-slate-100 p-1 rounded mx-1"><PlusSquare className="w-3 h-3 text-slate-700" /></span> <strong className="text-slate-900 font-bold">Add to Home Screen</strong>.
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            <button
+                                onClick={() => setShowInstructions(false)}
+                                className="w-full h-10 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-wider active:scale-95 transition-all"
+                            >
+                                Got it
+                            </button>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>

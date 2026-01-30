@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useLocation } from '@/context/LocationContext';
-import { ChevronDown, Loader2, MapPin, Crosshair } from 'lucide-react';
+import { ChevronDown, Loader2, MapPin, Crosshair, X } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -74,13 +74,21 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
 
 
         if (serviceableCityData) {
-          setPostalData(postOffices);
-          setSelectedArea(postOffices[0] || null);
-          setCurrentIsServiceable(true);
-          setMultipliers({
+          // Found and Serviceable: Auto-confirm and close
+          const confirmedArea = postOffices[0];
+          setLocation({
+            pincode: confirmedArea.Pincode,
+            city: confirmedArea.District,
+            area: {
+              Name: confirmedArea.Name,
+              District: confirmedArea.District,
+              State: confirmedArea.State,
+            },
+            isServiceable: true,
             inspection_multiplier: serviceableCityData.inspection_multiplier,
             repair_multiplier: serviceableCityData.repair_multiplier
           });
+          setDialogOpen(false);
         } else {
           setError(`Sorry, we do not currently service ${district}.`);
           setPostalData([]);
@@ -142,14 +150,19 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
               Pincode: detectedPincode
             };
 
-            setPostalData([mockArea]);
-            setSelectedArea(mockArea);
-            setCurrentIsServiceable(true);
-            setMultipliers({
+            setLocation({
+              pincode: mockArea.Pincode,
+              city: mockArea.District,
+              area: {
+                Name: mockArea.Name,
+                District: mockArea.District,
+                State: mockArea.State,
+              },
+              isServiceable: true,
               inspection_multiplier: serviceableCityData.inspection_multiplier,
               repair_multiplier: serviceableCityData.repair_multiplier
             });
-            if (detectedPincode) setPincode(detectedPincode);
+            setDialogOpen(false);
           } else {
             setError(`Sorry, we do not currently service ${city}.`);
             setPostalData([]);
@@ -233,9 +246,14 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
         )}
       </DialogTrigger>
       <DialogContent
-        className="max-w-[calc(100vw-1.5rem)] sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-6"
+        showCloseButton={false}
+        className="max-w-[calc(100vw-1.5rem)] sm:max-w-[425px] rounded-[2rem] border-none shadow-2xl p-6 bg-white dark:bg-slate-900"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
+        <DialogClose className="absolute right-4 top-0 rounded-full p-2  hover:bg-slate-200 transition-colors opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary/20 scale-100 active:scale-95">
+          <X className="h-6 w-6 text-black font-bold" />
+          <span className="sr-only">Close</span>
+        </DialogClose>
         <DialogHeader>
           <DialogTitle>{t('selectYourLocation')}</DialogTitle>
           <DialogDescription>
@@ -296,15 +314,7 @@ export default function LocationSelector({ isHero }: { isHero?: boolean }) {
             </div>
           )}
         </div>
-        <DialogFooter className="flex-row gap-2">
-          <DialogClose asChild>
-            <Button type="button" variant="outline" className="flex-1 rounded-full h-11 border-2 font-black uppercase text-[10px] tracking-widest hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all">{t('cancelButton')}</Button>
-          </DialogClose>
-          <Button onClick={handleLocationConfirm} disabled={!selectedArea || !currentIsServiceable} className="flex-1 rounded-full h-11 bg-[#1e1b4b] hover:bg-primary text-white font-black uppercase text-[10px] tracking-widest transition-all">
-            {t('confirmLocationButton')}
-          </Button>
-        </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </Dialog >
   );
 }

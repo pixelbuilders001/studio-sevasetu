@@ -17,23 +17,30 @@ export default function ShareAppButton({
     variant = 'default',
     className,
     label = 'Share App',
-    showIcon = true
-}: ShareAppButtonProps) {
+    showIcon = true,
+    shareData
+}: ShareAppButtonProps & {
+    shareData?: {
+        title: string;
+        text: string;
+        url: string;
+    }
+}) {
     const { toast } = useToast();
 
     const handleShare = async () => {
-        const shareData = {
+        const data = shareData || {
             title: 'helloFixo - Most Trusted Doorstep Repair Service 🛠️',
             text: '🔧 Get your phone, laptop & appliances fixed at your doorstep!\n\n✅ Certified technicians\n✅ 60-min service\n✅ 30-day warranty\n\nBook now:',
             url: 'https://hellofixo.in',
         };
 
         try {
-            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-                await navigator.share(shareData);
+            if (navigator.share) {
+                await navigator.share(data);
             } else {
                 // Fallback to WhatsApp
-                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(data.text + ' ' + data.url)}`;
                 window.open(whatsappUrl, '_blank');
             }
         } catch (error) {

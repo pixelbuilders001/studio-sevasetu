@@ -436,7 +436,7 @@ export function BookingForm({ categoryId, problemIds, inspectionFee, totalEstima
                     </SelectTrigger>
                     <SelectContent>
                       {savedAddresses.map((addr) => (
-                        <SelectItem key={addr.id} value={addr.id} className="text-xs">
+                        <SelectItem key={addr.id} value={addr.id} className="text-sm font-medium">
                           {addr.full_address.length > 40 ? addr.full_address.substring(0, 40) + '...' : addr.full_address}
                           {addr.is_default && " (Default)"}
                         </SelectItem>

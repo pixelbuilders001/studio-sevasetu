@@ -13,6 +13,8 @@ import BookingTrackerModal from './BookingTrackerModal';
 import { getReferralCode } from '@/app/actions';
 import { useEffect } from 'react';
 import DesktopConfirmationView from './DesktopConfirmationView';
+import Image from 'next/image';
+import ShareAppButton from '@/components/ShareAppButton';
 
 export default function ConfirmationPageContent() {
   const searchParams = useSearchParams();
@@ -82,115 +84,86 @@ export default function ConfirmationPageContent() {
 
   return (
     <>
-      {/* Mobile View */}
-      <div className="md:hidden max-w-md mx-auto space-y-4 pb-4 px-2">
-        {/* Compact Success Ticket */}
-        <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border-2 border-indigo-50 dark:border-indigo-900/30 overflow-hidden shadow-2xl relative">
-          {/* Top Section: Header */}
-          <div className="bg-indigo-600 p-6 text-white text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <CheckCircle2 className="w-24 h-24 rotate-12" />
-            </div>
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-3 border border-white/20">
-                <CheckCircle2 className="w-6 h-6 text-white" strokeWidth={3} />
-              </div>
-              <h1 className="text-xl font-black font-headline tracking-tighter uppercase mb-1">
-                {t('bookingConfirmedTitle')}
-              </h1>
-              <p className="text-white/70 text-[10px] uppercase tracking-widest font-black">
-                {t('bookingConfirmedDescription')}
-              </p>
-            </div>
+      {/* Mobile View - Compact No-Scroll Design */}
+      <div className="md:hidden flex flex-col px-5 py-10 overflow-hidden">
+        {/* Centered Content Container */}
+        <div className="flex-1 flex flex-col items-center justify-center space-y-4">
 
-            {/* Ticket Cutouts */}
-            <div className="absolute -bottom-3 -left-3 w-6 h-6 bg-slate-50 dark:bg-slate-950 rounded-full border-2 border-indigo-50 dark:border-indigo-900/30" />
-            <div className="absolute -bottom-3 -right-3 w-6 h-6 bg-slate-50 dark:bg-slate-950 rounded-full border-2 border-indigo-50 dark:border-indigo-900/30" />
-            <div className="absolute bottom-0 left-6 right-6 border-b-2 border-dashed border-white/20" />
+          {/* Success Animation/Image - Scooter */}
+          <div className="relative mb-0">
+            <div className="w-32 h-32 flex items-center justify-center">
+              <Image
+                src="/images/scooter-loader.png"
+                alt="Loading..."
+                width={120}
+                height={120}
+                priority
+                className="drop-shadow-lg"
+              />
+            </div>
           </div>
 
-          {/* Middle Section: Booking ID */}
-          <div className="p-5 space-y-4">
-            <div className="flex items-center justify-between gap-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-indigo-50 dark:border-indigo-900/20">
-              <div>
-                <p className="text-[9px] font-black text-indigo-600/60 uppercase tracking-widest mb-1">Booking ID</p>
-                <p className="text-lg font-black font-mono tracking-widest text-indigo-950 dark:text-white uppercase">{bookingId}</p>
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => handleCopy(bookingId, 'bookingId')}
-                className="w-10 h-10 rounded-xl border-indigo-100 dark:border-indigo-900/50 hover:bg-indigo-50"
-              >
-                {isCopied ? <CopyCheck className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-indigo-400" />}
-              </Button>
-            </div>
+          {/* Title & Desc */}
+          <div className="text-center space-y-1">
+            <h1 className="text-2xl font-black text-indigo-600 uppercase tracking-tight leading-none">Booking Confirmed!</h1>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wide max-w-[250px] mx-auto leading-tight">
+              Our Fixo expert will call you for the confirmation
+            </p>
+          </div>
 
-            {/* Referral Mini Card */}
-            {displayReferralCode && (
-              <div className="bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/30 dark:to-transparent rounded-2xl p-4 border border-indigo-100 dark:border-indigo-900/30 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
-                  <Gift className="w-12 h-12 text-indigo-600 rotate-12" />
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <p className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Refer & Earn ₹50</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-base font-black font-mono tracking-widest text-indigo-900 dark:text-indigo-300">{displayReferralCode}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleCopy(displayReferralCode, 'referral')}
-                        className="w-7 h-7 rounded-lg hover:bg-indigo-100"
-                      >
-                        {isReferralCopied ? <CopyCheck className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3 text-indigo-400/50" />}
-                      </Button>
-                    </div>
+          {/* Booking ID Card */}
+          <div className="w-full bg-white border border-slate-100 rounded-2xl p-3 flex items-center justify-between shadow-sm">
+            <div className="flex flex-col text-left">
+              <span className="text-[9px] uppercase font-black text-slate-400 tracking-wider mb-0.5">Booking ID</span>
+              <span className="text-xl font-black font-mono text-indigo-900 tracking-widest leading-none">{bookingId}</span>
+            </div>
+            <button
+              onClick={() => handleCopy(bookingId!, 'bookingId')}
+              className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-100 active:scale-95 transition-all"
+            >
+              {isCopied ? <CopyCheck className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-slate-400" />}
+            </button>
+          </div>
+
+          {/* Referral Card (Compact) */}
+          {displayReferralCode && (
+            <div className="w-full bg-[#1e1b4b] rounded-2xl p-4 text-white relative overflow-hidden shadow-xl shadow-indigo-900/10">
+              <div className="relative z-10 flex items-center justify-between gap-3">
+                <div className="space-y-1 flex-1 min-w-0">
+                  <h3 className="text-xs font-black uppercase text-yellow-400 tracking-wide leading-none">Gift ₹50, Get Rewards! 🎁</h3>
+                  <div className="text-[9px] text-white/80 font-medium leading-tight">
+                    Share code <span className="font-mono font-bold bg-white/10 px-1.5 py-0.5 rounded text-white border border-white/10">{displayReferralCode}</span>
                   </div>
-                  <Button asChild className="h-9 px-4 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-xl font-black text-[9px] uppercase tracking-widest shadow-lg shadow-green-500/20">
-                    <a href={`https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
-                      <Share className="w-3 h-3" />
-                      Share
-                    </a>
-                  </Button>
                 </div>
+                <ShareAppButton
+                  label="WhatsApp"
+                  className="shrink-0 bg-[#25D366] hover:bg-[#20ba59] text-white h-9 px-3 rounded-xl font-bold text-[9px] uppercase tracking-widest flex items-center gap-1.5 shadow-lg active:scale-95 transition-all"
+                  shareData={{
+                    title: 'Get ₹50 OFF with helloFixo! 🛠️',
+                    text: `Hey! 🎁 Get ₹50 OFF on your first doorstep repair with helloFixo!\n\nUse my referral code: ${displayReferralCode}\n\n✅ Certified technicians\n✅ 60-min doorstep service\n✅ 30-day warranty\n\nBook now:`,
+                    url: `https://hellofixo.in?ref=${displayReferralCode}`
+                  }}
+                />
               </div>
-            )}
-          </div>
+              {/* Background deco */}
+              <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mr-8 -mt-8 pointer-events-none blur-xl" />
+              <Gift className="absolute -bottom-4 -right-4 w-20 h-20 text-white/5 rotate-12 pointer-events-none" />
+            </div>
+          )}
 
-          {/* Footer of Ticket: Support Info */}
-          <div className="p-4 bg-slate-50/50 dark:bg-slate-900/50 border-t border-dashed border-indigo-100 dark:border-indigo-900/30 flex items-center justify-center gap-4">
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Verified Booking</p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
-              <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">30 Days Warranty</p>
-            </div>
-          </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          <Button asChild variant="outline" className="rounded-2xl h-11 border-indigo-100 dark:border-indigo-900/30 bg-white/50 dark:bg-slate-900/50 font-black text-[10px] uppercase tracking-widest transition-all active:scale-95">
-            <Link href="https://wa.me/910000000000" target="_blank" className="flex items-center justify-center gap-2 text-indigo-900 dark:text-indigo-300">
-              <MessageSquare className="w-3.5 h-3.5" />
-              Support
-            </Link>
-          </Button>
-          <BookingTrackerModal asChild={true}>
-            <Button className="rounded-2xl h-11 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-600/20 transition-all active:scale-95">
+        {/* Footer Actions */}
+        <div className="mt-auto pt-4 space-y-3 w-full pb- safe-area-bottom">
+          <BookingTrackerModal asChild={true} bookingId={bookingId || undefined}>
+            <Button variant="outline" className="w-full h-12 border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 rounded-xl font-black uppercase text-xs tracking-widest active:scale-[0.98] transition-all bg-transparent">
               Track Request
             </Button>
           </BookingTrackerModal>
-        </div>
 
-        {/* Back to Home Link */}
-        <div className="text-center pt-2">
-          <Button asChild variant="link" className="text-indigo-600/60 dark:text-indigo-400/60 text-[10px] font-black uppercase tracking-[0.2em] h-auto p-0 hover:text-indigo-600 transition-colors">
-            <Link href="/">Back to Home</Link>
-          </Button>
+          <Link href="/" className="block text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] hover:text-indigo-600 transition-colors py-2">
+            Back to Home
+          </Link>
         </div>
       </div>
 

@@ -112,7 +112,7 @@ export default function DesktopConfirmationView({
                                 <div className="w-px h-32 bg-slate-100 hidden md:block" />
 
                                 <div className="flex flex-col gap-4 w-full md:w-auto min-w-[240px]">
-                                    <BookingTrackerModal asChild={true}>
+                                    <BookingTrackerModal asChild={true} bookingId={bookingId}>
                                         <Button className="h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-100 px-8 group transition-all active:scale-[0.98]">
                                             TRACK SERVICE REQUEST
                                             <LayoutDashboard className="ml-3 w-5 h-5 group-hover:rotate-12 transition-transform" />
