@@ -22,7 +22,7 @@ function ServicesSheetSkeleton() {
         <div className="grid grid-cols-4 gap-y-6 gap-x-2 py-4">
             {Array.from({ length: 12 }).map((_, i) => (
                 <div key={i} className="flex flex-col items-center gap-2">
-                    <Skeleton className="w-14 h-14 rounded-full" />
+                    <Skeleton className="w-20 h-20 rounded-full" />
                     <Skeleton className="h-3 w-10" />
                 </div>
             ))}
@@ -66,13 +66,13 @@ function ServiceCard({ category }: { category: ServiceCategory }) {
         <>
             {isNavigating && <FullScreenLoader />}
             <div onClick={handleClick} className="group flex flex-col items-center cursor-pointer w-full p-1">
-                <div className="w-[4.5rem] h-[4.5rem] rounded-[1.25rem] bg-indigo-50/80 flex items-center justify-center mb-2 overflow-hidden shadow-sm border border-indigo-100/50 transition-all active:scale-95 group-hover:bg-primary/5 group-hover:shadow-md">
-                    <div className="relative w-10 h-10">
+                <div className="w-[5rem] h-[5rem] rounded-full bg-indigo-50/80 flex items-center justify-center mb-2 overflow-hidden shadow-sm border border-indigo-100/50 transition-all duration-300 active:scale-95 group-hover:bg-primary/10 group-hover:shadow-lg group-hover:border-primary/30 group-hover:scale-105">
+                    <div className="relative w-16 h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
                         <Image
                             src={category.image.imageUrl}
                             alt={category.name}
                             fill
-                            className="object-contain"
+                            className="object-contain transition-all duration-300"
                             data-ai-hint={category.image.imageHint}
                         />
                     </div>

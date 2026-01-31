@@ -75,13 +75,13 @@ function MobileServiceCard({ category }: { category: ServiceCategory }) {
     <>
       {isNavigating && <FullScreenLoader />}
       <div onClick={handleClick} className="group flex flex-col items-center cursor-pointer w-full p-1">
-        <div className="w-[4.5rem] h-[4.5rem] rounded-[1.25rem] bg-indigo-50/80 flex items-center justify-center mb-2 overflow-hidden shadow-sm border border-indigo-100/50 transition-all active:scale-95 group-hover:bg-primary/5 group-hover:shadow-md">
-          <div className="relative w-10 h-10">
+        <div className="w-[5rem] h-[5rem] rounded-full bg-indigo-50/80 flex items-center justify-center mb-2 overflow-hidden shadow-sm border border-indigo-100/50 transition-all duration-300 active:scale-95 group-hover:bg-primary/10 group-hover:shadow-lg group-hover:border-primary/30 group-hover:scale-105">
+          <div className="relative w-16 h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
             <Image
               src={category.image.imageUrl}
               alt={category.name}
               fill
-              className="object-contain"
+              className="object-contain transition-all duration-300"
             />
           </div>
         </div>
@@ -384,7 +384,15 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
                     </AnimatePresence>
                   </div>
                 </div>
-                <Mic className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-80" />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {/* Pulsing Ring Animation */}
+                  <span className="flex h-8 w-8 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/30 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-8 w-8 bg-primary/10 items-center justify-center">
+                      <Mic className="h-5 w-5 text-primary animate-pulse" />
+                    </span>
+                  </span>
+                </div>
               </div>
             </SheetTrigger>
             <SheetContent
@@ -439,7 +447,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         <section id="services" className="mt-12 px-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-black text-[#1e1b4b]">
-              Popular <span className="text-primary">Services</span>
+              Popular <span className="text-primary">Repairs</span>
             </h2>
             <Sheet>
               <SheetTrigger asChild>
