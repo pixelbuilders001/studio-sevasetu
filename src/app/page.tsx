@@ -9,7 +9,7 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import { getTranslations } from '@/lib/get-translation';
 import VerifiedTechnicians from '@/components/VerifiedTechnicians';
-import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase, ChevronRight, Search, IndianRupee, Star, Mic } from 'lucide-react';
+import { ArrowRight, Award, ShieldCheck, Clock, Shield, Zap, Briefcase, ChevronRight, Search, IndianRupee, Star, Mic, PaintBucket } from 'lucide-react';
 import type { ServiceCategory } from '@/lib/data';
 import BecomePartner from '@/components/BecomePartner';
 import HeroCTA from '@/components/HeroCTA';
@@ -38,6 +38,8 @@ import AppDownloadBanner from '@/components/AppDownloadBanner';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import FeatureCard from '@/components/FeatureCard';
+import PaintingServiceCard from '@/components/PaintingServiceCard';
+import CleaningServiceCard from '@/components/CleaningServiceCard';
 
 
 function ServiceCardSkeleton() {
@@ -232,6 +234,94 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
     },
   ];
 
+  const paintingServices = [
+    {
+      id: '1',
+      name: 'Interior Painting',
+      image: '/interior-painting.png',
+      description: 'Transform your indoor spaces with premium quality paints',
+      color: '#6366f1',
+      price: 199,
+    },
+    {
+      id: '2',
+      name: 'Exterior Painting',
+      image: '/exterior-painting.png',
+      description: 'Weather-resistant exterior painting for lasting protection',
+      color: '#8b5cf6',
+      price: 230,
+    },
+    {
+      id: '3',
+      name: 'Wall Texture',
+      image: '/wall-texture.png',
+      description: 'Add depth and character with textured wall finishes',
+      color: '#ec4899',
+      price: 220,
+    },
+    {
+      id: '4',
+      name: 'Wood Painting',
+      image: '/wood-painting.png',
+      description: 'Restore and enhance the beauty of wooden surfaces',
+      color: '#f59e0b',
+      price: 210,
+    },
+    // {
+    //   id: '5',
+    //   name: 'Rental Painting',
+    //   image: '/rental-painting.png',
+    //   description: 'Affordable painting solutions for rental properties',
+    //   color: '#8b5cf6',
+    //   price: 9,
+    //   isRental: true,
+    // },
+  ];
+
+  const cleaningServices = [
+    {
+      id: '1',
+      name: 'Bathroom Cleaning',
+      image: '/placeholder-cleaning.png', // User will provide later
+      description: 'Deep cleaning for spotless bathrooms',
+      color: '#10b981',
+      price: 399,
+      priceLabel: 'each',
+    },
+    {
+      id: '2',
+      name: 'Sofa Cleaning',
+      image: '/placeholder-cleaning.png', // User will provide later
+      description: 'Professional sofa and upholstery cleaning',
+      color: '#f59e0b',
+      price: 149,
+    },
+    {
+      id: '3',
+      name: 'Kitchen Cleaning',
+      image: '/placeholder-cleaning.png', // User will provide later
+      description: 'Complete kitchen deep cleaning service',
+      color: '#64748b',
+      price: 1524,
+    },
+    {
+      id: '4',
+      name: 'Vacant Home Deep Cleaning',
+      image: '/placeholder-cleaning.png', // User will provide later
+      description: 'Comprehensive cleaning for empty homes',
+      color: '#3b82f6',
+      price: 2300,
+    },
+    // {
+    //   id: '5',
+    //   name: 'Occupied Home Deep Cleaning',
+    //   image: '/placeholder-cleaning.png', // User will provide later
+    //   description: 'Thorough cleaning for occupied residences',
+    //   color: '#f97316',
+    //   price: 2500,
+    // },
+  ];
+
   return (
     <div className="min-h-screen bg-secondary/10 pb-10">
       {/* Desktop Hero (md+) */}
@@ -381,6 +471,49 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
 
         </section>
 
+        {/* Painting Services Section (Mobile) */}
+        <section className="mt-12 px-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-black text-[#1e1b4b]">
+              Painting <span className="text-primary">Services</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {paintingServices.map((service, index) => (
+              <PaintingServiceCard
+                key={service.id}
+                service={service}
+                index={index}
+                isMobile={true}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Cleaning Services Section (Mobile) */}
+        <section className="mt-12 px-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-black text-[#1e1b4b]">
+              Cleaning <span className="text-primary">Services</span>
+            </h2>
+            <div className="bg-pink-100 text-pink-600 text-[9px] font-bold px-3 py-1 rounded-full">
+              up to 50% off
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {cleaningServices.map((service, index) => (
+              <CleaningServiceCard
+                key={service.id}
+                service={service}
+                index={index}
+                isMobile={true}
+              />
+            ))}
+          </div>
+        </section>
+
         {/* Verified Technicians (Mobile) */}
         <div className="mt-12">
           <VerifiedTechnicians t={t} isMobile={true} />
@@ -417,6 +550,53 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
           }
         </div>
       </section >
+
+      {/* Painting Services Section (Desktop) */}
+      <section className="hidden md:block container mx-auto px-4 md:px-8 mt-12 md:mt-16">
+        <div className="flex justify-between items-end mb-6 md:mb-8">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[#1e1b4b]">
+              Painting <span className="text-primary">Services</span>
+            </h2>
+            <p className="text-xs md:text-lg text-indigo-600/60 font-bold mt-1 md:mt-3">Professional painting solutions for your home</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+          {paintingServices.map((service, index) => (
+            <PaintingServiceCard
+              key={service.id}
+              service={service}
+              index={index}
+              isMobile={false}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Cleaning Services Section (Desktop) */}
+      <section className="hidden md:block container mx-auto px-4 md:px-8 mt-12 md:mt-16">
+        <div className="flex justify-between items-end mb-6 md:mb-8">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[#1e1b4b]">
+              Cleaning <span className="text-primary">Services</span>
+            </h2>
+            <p className="text-xs md:text-lg text-indigo-600/60 font-bold mt-1 md:mt-3">Professional cleaning solutions for your home</p>
+          </div>
+          <div className="bg-pink-100 text-pink-600 text-sm font-bold px-4 py-2 rounded-full">
+            up to 50% off
+          </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+          {cleaningServices.map((service, index) => (
+            <CleaningServiceCard
+              key={service.id}
+              service={service}
+              index={index}
+              isMobile={false}
+            />
+          ))}
+        </div>
+      </section>
 
       {/* Referral Banner */}
       < section className="container mx-auto px-4 md:px-8 md:mt-24" >
