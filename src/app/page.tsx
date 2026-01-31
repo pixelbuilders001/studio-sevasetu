@@ -282,7 +282,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
     {
       id: '1',
       name: 'Bathroom Cleaning',
-      image: '/placeholder-cleaning.png', // User will provide later
+      image: '/bathroom-cleaning.png',
       description: 'Deep cleaning for spotless bathrooms',
       color: '#10b981',
       price: 399,
@@ -291,7 +291,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
     {
       id: '2',
       name: 'Sofa Cleaning',
-      image: '/placeholder-cleaning.png', // User will provide later
+      image: '/sofa-cleaning.png',
       description: 'Professional sofa and upholstery cleaning',
       color: '#f59e0b',
       price: 149,
@@ -299,7 +299,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
     {
       id: '3',
       name: 'Kitchen Cleaning',
-      image: '/placeholder-cleaning.png', // User will provide later
+      image: '/kitchen-cleaning.png',
       description: 'Complete kitchen deep cleaning service',
       color: '#64748b',
       price: 1524,
@@ -307,7 +307,7 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
     {
       id: '4',
       name: 'Vacant Home Deep Cleaning',
-      image: '/placeholder-cleaning.png', // User will provide later
+      image: '/vacant-home-cleaning.png',
       description: 'Comprehensive cleaning for empty homes',
       color: '#3b82f6',
       price: 2300,
@@ -474,9 +474,14 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         {/* Painting Services Section (Mobile) */}
         <section className="mt-12 px-4">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-black text-[#1e1b4b]">
-              Painting <span className="text-primary">Services</span>
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-black text-[#1e1b4b]">
+                Painting <span className="text-primary">Services</span>
+              </h2>
+              <span className="bg-gradient-to-r from-orange-500 to-pink-500 text-white text-[6px] font-bold px-2 py-1 rounded-full uppercase tracking-wide shadow-sm">
+                Coming Soon
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -494,9 +499,14 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
         {/* Cleaning Services Section (Mobile) */}
         <section className="mt-12 px-4">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-black text-[#1e1b4b]">
-              Cleaning <span className="text-primary">Services</span>
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-black text-[#1e1b4b]">
+                Cleaning <span className="text-primary">Services</span>
+              </h2>
+              <span className="bg-gradient-to-r from-orange-500 to-pink-500 text-white text-[6px] font-bold px-2 py-1 rounded-full uppercase tracking-wide shadow-sm">
+                Coming Soon
+              </span>
+            </div>
             <div className="bg-pink-100 text-pink-600 text-[9px] font-bold px-3 py-1 rounded-full">
               up to 50% off
             </div>
@@ -555,9 +565,14 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
       <section className="hidden md:block container mx-auto px-4 md:px-8 mt-12 md:mt-16">
         <div className="flex justify-between items-end mb-6 md:mb-8">
           <div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[#1e1b4b]">
-              Painting <span className="text-primary">Services</span>
-            </h2>
+            <div className="flex items-center gap-3 mb-2">
+              <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[#1e1b4b]">
+                Painting <span className="text-primary">Services</span>
+              </h2>
+              <span className="bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow-md">
+                Coming Soon
+              </span>
+            </div>
             <p className="text-xs md:text-lg text-indigo-600/60 font-bold mt-1 md:mt-3">Professional painting solutions for your home</p>
           </div>
         </div>
@@ -577,9 +592,14 @@ export default function Home({ searchParams }: { searchParams: Promise<{ [key: s
       <section className="hidden md:block container mx-auto px-4 md:px-8 mt-12 md:mt-16">
         <div className="flex justify-between items-end mb-6 md:mb-8">
           <div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[#1e1b4b]">
-              Cleaning <span className="text-primary">Services</span>
-            </h2>
+            <div className="flex items-center gap-3 mb-2">
+              <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[#1e1b4b]">
+                Cleaning <span className="text-primary">Services</span>
+              </h2>
+              <span className="bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow-md">
+                Coming Soon
+              </span>
+            </div>
             <p className="text-xs md:text-lg text-indigo-600/60 font-bold mt-1 md:mt-3">Professional cleaning solutions for your home</p>
           </div>
           <div className="bg-pink-100 text-pink-600 text-sm font-bold px-4 py-2 rounded-full">

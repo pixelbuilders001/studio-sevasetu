@@ -47,19 +47,19 @@ export default function CleaningServiceCard({ service, index, isMobile = false }
                         <div className="absolute top-2 right-2 backdrop-blur-sm px-2 py-1 rounded-full shadow-md flex items-center gap-0.5"
                             style={{ backgroundColor: service.color }}
                         >
-                            <span className="text-[7px] font-bold text-white uppercase tracking-wide">Starts at</span>
+                            <span className="text-[7px] font-bold text-white uppercase tracking-wide">Starts at {service.price}</span>
                         </div>
-                        <div className="absolute top-8 right-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-full shadow-md flex items-center gap-0.5">
+                        {/* <div className="absolute top-8 right-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-full shadow-md flex items-center gap-0.5">
                             <IndianRupee className="w-2.5 h-2.5 text-primary" />
                             <span className="text-[8px] font-black text-primary">{service.price}</span>
                             {service.priceLabel && (
                                 <span className="text-[7px] font-medium text-slate-500">/{service.priceLabel}</span>
                             )}
-                        </div>
+                        </div> */}
                     </div>
-                    <h3 className="text-xs font-black text-center text-[#1e1b4b] leading-tight mb-1">
+                    {/* <h3 className="text-xs font-black text-center text-[#1e1b4b] leading-tight mb-1">
                         {service.name}
-                    </h3>
+                    </h3> */}
                     <p className="text-[9px] text-slate-500 text-center font-medium leading-tight line-clamp-2">
                         {service.description}
                     </p>
@@ -100,15 +100,15 @@ export default function CleaningServiceCard({ service, index, isMobile = false }
                         <div className="absolute top-3 right-3 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1"
                             style={{ backgroundColor: service.color }}
                         >
-                            <span className="text-[9px] font-bold text-white uppercase tracking-wide">Starts at</span>
+                            <span className="text-[9px] font-bold text-white uppercase tracking-wide">Starts at {service.price}</span>
                         </div>
-                        <div className="absolute top-12 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                        {/* <div className="absolute top-12 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
                             <IndianRupee className="w-3.5 h-3.5 text-primary" />
                             <span className="text-sm font-black text-primary">{service.price}</span>
                             {service.priceLabel && (
                                 <span className="text-xs font-medium text-slate-500">/{service.priceLabel}</span>
                             )}
-                        </div>
+                        </div> */}
                     </div>
                     {/* Glow Element */}
                     <div
@@ -118,9 +118,9 @@ export default function CleaningServiceCard({ service, index, isMobile = false }
                 </div>
 
                 <div className="relative z-10 flex flex-col gap-2 text-center">
-                    <h3 className="text-base font-black text-[#1e1b4b] group-hover:text-primary transition-colors leading-tight">
+                    {/* <h3 className="text-base font-black text-[#1e1b4b] group-hover:text-primary transition-colors leading-tight">
                         {service.name}
-                    </h3>
+                    </h3> */}
                     <p className="text-xs text-slate-500 font-medium leading-relaxed">
                         {service.description}
                     </p>
